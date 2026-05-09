@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>RAG AI Chatbot</title>
+
+    <!-- CSS -->
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+    <!-- Marked -->
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Font Awesome -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+
+    <!-- Google Fonts -->
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Sidebar -->
+
+    <div
+        class="sidebar"
+        id="sidebar"
+    >
+
+        <button
+            class="toggle-btn"
+            onclick="toggleSidebar()"
+        >
+            ☰
+        </button>
+
+        <!-- Top -->
+
+        <div class="sidebar-top">
+
+            <div class="logo">
+
+                <i class="fa-solid fa-robot"></i>
+
+                <span class="sidebar-text">
+                    RAG AI
+                </span>
+
+            </div>
+
+        </div>
+
+        <!-- Actions -->
+
+        <div class="sidebar-actions">
+
+            <!-- Upload Button -->
+
+            <button
+                class="sidebar-btn"
+                onclick="toggleUploadPanel()"
+            >
+
+                <i class="fa-solid fa-upload"></i>
+
+                <span class="sidebar-text">
+                    Upload PDFs
+                </span>
+
+            </button>
+
+        </div>
+
+        <!-- Upload Panel -->
+
+        <div
+            class="upload-panel"
+            id="uploadPanel"
+        >
+
+            <h3>
+                Upload PDF Files
+            </h3>
+
+            <input
+                type="file"
+                id="pdfFiles"
+                multiple
+            >
+
+            <button
+                class="upload-real-btn"
+                onclick="uploadFiles()"
+            >
+                Upload Files
+            </button>
+
+            <div
+                class="status"
+                id="uploadStatus"
+            ></div>
+
+        </div>
+
+        <!-- Chat History -->
+
+        <div class="chat-history">
+
+            <h3 class="chat-history-title">
+                Chat History
+            </h3>
+
+            <div id="chatHistoryList"></div>
+
+        </div>
+
+    </div>
+
+    <!-- Chat Area -->
+
+    <div class="chat-area">
+
+<div class="chat-header">
+
+    <h1>
+        PDF Question Answering Chatbot
+    </h1>
+
+    <div class="top-controls">
+
+        <!-- Theme Color -->
+
+        <select
+            id="themeSelector"
+            onchange="changeTheme(this.value)"
+        >
+
+            <option value="cyan">
+                Cyan Blue
+            </option>
+
+            <option value="purple">
+                Purple Night
+            </option>
+
+            <option value="green">
+                Neon Green
+            </option>
+
+            <option value="orange">
+                Sunset Orange
+            </option>
+
+            <option value="pink">
+                Pink Rose
+            </option>
+
+        </select>
+
+        <!-- Dark Light -->
+
+        <button
+            id="modeToggle"
+            onclick="toggleMode()"
+        >
+
+            <i class="fa-solid fa-moon"></i>
+
+        </button>
+
+    </div>
+
+</div>
+
+        <!-- Messages -->
+
+        <div
+            class="messages"
+            id="messages"
+        >
+
+            <div class="message bot">
+
+                Hello 👋 <br><br>
+
+                Upload PDFs and start asking questions.
+
+            </div>
+
+        </div>
+
+        <!-- Input -->
+
+        <div class="chat-input-area">
+
+            <input
+                type="text"
+                id="questionInput"
+                class="chat-input"
+                placeholder="Ask anything..."
+            >
+
+            <button
+                class="mic-btn"
+                id="micBtn"
+                onclick="startSpeechRecognition()"
+            >
+                <i class="fa-solid fa-microphone"></i>
+            </button>
+
+            <button
+                class="send-btn"
+                onclick="sendQuestion()"
+            >
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    // -----------------------------
+// Theme Switcher
+// -----------------------------
+
+function changeTheme(theme){
+
+    document.body.classList.remove(
+
+        "theme-cyan",
+        "theme-purple",
+        "theme-green",
+        "theme-orange",
+        "theme-pink"
+    );
+
+    document.body.classList.add(
+
+        `theme-${theme}`
+    );
+
+    localStorage.setItem(
+        "theme",
+        theme
+    );
+}
+
+// -----------------------------
+// Light Dark Toggle
+// -----------------------------
+
+function toggleMode(){
+
+    document.body.classList.toggle(
+        "light-mode"
+    );
+
+    const icon =
+        document.querySelector(
+            "#modeToggle i"
+        );
+
+    if(
+        document.body.classList.contains(
+            "light-mode"
+        )
+    ){
+
+        icon.className =
+            "fa-solid fa-sun";
+
+    }else{
+
+        icon.className =
+            "fa-solid fa-moon";
+    }
+
+    localStorage.setItem(
+
+        "mode",
+
+        document.body.classList.contains(
+            "light-mode"
+        )
+        ? "light"
+        : "dark"
+    );
+}
+
+    marked.setOptions({
+        breaks:true
+    });
+
+    let session_id = null;
+
+    let messagesData = [];
+
+    // Toggle Sidebar
+
+    function toggleSidebar(){
+
+        document
+        .getElementById("sidebar")
+        .classList.toggle("collapsed");
+    }
+
+    // Toggle Upload Panel
+
+    function toggleUploadPanel(){
+
+        document
+        .getElementById("uploadPanel")
+        .classList.toggle("active");
+    }
+
+    // Upload Files
+
+    async function uploadFiles(){
+
+        const files =
+            document.getElementById("pdfFiles").files;
+
+        if(files.length === 0){
+
+            alert("Please select PDF files");
+
+            return;
+        }
+
+        const formData = new FormData();
+
+        for(let file of files){
+
+            formData.append("files", file);
+        }
+
+        document.getElementById("uploadStatus")
+        .innerText =
+            "Uploading PDFs...";
+
+        const response = await fetch("/upload",{
+
+            method:"POST",
+
+            body:formData
+        });
+
+        const data = await response.json();
+
+        if(data.status === "success"){
+
+            session_id = data.session_id;
+
+            messagesData = [];
+
+            document.getElementById("uploadStatus")
+            .innerText =
+                "Upload successful ✅";
+
+            loadChats();
+
+        }else{
+
+            alert(data.message);
+        }
+    }
+
+    // Add Message
+
+    function addMessage(content, type){
+
+        const messages =
+            document.getElementById("messages");
+
+        const div =
+            document.createElement("div");
+
+        div.className = `message ${type}`;
+
+        div.innerHTML = content;
+
+        messages.appendChild(div);
+
+        messages.scrollTop =
+            messages.scrollHeight;
+
+        return div;
+    }
+
+    // -----------------------------
+// Send Question
+// -----------------------------
+
+async function sendQuestion(){
+
+    const input =
+        document.getElementById("questionInput");
+
+    const question =
+        input.value.trim();
+
+    if(!question){
+
+        return;
+    }
+
+    if(!session_id){
+
+        alert("Please upload PDFs first");
+
+        return;
+    }
+
+    // Add user message
+
+    addMessage(question, "user");
+
+    // Store locally
+
+    messagesData.push({
+
+        question:question
+    });
+
+    input.value = "";
+
+    // Bot placeholder
+
+    const botDiv =
+        addMessage("Thinking...", "bot");
+
+    // API Call
+
+    const response = await fetch("/ask",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+
+            question:question,
+
+            session_id:session_id,
+
+            messages:messagesData
+        })
+    });
+
+    const data = await response.json();
+
+    // Error
+
+    if(data.status !== "success"){
+
+        botDiv.innerHTML = data.message;
+
+        return;
+    }
+
+    // Sources
+
+    let sourceHTML = "";
+
+    if(data.sources.length > 0){
+
+        sourceHTML += `
+
+            <div class="sources">
+
+                <b>Sources:</b>
+
+                <br><br>
+        `;
+
+        data.sources.forEach(src => {
+
+            sourceHTML += `
+
+                <div class="source-item">
+
+                    📄 <b>${src.source}</b>
+
+                    | Page ${src.page}
+
+                    <br><br>
+
+                    ${src.content}...
+
+                </div>
+            `;
+        });
+
+        sourceHTML += `</div>`;
+    }
+
+    // Render markdown
+
+    botDiv.innerHTML =
+
+        marked.parse(data.answer)
+
+        + sourceHTML;
+
+    // Save response locally
+
+    messagesData.push({
+
+        answer:data.answer
+    });
+
+    // Reload history
+
+    loadChats();
+}
+
+// -----------------------------
+// Enter Key Submit
+// -----------------------------
+
+document
+.getElementById("questionInput")
+.addEventListener("keypress", function(event){
+
+    if(event.key === "Enter"){
+
+        sendQuestion();
+    }
+});
+
+// -----------------------------
+// Load Chat History
+// -----------------------------
+
+async function loadChats(){
+
+    const response =
+        await fetch("/get_chats");
+
+    const chats =
+        await response.json();
+
+    const historyDiv =
+        document.getElementById(
+            "chatHistoryList"
+        );
+
+    historyDiv.innerHTML = "";
+
+    chats.forEach(chat => {
+
+        const div =
+            document.createElement("div");
+
+        div.className =
+            "chat-history-item";
+
+        div.innerHTML = `
+
+            <i class="fa-solid fa-message"></i>
+
+            <span>
+
+                ${chat[1]}
+
+            </span>
+        `;
+
+        div.onclick = function(){
+
+            loadChatMessages(chat[0]);
+        };
+
+        historyDiv.appendChild(div);
+    });
+}
+
+// -----------------------------
+// Load Previous Chat Messages
+// -----------------------------
+
+async function loadChatMessages(chatSessionId){
+
+    session_id = chatSessionId;
+
+    const response = await fetch(
+
+        `/load_chat/${chatSessionId}`
+    );
+
+    const messages =
+        await response.json();
+
+    const messagesDiv =
+        document.getElementById("messages");
+
+    messagesDiv.innerHTML = "";
+
+    messagesData = [];
+
+    messages.forEach(msg => {
+
+        // User
+
+        if(msg.question){
+
+            addMessage(
+                msg.question,
+                "user"
+            );
+
+            messagesData.push({
+
+                question:msg.question
+            });
+        }
+
+        // Bot
+
+        if(msg.answer){
+
+            addMessage(
+                marked.parse(msg.answer),
+                "bot"
+            );
+
+            messagesData.push({
+
+                answer:msg.answer
+            });
+        }
+    });
+}
+
+// -----------------------------
+// Speech Recognition
+// -----------------------------
+
+function startSpeechRecognition(){
+
+    const micBtn =
+        document.getElementById("micBtn");
+
+    const SpeechRecognition =
+
+        window.SpeechRecognition ||
+
+        window.webkitSpeechRecognition;
+
+    if(!SpeechRecognition){
+
+        alert(
+            "Speech Recognition not supported"
+        );
+
+        return;
+    }
+
+    const recognition =
+        new SpeechRecognition();
+
+    recognition.lang = "en-US";
+
+    recognition.interimResults = false;
+
+    recognition.start();
+
+    micBtn.classList.add("recording");
+
+    recognition.onresult = function(event){
+
+        const transcript =
+
+            event.results[0][0].transcript;
+
+        document.getElementById(
+            "questionInput"
+        ).value = transcript;
+    };
+
+    recognition.onend = function(){
+
+        micBtn.classList.remove(
+            "recording"
+        );
+    };
+
+    recognition.onerror = function(){
+
+        micBtn.classList.remove(
+            "recording"
+        );
+    };
+}
+
+// -----------------------------
+// Initial Load
+// -----------------------------
+
+window.onload = function(){
+
+    // Load Chats
+
+    loadChats();
+
+    // Restore Theme
+
+    const savedTheme =
+
+        localStorage.getItem("theme")
+
+        || "cyan";
+
+    changeTheme(savedTheme);
+
+    document.getElementById(
+        "themeSelector"
+    ).value = savedTheme;
+
+    // Restore Mode
+
+    const savedMode =
+        localStorage.getItem("mode");
+
+    if(savedMode === "light"){
+
+        document.body.classList.add(
+            "light-mode"
+        );
+
+        document.querySelector(
+            "#modeToggle i"
+        ).className =
+            "fa-solid fa-sun";
+    }
+};
+
+</script>
+
+</body>
+
+</html>

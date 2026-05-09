@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Login</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:'Inter',sans-serif;
+        }
+
+        body{
+
+            height:100vh;
+
+            display:flex;
+
+            justify-content:center;
+            align-items:center;
+
+            background:#0b0c0f;
+        }
+
+        .login-card{
+
+            width:360px;
+
+            background:#171a21;
+
+            border:1px solid rgba(255,255,255,0.06);
+
+            border-radius:22px;
+
+            padding:32px;
+
+            box-shadow:
+                0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        h1{
+
+            color:white;
+
+            margin-bottom:24px;
+
+            font-size:24px;
+
+            text-align:center;
+        }
+
+        .input-group{
+
+            margin-bottom:18px;
+        }
+
+        input{
+
+            width:100%;
+
+            height:48px;
+
+            border:none;
+
+            border-radius:14px;
+
+            padding:0 16px;
+
+            background:#0f1115;
+
+            color:white;
+
+            outline:none;
+
+            border:1px solid rgba(255,255,255,0.06);
+        }
+
+        button{
+
+            width:100%;
+
+            height:48px;
+
+            border:none;
+
+            border-radius:14px;
+
+            background:linear-gradient(
+                135deg,
+                #7c8cff,
+                #5b6dff
+            );
+
+            color:white;
+
+            cursor:pointer;
+
+            font-size:15px;
+
+            font-weight:600;
+        }
+
+        .error{
+
+            color:#ff6b6b;
+
+            margin-bottom:14px;
+
+            font-size:14px;
+
+            text-align:center;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="login-card">
+
+        <h1>
+            Login
+        </h1>
+
+        {% if error %}
+
+            <div class="error">
+
+                {{ error }}
+
+            </div>
+
+        {% endif %}
+
+        <form method="POST">
+
+            <div class="input-group">
+
+                <input
+                    type="text"
+                    name="username"
+                    placeholder="Username"
+                    required
+                >
+
+            </div>
+
+            <div class="input-group">
+
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    required
+                >
+
+            </div>
+
+            <button type="submit">
+
+                Sign In
+
+            </button>
+
+        </form>
+
+    </div>
+
+</body>
+
+</html>

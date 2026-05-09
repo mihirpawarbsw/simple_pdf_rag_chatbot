@@ -19,6 +19,49 @@
     gap:14px;
 }
 
+/* =========================
+   LOGOUT BUTTON
+========================= */
+
+.logout-btn{
+
+    height:38px;
+
+    padding:0 14px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:#dc2626;
+
+    color:white;
+
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    cursor:pointer;
+
+    font-size:13px;
+
+    font-weight:500;
+
+    transition:0.2s ease;
+}
+
+.logout-btn:hover{
+
+    background:#b91c1c;
+
+    transform:translateY(-1px);
+}
+
+.logout-btn i{
+
+    font-size:12px;
+}
+
 /* Theme Dropdown */
 
 #themeSelector{

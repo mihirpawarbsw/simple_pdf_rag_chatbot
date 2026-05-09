@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langchain_huggingface import HuggingFaceEndpointEmbeddings
@@ -14,7 +14,15 @@ import uuid
 import sqlite3
 import json
 from datetime import datetime
-
+from flask import (
+    Flask,
+    render_template,
+    request,
+    jsonify,
+    redirect,
+    url_for,
+    session
+)
 # -----------------------------
 # Load ENV
 # -----------------------------
@@ -22,12 +30,15 @@ from datetime import datetime
 load_dotenv()
 
 app = Flask(__name__)
-
+app.secret_key = "super_secret_key_123"
 # -----------------------------
 # SQLite Setup
 # -----------------------------
 
 DB_NAME = "chat_history.db"
+USERNAME = "admin"
+
+PASSWORD = "admin123"
 
 def init_db():
 
@@ -416,18 +427,91 @@ qa_prompt = ChatPromptTemplate.from_template(
 # -----------------------------
 # Home
 # -----------------------------
+# -----------------------------
+# Login Required
+# -----------------------------
+
+def is_logged_in():
+
+    return session.get("logged_in")
 
 @app.route("/")
 def index():
 
+    if not is_logged_in():
+
+        return redirect(
+            url_for("login")
+        )
+
     return render_template("index.html")
 
+@app.route("/login", methods=["GET", "POST"])
+def login():
+
+    if request.method == "POST":
+
+        username = request.form.get(
+            "username"
+        )
+
+        password = request.form.get(
+            "password"
+        )
+
+        if (
+
+            username == USERNAME
+
+            and
+
+            password == PASSWORD
+        ):
+
+            session["logged_in"] = True
+
+            return redirect(
+                url_for("index")
+            )
+
+        return render_template(
+
+            "login.html",
+
+            error="Invalid credentials"
+        )
+
+    return render_template(
+        "login.html"
+    )
+
+# -----------------------------
+# Logout
+# -----------------------------
+
+@app.route("/logout")
+def logout():
+
+    session.clear()
+
+    return render_template(
+        "logout.html"
+    )
 # -----------------------------
 # Upload
 # -----------------------------
 
 @app.route("/upload", methods=["POST"])
 def upload_files():
+
+    if not is_logged_in():
+
+        return jsonify({
+
+            "status":"error",
+
+            "message":"Unauthorized"
+        })
 
     uploaded_files = request.files.getlist(
         "files"
@@ -468,6 +552,15 @@ def upload_files():
 
 @app.route("/ask", methods=["POST"])
 def ask_question():
+
+    if not is_logged_in():
+
+        return jsonify({
+
+            "status":"error",
+
+            "message":"Unauthorized"
+        })
 
     data = request.json
 
@@ -538,12 +631,22 @@ def ask_question():
         "sources":sources
     })
 
+
 # -----------------------------
 # Get Chat List
 # -----------------------------
 
 @app.route("/get_chats")
 def get_chats():
+
+    if not is_logged_in():
+
+        return jsonify({
+
+            "status":"error",
+
+            "message":"Unauthorized"
+        })
 
     chats = get_all_chats()
 
@@ -555,6 +658,15 @@ def get_chats():
 
 @app.route("/load_chat/<session_id>")
 def load_chat(session_id):
+
+    if not is_logged_in():
+
+        return jsonify({
+
+            "status":"error",
+
+            "message":"Unauthorized"
+        })
 
     messages = get_chat_messages(
         session_id

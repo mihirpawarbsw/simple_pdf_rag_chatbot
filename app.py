@@ -1,13 +1,12 @@
 from flask import Flask, render_template, request, jsonify
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEndpointEmbeddings
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_community.document_loaders import PyMuPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
 from operator import itemgetter
-
 import chromadb
 import tempfile
 import os
@@ -95,8 +94,15 @@ def configure_retriever(uploaded_files, session_id):
 
     chunks = splitter.split_documents(docs)
 
-    embeddings = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2"
+
+
+    embeddings = HuggingFaceEndpointEmbeddings(
+
+        model="sentence-transformers/all-MiniLM-L6-v2",
+
+        huggingfacehub_api_token=os.getenv(
+            "HUGGINGFACEHUB_API_TOKEN"
+        )
     )
 
     client = chromadb.PersistentClient(

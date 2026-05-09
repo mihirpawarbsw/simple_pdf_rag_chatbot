@@ -2,10 +2,10 @@ flask
 python-dotenv
 langchain
 langchain-groq
-langchain-huggingface
 langchain-community
 langchain-chroma
 chromadb
-sentence-transformers
 pymupdf
 gunicorn
+langchain-huggingface
+huggingface_hub

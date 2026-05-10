@@ -17,127 +17,574 @@
         rel="stylesheet"
     >
 
-    <style>
+<style>
 
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-            font-family:'Inter',sans-serif;
-        }
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family:'Inter',sans-serif;
+    }
 
-        body{
+body{
 
-            height:100vh;
+    height:100vh;
 
-            display:flex;
+    display:flex;
 
-            justify-content:center;
-            align-items:center;
+    justify-content:center;
+    align-items:center;
 
-            background:#0b0c0f;
-        }
+    overflow:hidden;
 
-        .login-card{
+    position:relative;
 
-            width:360px;
+    background:#07141c;
+}
+    /* Background Glow */
 
-            background:#171a21;
 
-            border:1px solid rgba(255,255,255,0.06);
+    /* =========================
+   BACKGROUND IMAGE LAYER
+========================= */
 
-            border-radius:22px;
+.bg-image{
 
-            padding:32px;
+    position:absolute;
 
-            box-shadow:
-                0 10px 40px rgba(0,0,0,0.3);
-        }
+    inset:0;
 
-        h1{
+    background-image:
 
-            color:white;
+        linear-gradient(
+            rgba(0,0,0,0.18),
+            rgba(0,0,0,0.22)
+        ),
 
-            margin-bottom:24px;
+        url('/static/images/glass_bk.jpg');
 
-            font-size:24px;
+    background-size:cover;
 
-            text-align:center;
-        }
+    background-position:center;
 
-        .input-group{
+    background-repeat:no-repeat;
 
-            margin-bottom:18px;
-        }
+    z-index:0;
+}
 
-        input{
+/* =========================
+   CYAN/TEAL MESH GLOW
+========================= */
 
-            width:100%;
+.mesh-gradient{
 
-            height:48px;
+    position:absolute;
 
-            border:none;
+    inset:0;
 
-            border-radius:14px;
+    overflow:hidden;
 
-            padding:0 16px;
+    z-index:1;
+}
 
-            background:#0f1115;
+/* Blob 1 */
 
-            color:white;
+.blob{
 
-            outline:none;
+    position:absolute;
 
-            border:1px solid rgba(255,255,255,0.06);
-        }
+    border-radius:50%;
 
-        button{
+    filter:blur(120px);
 
-            width:100%;
+    opacity:0.18;
+}
 
-            height:48px;
+.blob1{
 
-            border:none;
+    width:420px;
+    height:420px;
 
-            border-radius:14px;
+    background:#00ffd5;
 
-            background:linear-gradient(
-                135deg,
-                #7c8cff,
-                #5b6dff
-            );
+    top:-120px;
+    left:-100px;
+}
 
-            color:white;
+/* Blob 2 */
 
-            cursor:pointer;
+.blob2{
 
-            font-size:15px;
+    width:380px;
+    height:380px;
 
-            font-weight:600;
-        }
+    background:#00c2ff;
 
-        .error{
+    bottom:-120px;
+    right:-80px;
+}
 
-            color:#ff6b6b;
+/* Blob 3 */
 
-            margin-bottom:14px;
+.blob3{
 
-            font-size:14px;
+    width:280px;
+    height:280px;
 
-            text-align:center;
-        }
+    background:#14b8a6;
 
-    </style>
+    top:40%;
+    left:55%;
+}
+
+/* Noise Overlay */
+
+.noise{
+
+    position:absolute;
+
+    inset:0;
+
+    background-image:
+        radial-gradient(
+            rgba(255,255,255,0.03) 1px,
+            transparent 1px
+        );
+
+    background-size:3px 3px;
+
+    opacity:0.12;
+
+    z-index:2;
+}
+
+
+    /* Login Card */
+
+.login-card{
+
+    width:410px;
+
+    padding:42px;
+
+    border-radius:34px;
+
+    background:
+        rgba(255,255,255,0.12);
+
+    backdrop-filter:blur(22px);
+
+    -webkit-backdrop-filter:blur(22px);
+
+    border:
+        1px solid rgba(255,255,255,0.18);
+
+    box-shadow:
+
+        0 8px 32px rgba(0,0,0,0.18),
+
+        inset 0 1px 1px rgba(255,255,255,0.12);
+
+    position:relative;
+
+    overflow:hidden;
+
+    z-index:10;
+}
+
+/* =========================
+   PROJECT BRAND
+========================= */
+
+.project-brand{
+
+    margin-bottom:30px;
+
+    text-align:center;
+}
+
+.brand-logo{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:10px;
+
+    margin-bottom:10px;
+}
+
+.brand-logo span{
+
+    font-size:34px;
+
+    font-weight:800;
+
+    letter-spacing:-1.2px;
+
+    color:white;
+
+    text-shadow:
+        0 2px 18px rgba(255,255,255,0.22);
+}
+
+.project-brand p{
+
+    color:rgba(255,255,255,0.88);
+
+    font-size:14px;
+
+    letter-spacing:0.4px;
+
+    margin-top:2px;
+}
+
+/* Animated Logo */
+
+.logo-dot{
+
+    width:14px;
+    height:14px;
+
+    border-radius:50%;
+
+    background:
+        linear-gradient(
+            135deg,
+            #00ffd5,
+            #00c2ff
+        );
+
+    box-shadow:
+        0 0 18px rgba(0,255,213,0.7);
+
+    animation:pulseGlow 2s infinite;
+}
+
+/* Subtitle */
+
+.project-brand p{
+
+    color:rgba(255,255,255,0.78);
+
+    font-size:14px;
+
+    letter-spacing:0.3px;
+}
+
+/* =========================
+   GLASS SHINE
+========================= */
+
+.glass-shine{
+
+    position:absolute;
+
+    width:180px;
+    height:500px;
+
+    background:
+        linear-gradient(
+            to right,
+            rgba(255,255,255,0.22),
+            rgba(255,255,255,0.04)
+        );
+
+    top:-100px;
+    left:-120px;
+
+    transform:rotate(25deg);
+
+    filter:blur(10px);
+
+    pointer-events:none;
+}
+
+/* Welcome */
+
+h1{
+
+    color:white;
+
+    font-size:26px;
+
+    font-weight:650;
+
+    margin-bottom:26px;
+
+    text-align:center;
+
+    letter-spacing:-0.6px;
+}
+
+/* Glow Animation */
+
+@keyframes pulseGlow{
+
+    0%{
+        transform:scale(1);
+        opacity:1;
+    }
+
+    50%{
+        transform:scale(1.2);
+        opacity:0.8;
+    }
+
+    100%{
+        transform:scale(1);
+        opacity:1;
+    }
+}
+    /* Heading */
+
+    h1{
+
+        color:white;
+
+        font-size:30px;
+
+        font-weight:700;
+
+        margin-bottom:28px;
+
+        text-align:center;
+
+        letter-spacing:-0.5px;
+    }
+
+    /* Error */
+
+    .error{
+
+        background:
+            rgba(255,255,255,0.12);
+
+        color:white;
+
+        padding:12px;
+
+        border-radius:12px;
+
+        margin-bottom:18px;
+
+        font-size:14px;
+
+        text-align:center;
+
+        border:
+            1px solid rgba(255,255,255,0.12);
+    }
+
+    /* Input Groups */
+
+    .input-group{
+
+        margin-bottom:18px;
+    }
+
+    /* Inputs */
+
+input{
+
+    width:100%;
+
+    height:58px;
+
+    border:none;
+
+    border-radius:18px;
+
+    padding:0 20px;
+
+    background:
+        rgba(255,255,255,0.16);
+
+    color:white;
+
+    outline:none;
+
+    font-size:14px;
+
+    border:
+        1px solid rgba(255,255,255,0.18);
+
+    backdrop-filter:blur(12px);
+
+    transition:0.25s ease;
+}
+
+input::placeholder{
+
+    color:
+        rgba(255,255,255,0.82);
+}
+
+input:focus{
+
+    background:
+        rgba(255,255,255,0.2);
+
+    border:
+        1px solid rgba(255,255,255,0.32);
+
+    box-shadow:
+
+        0 0 0 4px rgba(255,255,255,0.12),
+
+        0 0 24px rgba(0,255,200,0.18);
+}
+
+    input::placeholder{
+
+        color:
+            rgba(255,255,255,0.72);
+    }
+
+    input:focus{
+
+        background:
+            rgba(255,255,255,0.18);
+
+        border:
+            1px solid rgba(255,255,255,0.28);
+
+        box-shadow:
+            0 0 0 4px rgba(255,255,255,0.08);
+    }
+
+    /* Button */
+
+button{
+
+    width:100%;
+
+    height:58px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,0.26),
+            rgba(255,255,255,0.12)
+        );
+
+    color:white;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    letter-spacing:0.3px;
+
+    backdrop-filter:blur(12px);
+
+    border:
+        1px solid rgba(255,255,255,0.18);
+
+    transition:0.28s ease;
+
+    margin-top:10px;
+}
+
+button:hover{
+
+    transform:
+        translateY(-2px)
+        scale(1.01);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,0.34),
+            rgba(255,255,255,0.18)
+        );
+
+    box-shadow:
+        0 12px 30px rgba(0,0,0,0.12);
+}
+
+    button:hover{
+
+        transform:translateY(-2px);
+
+        box-shadow:
+            0 10px 24px rgba(0,0,0,0.2);
+    }
+
+    /* Small Brand Text */
+
+    .brand{
+
+        text-align:center;
+
+        color:white;
+
+        font-size:13px;
+
+        margin-top:20px;
+
+        opacity:0.85;
+    }
+
+</style>
 
 </head>
 
 <body>
 
+    <!-- Background Image -->
+
+<div class="bg-image"></div>
+
+<!-- Mesh Gradient -->
+
+<div class="mesh-gradient">
+
+    <div class="blob blob1"></div>
+
+    <div class="blob blob2"></div>
+
+    <div class="blob blob3"></div>
+
+</div>
+
+<!-- Noise -->
+
+<div class="noise"></div>
+
     <div class="login-card">
 
-        <h1>
-            Login
-        </h1>
+        <div class="glass-shine"></div>
+
+<div class="project-brand">
+
+    <div class="brand-logo">
+
+        <div class="logo-dot"></div>
+
+        <span>
+            Nexora AI
+        </span>
+
+    </div>
+
+    <p>
+        Your AI Knowledge Workspace
+    </p>
+
+</div>
+
+<h1>
+    Welcome
+</h1>
 
         {% if error %}
 

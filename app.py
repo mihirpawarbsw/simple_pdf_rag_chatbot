@@ -105,8 +105,6 @@ def configure_retriever(uploaded_files, session_id):
 
     chunks = splitter.split_documents(docs)
 
-
-
     embeddings = HuggingFaceEndpointEmbeddings(
 
         model="sentence-transformers/all-MiniLM-L6-v2",
@@ -217,6 +215,23 @@ def save_chat(session_id, title, messages):
     conn.commit()
 
     conn.close()
+
+@app.route("/clear_chroma")
+def clear_chroma():
+
+    client = chromadb.PersistentClient(
+        path="./chroma_db"
+    )
+
+    collections = client.list_collections()
+
+    for col in collections:
+
+        client.delete_collection(
+            col.name
+        )
+
+    return "ChromaDB Cleared"
 
 # -----------------------------
 # Update Chat

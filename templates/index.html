@@ -41,6 +41,26 @@
 
 <body>
 
+    <!-- Background -->
+
+<div class="bg-image"></div>
+
+<!-- Mesh -->
+
+<div class="mesh-gradient">
+
+    <div class="blob blob1"></div>
+
+    <div class="blob blob2"></div>
+
+    <div class="blob blob3"></div>
+
+</div>
+
+<!-- Noise -->
+
+<div class="noise"></div>
+
 <div class="container">
 
     <!-- Sidebar -->
@@ -54,7 +74,7 @@
             class="toggle-btn"
             onclick="toggleSidebar()"
         >
-            ☰
+            <i class="fa-solid fa-bars"></i>
         </button>
 
         <!-- Top -->
@@ -66,7 +86,7 @@
                 <i class="fa-solid fa-robot"></i>
 
                 <span class="sidebar-text">
-                    RAG AI
+                    Nexora.AI
                 </span>
 
             </div>
@@ -146,7 +166,7 @@
 <div class="chat-header">
 
     <h1>
-        PDF Question Answering Chatbot
+        AI-Powered Knowledge Workspace
     </h1>
 
     <div class="top-controls">
@@ -335,21 +355,77 @@ function toggleMode(){
 
     // Toggle Sidebar
 
-    function toggleSidebar(){
+function toggleSidebar(){
 
-        document
-        .getElementById("sidebar")
-        .classList.toggle("collapsed");
+    const sidebar =
+
+        document.getElementById(
+            "sidebar"
+        );
+
+    const uploadPanel =
+
+        document.getElementById(
+            "uploadPanel"
+        );
+
+    sidebar.classList.toggle(
+        "collapsed"
+    );
+
+    // Auto close upload panel
+    // when collapsed
+
+    if(
+
+        sidebar.classList.contains(
+            "collapsed"
+        )
+    ){
+
+        uploadPanel.classList.remove(
+            "active"
+        );
     }
+}
 
     // Toggle Upload Panel
 
-    function toggleUploadPanel(){
+function toggleUploadPanel(){
 
-        document
-        .getElementById("uploadPanel")
-        .classList.toggle("active");
+    const sidebar =
+
+        document.getElementById(
+            "sidebar"
+        );
+
+    const uploadPanel =
+
+        document.getElementById(
+            "uploadPanel"
+        );
+
+    // If sidebar collapsed,
+    // expand it first
+
+    if(
+
+        sidebar.classList.contains(
+            "collapsed"
+        )
+    ){
+
+        sidebar.classList.remove(
+            "collapsed"
+        );
     }
+
+    // Open upload panel
+
+    uploadPanel.classList.toggle(
+        "active"
+    );
+}
 
     // Upload Files
 
@@ -611,7 +687,7 @@ async function loadChats(){
             loadChatMessages(chat[0]);
         };
 
-        historyDiv.appendChild(div);
+        historyDiv.prepend(div);
     });
 }
 

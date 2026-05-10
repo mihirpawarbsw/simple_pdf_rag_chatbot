@@ -13,6 +13,7 @@ import os
 import uuid
 import sqlite3
 import json
+import re
 from datetime import datetime
 from flask import (
     Flask,
@@ -142,7 +143,46 @@ def format_docs(docs):
     return "\n\n".join(
         [d.page_content for d in docs]
     )
+# -----------------------------
+# Detect General Questions
+# -----------------------------
 
+def is_general_question(question):
+
+    question = question.lower().strip()
+
+    casual_patterns = [
+
+        r"\bhi\b",
+        r"\bhello\b",
+        r"\bhey\b",
+        r"\bbye\b",
+        r"\bgood morning\b",
+        r"\bgood evening\b",
+        r"\bhow are you\b",
+        r"\bwho are you\b",
+        r"\bthank you\b",
+        r"\bthanks\b",
+        r"\bjoke\b",
+        r"\btimepass\b",
+        r"\bwhat is your name\b",
+        r"\bhow old are you\b",
+        r"\bwhat can you do\b",
+        r"\bwhat is ai\b",
+        r"\bcapital of\b",
+        r"\bwho is\b",
+        r"\bwhat is\b",
+        r"\bwhen is\b",
+        r"\bwhere is\b"
+    ]
+
+    for pattern in casual_patterns:
+
+        if re.search(pattern, question):
+
+            return True
+
+    return False
 # -----------------------------
 # Source Metadata
 # -----------------------------
@@ -596,34 +636,140 @@ def ask_question():
             "message":"Session expired"
         })
 
-    retrieved_docs = retriever.invoke(question)
+    ################## NEW CODE #########################
+    # -----------------------------------
+    # General / Casual Questions
+    # -----------------------------------
 
-    chain = (
+    if is_general_question(question):
 
-        {
+        greetings = [
 
-            "context":
-                itemgetter("question")
-                | retriever
-                | format_docs,
+            "hi",
+            "hello",
+            "hey",
+            "bye",
+            "good morning",
+            "good evening",
+            "thanks",
+            "thank you"
+        ]
 
-            "question":
-                itemgetter("question")
-        }
+        lower_question = question.lower().strip()
 
-        | qa_prompt
+        # -----------------------------------
+        # Greetings
+        # -----------------------------------
 
-        | llm
-    )
+        if any(
 
-    response = chain.invoke({
+            greet in lower_question
 
-        "question":question
-    })
+            for greet in greetings
+        ):
 
-    sources = get_source_metadata(
-        retrieved_docs
-    )
+            greeting_prompt = f"""
+
+            You are a friendly AI assistant.
+
+            Respond naturally and briefly
+            to the user's greeting.
+
+            User:
+            {question}
+
+            Assistant:
+            """
+
+            response = llm.invoke(
+                greeting_prompt
+            )
+
+        # -----------------------------------
+        # Irrelevant Questions
+        # -----------------------------------
+
+        else:
+
+            class DummyResponse:
+
+                def __init__(self, text):
+
+                    self.content = text
+
+            response = DummyResponse(
+
+                "The question is irrelevant to the uploaded document. Please ask questions related to the uploaded files."
+            )
+
+        sources = []
+    # -----------------------------------
+    # RAG Questions
+    # -----------------------------------
+
+    else:
+
+        retrieved_docs = retriever.invoke(
+            question
+        )
+
+        chain = (
+
+            {
+
+                "context":
+                    itemgetter("question")
+                    | retriever
+                    | format_docs,
+
+                "question":
+                    itemgetter("question")
+            }
+
+            | qa_prompt
+
+            | llm
+        )
+
+        response = chain.invoke({
+
+            "question":question
+        })
+
+        # -----------------------------------
+        # Remove sources if answer unknown
+        # -----------------------------------
+
+        unknown_patterns = [
+
+            "i don't know",
+
+            "do not know",
+
+            "not available",
+
+            "not mentioned",
+
+            "cannot find",
+
+            "no information"
+        ]
+
+        if any(
+
+            pattern in response.content.lower()
+
+            for pattern in unknown_patterns
+        ):
+
+            sources = []
+
+        else:
+
+            sources = get_source_metadata(
+                retrieved_docs
+            )
+    ################## NEW CODE #########################
 
     messages.append({
 

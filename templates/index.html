@@ -145,6 +145,19 @@
 
         </div>
 
+            <button
+            class="sidebar-btn new-chat-btn"
+            onclick="createNewChat()"
+            >
+
+            <i class="fa-solid fa-plus"></i>
+
+            <span class="sidebar-text">
+            New Chat
+            </span>
+
+            </button>
+
         <!-- Chat History -->
 
         <div class="chat-history">
@@ -153,7 +166,10 @@
                 Chat History
             </h3>
 
-            <div id="chatHistoryList"></div>
+            <div
+                class="chat-history-list"
+                id="chatHistoryList"
+            ></div>
 
         </div>
 
@@ -427,6 +443,38 @@ function toggleUploadPanel(){
     );
 }
 
+// -----------------------------
+// New Chat
+// -----------------------------
+
+function createNewChat(){
+
+    session_id = null;
+
+    messagesData = [];
+
+    document.getElementById(
+        "messages"
+    ).innerHTML = `
+
+        <div class="message bot">
+
+            Hello 👋 <br><br>
+
+            Upload PDFs and start asking questions.
+
+        </div>
+    `;
+
+    document.getElementById(
+        "uploadStatus"
+    ).innerText = "";
+
+    document.getElementById(
+        "pdfFiles"
+    ).value = "";
+}
+
     // Upload Files
 
     async function uploadFiles(){
@@ -663,32 +711,42 @@ async function loadChats(){
 
     historyDiv.innerHTML = "";
 
-    chats.forEach(chat => {
+chats.forEach(chat => {
 
-        const div =
-            document.createElement("div");
+    // Skip empty / default new chats
 
-        div.className =
-            "chat-history-item";
+    if(
+        !chat[1] ||
+        chat[1].trim().toLowerCase() === "new chat"
+    ){
+        return;
+    }
 
-        div.innerHTML = `
+    const div =
+        document.createElement("div");
 
-            <i class="fa-solid fa-message"></i>
+    div.className =
+        "chat-history-item";
 
-            <span>
+div.innerHTML = `
 
-                ${chat[1]}
+    <i class="fa-solid fa-message"></i>
 
-            </span>
-        `;
+    <span title="${chat[1]}">
 
-        div.onclick = function(){
+        ${chat[1]}
 
-            loadChatMessages(chat[0]);
-        };
+    </span>
+`;
 
-        historyDiv.prepend(div);
-    });
+    div.onclick = function(){
+
+        loadChatMessages(chat[0]);
+    };
+
+    historyDiv.appendChild(div);
+
+});
 }
 
 // -----------------------------

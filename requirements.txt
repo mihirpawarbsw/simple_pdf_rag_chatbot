@@ -8,9 +8,6 @@ chromadb
 pymupdf
 gunicorn
 langchain-huggingface
-<<<<<<< HEAD
 huggingface_hub
 python-docx
-=======
-huggingface_hub
->>>>>>> b978b0a1227216c8b32591d59dcbc2d870d82517
+

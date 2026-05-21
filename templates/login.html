@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Login</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+<style>
+
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family:'Inter',sans-serif;
+    }
+
+body{
+
+    height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    overflow:hidden;
+
+    position:relative;
+
+    background:#07141c;
+}
+    /* Background Glow */
+
+
+    /* =========================
+   BACKGROUND IMAGE LAYER
+========================= */
+
+.bg-image{
+
+    position:absolute;
+
+    inset:0;
+
+    background-image:
+
+        linear-gradient(
+            rgba(0,0,0,0.18),
+            rgba(0,0,0,0.22)
+        ),
+
+        url('/static/images/glass_bk.jpg');
+
+    background-size:cover;
+
+    background-position:center;
+
+    background-repeat:no-repeat;
+
+    z-index:0;
+}
+
+/* =========================
+   CYAN/TEAL MESH GLOW
+========================= */
+
+.mesh-gradient{
+
+    position:absolute;
+
+    inset:0;
+
+    overflow:hidden;
+
+    z-index:1;
+}
+
+/* Blob 1 */
+
+.blob{
+
+    position:absolute;
+
+    border-radius:50%;
+
+    filter:blur(120px);
+
+    opacity:0.18;
+}
+
+.blob1{
+
+    width:420px;
+    height:420px;
+
+    background:#00ffd5;
+
+    top:-120px;
+    left:-100px;
+}
+
+/* Blob 2 */
+
+.blob2{
+
+    width:380px;
+    height:380px;
+
+    background:#00c2ff;
+
+    bottom:-120px;
+    right:-80px;
+}
+
+/* Blob 3 */
+
+.blob3{
+
+    width:280px;
+    height:280px;
+
+    background:#14b8a6;
+
+    top:40%;
+    left:55%;
+}
+
+/* Noise Overlay */
+
+.noise{
+
+    position:absolute;
+
+    inset:0;
+
+    background-image:
+        radial-gradient(
+            rgba(255,255,255,0.03) 1px,
+            transparent 1px
+        );
+
+    background-size:3px 3px;
+
+    opacity:0.12;
+
+    z-index:2;
+}
+
+
+    /* Login Card */
+
+.login-card{
+
+    width:410px;
+
+    padding:42px;
+
+    border-radius:34px;
+
+    background:
+        rgba(255,255,255,0.12);
+
+    backdrop-filter:blur(22px);
+
+    -webkit-backdrop-filter:blur(22px);
+
+    border:
+        1px solid rgba(255,255,255,0.18);
+
+    box-shadow:
+
+        0 8px 32px rgba(0,0,0,0.18),
+
+        inset 0 1px 1px rgba(255,255,255,0.12);
+
+    position:relative;
+
+    overflow:hidden;
+
+    z-index:10;
+}
+
+/* =========================
+   PROJECT BRAND
+========================= */
+
+.project-brand{
+
+    margin-bottom:30px;
+
+    text-align:center;
+}
+
+.brand-logo{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:10px;
+
+    margin-bottom:10px;
+}
+
+.brand-logo span{
+
+    font-size:34px;
+
+    font-weight:800;
+
+    letter-spacing:-1.2px;
+
+    color:white;
+
+    text-shadow:
+        0 2px 18px rgba(255,255,255,0.22);
+}
+
+.project-brand p{
+
+    color:rgba(255,255,255,0.88);
+
+    font-size:14px;
+
+    letter-spacing:0.4px;
+
+    margin-top:2px;
+}
+
+/* Animated Logo */
+
+.logo-dot{
+
+    width:14px;
+    height:14px;
+
+    border-radius:50%;
+
+    background:
+        linear-gradient(
+            135deg,
+            #00ffd5,
+            #00c2ff
+        );
+
+    box-shadow:
+        0 0 18px rgba(0,255,213,0.7);
+
+    animation:pulseGlow 2s infinite;
+}
+
+/* Subtitle */
+
+.project-brand p{
+
+    color:rgba(255,255,255,0.78);
+
+    font-size:14px;
+
+    letter-spacing:0.3px;
+}
+
+/* =========================
+   GLASS SHINE
+========================= */
+
+.glass-shine{
+
+    position:absolute;
+
+    width:180px;
+    height:500px;
+
+    background:
+        linear-gradient(
+            to right,
+            rgba(255,255,255,0.22),
+            rgba(255,255,255,0.04)
+        );
+
+    top:-100px;
+    left:-120px;
+
+    transform:rotate(25deg);
+
+    filter:blur(10px);
+
+    pointer-events:none;
+}
+
+/* Welcome */
+
+h1{
+
+    color:white;
+
+    font-size:26px;
+
+    font-weight:650;
+
+    margin-bottom:26px;
+
+    text-align:center;
+
+    letter-spacing:-0.6px;
+}
+
+/* Glow Animation */
+
+@keyframes pulseGlow{
+
+    0%{
+        transform:scale(1);
+        opacity:1;
+    }
+
+    50%{
+        transform:scale(1.2);
+        opacity:0.8;
+    }
+
+    100%{
+        transform:scale(1);
+        opacity:1;
+    }
+}
+    /* Heading */
+
+    h1{
+
+        color:white;
+
+        font-size:30px;
+
+        font-weight:700;
+
+        margin-bottom:28px;
+
+        text-align:center;
+
+        letter-spacing:-0.5px;
+    }
+
+    /* Error */
+
+    .error{
+
+        background:
+            rgba(255,255,255,0.12);
+
+        color:white;
+
+        padding:12px;
+
+        border-radius:12px;
+
+        margin-bottom:18px;
+
+        font-size:14px;
+
+        text-align:center;
+
+        border:
+            1px solid rgba(255,255,255,0.12);
+    }
+
+    /* Input Groups */
+
+    .input-group{
+
+        margin-bottom:18px;
+    }
+
+    /* Inputs */
+
+input{
+
+    width:100%;
+
+    height:58px;
+
+    border:none;
+
+    border-radius:18px;
+
+    padding:0 20px;
+
+    background:
+        rgba(255,255,255,0.16);
+
+    color:white;
+
+    outline:none;
+
+    font-size:14px;
+
+    border:
+        1px solid rgba(255,255,255,0.18);
+
+    backdrop-filter:blur(12px);
+
+    transition:0.25s ease;
+}
+
+input::placeholder{
+
+    color:
+        rgba(255,255,255,0.82);
+}
+
+input:focus{
+
+    background:
+        rgba(255,255,255,0.2);
+
+    border:
+        1px solid rgba(255,255,255,0.32);
+
+    box-shadow:
+
+        0 0 0 4px rgba(255,255,255,0.12),
+
+        0 0 24px rgba(0,255,200,0.18);
+}
+
+    input::placeholder{
+
+        color:
+            rgba(255,255,255,0.72);
+    }
+
+    input:focus{
+
+        background:
+            rgba(255,255,255,0.18);
+
+        border:
+            1px solid rgba(255,255,255,0.28);
+
+        box-shadow:
+            0 0 0 4px rgba(255,255,255,0.08);
+    }
+
+    /* Button */
+
+button{
+
+    width:100%;
+
+    height:58px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,0.26),
+            rgba(255,255,255,0.12)
+        );
+
+    color:white;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    letter-spacing:0.3px;
+
+    backdrop-filter:blur(12px);
+
+    border:
+        1px solid rgba(255,255,255,0.18);
+
+    transition:0.28s ease;
+
+    margin-top:10px;
+}
+
+button:hover{
+
+    transform:
+        translateY(-2px)
+        scale(1.01);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,0.34),
+            rgba(255,255,255,0.18)
+        );
+
+    box-shadow:
+        0 12px 30px rgba(0,0,0,0.12);
+}
+
+    button:hover{
+
+        transform:translateY(-2px);
+
+        box-shadow:
+            0 10px 24px rgba(0,0,0,0.2);
+    }
+
+    /* Small Brand Text */
+
+    .brand{
+
+        text-align:center;
+
+        color:white;
+
+        font-size:13px;
+
+        margin-top:20px;
+
+        opacity:0.85;
+    }
+
+</style>
+
+</head>
+
+<body>
+
+    <!-- Background Image -->
+
+<div class="bg-image"></div>
+
+<!-- Mesh Gradient -->
+
+<div class="mesh-gradient">
+
+    <div class="blob blob1"></div>
+
+    <div class="blob blob2"></div>
+
+    <div class="blob blob3"></div>
+
+</div>
+
+<!-- Noise -->
+
+<div class="noise"></div>
+
+    <div class="login-card">
+
+        <div class="glass-shine"></div>
+
+<div class="project-brand">
+
+    <div class="brand-logo">
+
+        <div class="logo-dot"></div>
+
+        <span>
+            Nexora AI
+        </span>
+
+    </div>
+
+    <p>
+        Your AI Knowledge Workspace
+    </p>
+
+</div>
+
+<h1>
+    Welcome
+</h1>
+
+        {% if error %}
+
+            <div class="error">
+
+                {{ error }}
+
+            </div>
+
+        {% endif %}
+
+        <form method="POST">
+
+            <div class="input-group">
+
+                <input
+                    type="text"
+                    name="username"
+                    placeholder="Username"
+                    required
+                >
+
+            </div>
+
+            <div class="input-group">
+
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    required
+                >
+
+            </div>
+
+            <button type="submit">
+
+                Sign In
+
+            </button>
+
+        </form>
+
+    </div>
+
+</body>
+
+</html>

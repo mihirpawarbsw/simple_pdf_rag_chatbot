@@ -551,6 +551,8 @@ def ask_stream():
     question = data.get("question")
     session_id = data.get("session_id")
     messages = data.get("messages", [])
+    language = data.get("language", "English")
+    response_type = data.get("response_type", "detailed")
     
     if not question or not session_id:
         return jsonify({"status": "error", "message": "Missing question or session_id"}), 400
@@ -574,7 +576,16 @@ def ask_stream():
                 # Pure casual interaction
                 try:
                     llm = get_llm(session_id)
-                    prompt = f"{settings['system_prompt']}\n\nUser: {question}\nAssistant:"
+                    prompt = f"""
+                    {settings['system_prompt']}
+
+                    Respond in {language}.
+                    Response style: {response_type}.
+
+                    User: {question}
+
+                    Assistant:
+                    """
                     answer_text = ""
                     for chunk in llm.stream(prompt):
                         token = chunk.content
@@ -600,7 +611,16 @@ def ask_stream():
             
             if is_casual:
                 # Bypass RAG for simple greeting
-                prompt = f"{settings['system_prompt']}\n\nUser: {question}\nAssistant:"
+                prompt = f"""
+                {settings['system_prompt']}
+
+                Respond in {language}.
+                Response style: {response_type}.
+
+                User: {question}
+
+                Assistant:
+                """
                 answer_text = ""
                 for chunk in llm.stream(prompt):
                     token = chunk.content
@@ -618,17 +638,27 @@ def ask_stream():
             sources = get_source_metadata(retrieved_docs)
             
             system_instructions = settings["system_prompt"]
-            rag_prompt = f"""{system_instructions}
-            
-Use only the following context to answer the question. If you do not know the answer based on the context, say that you don't know.
+            rag_prompt = f"""
+            {system_instructions}
 
-Context:
-{context_str}
+            You are an enterprise RAG AI assistant.
 
-Question:
-{question}
+            IMPORTANT INSTRUCTIONS:
+            - Respond ONLY in {language} language.
+            - Response style should be {response_type}.
+            - If response type is short, keep answer concise and direct.
+            - If response type is detailed, explain properly with context and bullet points where useful.
+            - Use ONLY the provided context.
+            - If answer is not present in context, clearly say you do not know.
 
-Answer:"""
+            Context:
+            {context_str}
+
+            Question:
+            {question}
+
+            Answer:
+            """
             
             answer_text = ""
             for chunk in llm.stream(rag_prompt):

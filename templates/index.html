@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <!-- Marked Markdown Parser -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
     <!-- Google Fonts -->
@@ -41,19 +42,20 @@
 
         <!-- Sidebar Document Action Button -->
         <div class="sidebar-actions">
-            <button class="sidebar-btn upload-trigger-btn" onclick="toggleUploadPanel()" title="Manage Knowledge Base">
-                <i class="fa-solid fa-folder-open"></i>
-                <span class="sidebar-text">Knowledge Base</span>
-            </button>
             <button class="sidebar-btn new-chat-btn" onclick="createNewChat()" title="Start New Chat">
                 <i class="fa-solid fa-plus"></i>
                 <span class="sidebar-text">New Chat</span>
             </button>
+            <button class="sidebar-btn upload-trigger-btn" onclick="toggleUploadPanel()" title="Manage Knowledge Base">
+                <i class="fa-solid fa-folder-open"></i>
+                <span class="sidebar-text">Knowledge Base</span>
+            </button>
+
         </div>
 
         <!-- Upload Panel / File Manager -->
         <div class="upload-panel" id="uploadPanel">
-            <h3>Knowledge Documents</h3>
+            <h3>Upload Documents</h3>
             
             <div class="upload-drag-area" onclick="document.getElementById('pdfFiles').click()">
                 <i class="fa-solid fa-cloud-arrow-up"></i>
@@ -88,38 +90,92 @@
 
     <!-- Chat Workspace Area -->
     <div class="chat-area">
+
         <div class="chat-header">
-            <div class="header-title-section">
-                <i class="fa-solid fa-compass-drafting header-icon"></i>
-                <h1>RAG Knowledge Workspace</h1>
-            </div>
 
-            <div class="top-controls">
-                <!-- Session Settings -->
-                <button id="settingsBtn" class="header-icon-btn" onclick="toggleSettingsDrawer()" title="Session Settings">
-                    <i class="fa-solid fa-sliders"></i>
-                </button>
+    <div class="header-title-section">
+        <i class="fa-solid fa-compass-drafting header-icon"></i>
+        <h1>RAG Knowledge Workspace</h1>
+    </div>
 
-                <!-- Theme Selection -->
-                <select id="themeSelector" onchange="changeTheme(this.value)" title="Choose Color Theme">
-                    <option value="cyan">Cyan Blue</option>
-                    <option value="purple">Purple Night</option>
-                    <option value="green">Neon Green</option>
-                    <option value="orange">Sunset Orange</option>
-                    <option value="pink">Pink Rose</option>
-                </select>
+    <div class="top-controls">
 
-                <!-- Light/Dark Mode -->
-                <button id="modeToggle" class="header-icon-btn" onclick="toggleMode()" title="Toggle Dark/Light Mode">
-                    <i class="fa-solid fa-moon"></i>
-                </button>
+        <!-- Language Selector -->
+        <select id="languageSelector" title="Response Language">
+            <option value="English">English</option>
+            <option value="Hindi">Hindi</option>
+            <option value="Marathi">Marathi</option>
+            <option value="Bhojpuri">Bhojpuri</option>
+            <option value="Punjabi">Punjabi</option>
+            <option value="Spanish">Spanish</option>
+            <option value="French">French</option>
+            <option value="Spanish">Spanish</option>
+        </select>
 
-                <!-- Logout -->
-                <button class="logout-btn" onclick="window.location.href='/logout'" title="Log Out">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                </button>
-            </div>
-        </div>
+        <!-- Response Type Selector -->
+        <select id="responseTypeSelector" title="Response Style">
+            <option value="detailed">Detailed</option>
+            <option value="short">Short</option>
+        </select>
+
+        <!-- Settings -->
+        <button id="settingsBtn"
+                class="header-icon-btn"
+                onclick="toggleSettingsDrawer()"
+                title="Session Settings">
+            <i class="fa-solid fa-sliders"></i>
+        </button>
+
+        <!-- Theme -->
+        <select id="themeSelector"
+                onchange="changeTheme(this.value)"
+                title="Choose Color Theme">
+
+            <option value="cyan">Cyan Blue</option>
+            <option value="purple">Purple Night</option>
+            <option value="green">Neon Green</option>
+            <option value="orange">Sunset Orange</option>
+            <option value="pink">Pink Rose</option>
+
+        </select>
+
+        <!-- Light/Dark -->
+        <button id="modeToggle"
+                class="header-icon-btn"
+                onclick="toggleMode()"
+                title="Toggle Dark/Light Mode">
+
+            <i class="fa-solid fa-moon"></i>
+
+        </button>
+
+        <!-- Logout -->
+        <button class="logout-btn"
+                onclick="window.location.href='/logout'"
+                title="Logout">
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+        </button>
+
+    </div>
+
+</div>  
+        <!-- Chat Action Bar -->
+        <div class="chat-actions-bar" style="width:100%;display:flex;justify-content:flex-end;align-items:center;padding:10px 22px 0px 22px;position:absolute;top:82px;right:0;z-index:20;pointer-events:none;">
+
+    <button 
+        class="download-chat-btn"
+        onclick="downloadConversationPDF()"
+        title="Download Conversation PDF"
+        style="width:42px;height:42px;border-radius:12px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#ff4b4b;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.25s ease;pointer-events:auto;"
+    >
+
+        <i class="fa-solid fa-file-pdf"></i>
+
+    </button>
+
+</div>
 
         <!-- Chat Window Messages -->
         <div class="messages" id="messages">
@@ -133,18 +189,25 @@
             </div>
         </div>
 
-        <!-- Prompt Suggestions Chips -->
-        <div class="starter-suggestions" id="starterSuggestions">
-            <div class="suggestion-chip" onclick="applySuggestion('Can you summarize the core contents of the uploaded files?')">
-                <i class="fa-solid fa-file-contract"></i> Summarize Documents
-            </div>
-            <div class="suggestion-chip" onclick="applySuggestion('Extract the key findings or takeaways from these files.')">
-                <i class="fa-solid fa-lightbulb"></i> Key Takeaways
-            </div>
-            <div class="suggestion-chip" onclick="applySuggestion('Are there any risks, warnings, or anomalies mentioned in the documents?')">
-                <i class="fa-solid fa-triangle-exclamation"></i> Risk Analysis
-            </div>
-        </div>
+<!-- Prompt Suggestions Chips -->
+<div class="starter-suggestions" id="starterSuggestions">
+
+    <div class="suggestion-chip" onclick="applySuggestion('Summarize the uploaded documents in a clear structured format.')">
+        <i class="fa-solid fa-file-contract"></i>
+        Summarize Document
+    </div>
+
+    <div class="suggestion-chip" onclick="applySuggestion('What are the key takeaways, insights, and important findings from these documents?')">
+        <i class="fa-solid fa-lightbulb"></i>
+        Key Takeaways
+    </div>
+
+    <div class="suggestion-chip" onclick="applySuggestion('List and explain the important terminologies, concepts, technical terms, and keywords used in these documents.')">
+        <i class="fa-solid fa-book-open"></i>
+        Key Terminologies
+    </div>
+
+</div>
 
         <!-- Question Chat Input Box -->
         <div class="chat-input-area">
@@ -536,6 +599,87 @@
         return div;
     }
 
+    /* DOWNLOAD ENTIRE CONVERSATION PDF */
+
+async function downloadConversationPDF(){
+
+    if(messagesData.length === 0){
+        alert("No conversation available to download.");
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+
+    const doc = new jsPDF({
+        orientation: "portrait",
+        unit: "pt",
+        format: "a4"
+    });
+
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    let y = 40;
+
+    // TITLE
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(22);
+
+    doc.text("Nexora.AI Conversation Export", 40, y);
+
+    y += 40;
+
+    doc.setFont("helvetica", "normal");
+
+    for(let i = 0; i < messagesData.length; i++){
+
+        const msg = messagesData[i];
+
+        // USER QUESTION
+        if(msg.question){
+
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+
+            const questionLines = doc.splitTextToSize(
+                `User: ${msg.question}`,
+                pageWidth - 80
+            );
+
+            doc.text(questionLines, 40, y);
+
+            y += (questionLines.length * 20) + 10;
+        }
+
+        // BOT ANSWER
+        if(msg.answer){
+
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "normal");
+
+            const answerLines = doc.splitTextToSize(
+                `Assistant: ${msg.answer.replace(/[#*_>`-]/g, '')}`,
+                pageWidth - 80
+            );
+
+            // PAGE BREAK
+            if(y + (answerLines.length * 18) > pageHeight - 50){
+
+                doc.addPage();
+                y = 40;
+            }
+
+            doc.text(answerLines, 40, y);
+
+            y += (answerLines.length * 18) + 30;
+        }
+    }
+
+    const currentDate = new Date().toISOString().split("T")[0];
+
+    doc.save(`Nexora_Conversation_${currentDate}.pdf`);
+}
+
     // Streaming SSE Logic
     async function sendQuestion(){
         if (isGenerating) return;
@@ -570,10 +714,12 @@
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    question: question,
-                    session_id: session_id,
-                    messages: messagesData
-                })
+                question: question,
+                session_id: session_id,
+                messages: messagesData,
+                language: document.getElementById("languageSelector").value,
+                response_type: document.getElementById("responseTypeSelector").value
+            })
             });
 
             if (!response.ok) {

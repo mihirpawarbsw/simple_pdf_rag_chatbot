@@ -1202,6 +1202,25 @@ body.light-mode .settings-drawer {
     transition: border-color 0.2s;
 }
 
+/* SETTINGS DROPDOWN FIX */
+
+.setting-group select {
+
+    background: rgba(15,25,35,0.95);
+    color: #ffffff;
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+}
+
+/* dropdown option colors */
+.setting-group select option {
+
+    background: #10212b;
+    color: #ffffff;
+
+}
+
 .setting-group select:focus,
 .setting-group textarea:focus {
     border-color: hsl(var(--primary));
@@ -1408,4 +1427,142 @@ body.light-mode .modal-content {
     .chat-input-area {
         padding: 0 20px;
     }
+}
+
+#languageSelector,
+#responseTypeSelector {
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border-glass);
+    background: var(--bg-glass);
+    color: var(--text-main);
+    outline: none;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#languageSelector:hover,
+#responseTypeSelector:hover {
+    border-color: rgba(hsl(var(--primary)), 0.4);
+}
+
+#languageSelector,
+#responseTypeSelector,
+#themeSelector {
+    min-width: 120px;
+    max-width: 160px;
+    height: 38px;
+    padding: 0 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border-glass);
+    background: rgba(255,255,255,0.05);
+    color: var(--text-main);
+    font-size: 13px;
+    outline: none;
+}
+
+.chat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: nowrap;
+    overflow: hidden;
+}
+
+.top-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+}
+
+.header-title-section {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.header-title-section h1 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 1100px) {
+
+    .chat-header {
+        flex-direction: column;
+        align-items: flex-start;
+        height: auto;
+        padding: 15px;
+    }
+
+    .top-controls {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    #languageSelector,
+    #responseTypeSelector,
+    #themeSelector {
+        flex: 1;
+        min-width: 120px;
+    }
+}
+
+/* FIX SELECT DROPDOWN OPTION COLORS */
+
+#languageSelector,
+#responseTypeSelector,
+#themeSelector {
+
+    background: #0b1d26;
+    color: #ffffff;
+
+}
+
+/* Dropdown options */
+#languageSelector option,
+#responseTypeSelector option,
+#themeSelector option {
+
+    background-color: #0b1d26;
+    color: #ffffff;
+
+}
+
+/* DOWNLOAD PDF BUTTON */
+
+.download-chat-btn{
+
+    width: 42px;
+    height: 42px;
+
+    border-radius: 12px;
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    background: rgba(255,255,255,0.04);
+
+    color: #ff4b4b;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: all 0.25s ease;
+}
+
+.download-chat-btn:hover{
+
+    transform: translateY(-2px);
+
+    background: rgba(255,75,75,0.12);
+
+    border-color: rgba(255,75,75,0.25);
 }

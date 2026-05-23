@@ -72,14 +72,17 @@
 
             <div class="status" id="uploadStatus"></div>
 
-            <!-- List of files in active session -->
-            <div class="session-files-section">
-                <h4>Active Documents</h4>
-                <div id="sessionFilesList" class="session-files-list">
-                    <div class="no-files-msg">No files uploaded.</div>
-                </div>
-            </div>
+
         </div>
+
+                    <div class="document-filter-box">
+
+                <h4>Select Documents For Query</h4>
+
+                <div id="documentCheckboxList"></div>
+
+            </div>
+
 
         <!-- Chat History List -->
         <div class="chat-history">
@@ -162,16 +165,15 @@
 
 </div>  
         <!-- Chat Action Bar -->
-        <div class="chat-actions-bar" style="width:100%;display:flex;justify-content:flex-end;align-items:center;padding:10px 22px 0px 22px;position:absolute;top:82px;right:0;z-index:20;pointer-events:none;">
+<div class="chat-actions-bar">
 
     <button 
         class="download-chat-btn"
         onclick="downloadConversationPDF()"
         title="Download Conversation PDF"
-        style="width:42px;height:42px;border-radius:12px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#ff4b4b;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.25s ease;pointer-events:auto;"
     >
 
-        <i class="fa-solid fa-file-pdf"></i>
+        <i class="fa-solid fa-file-arrow-down"></i>
 
     </button>
 
@@ -306,6 +308,127 @@
         localStorage.setItem("mode", isLight ? "light" : "dark");
     }
 
+async function loadUserDocuments(){
+
+    try{
+
+        const response = await fetch(
+            "/get_user_documents"
+        );
+
+        const docs = await response.json();
+
+        const container = document.getElementById(
+            "documentCheckboxList"
+        );
+
+        container.innerHTML = "";
+
+        if(docs.length === 0){
+
+            container.innerHTML = `
+                <div class="no-files-msg">
+                    No indexed documents.
+                </div>
+            `;
+
+            return;
+        }
+
+        docs.forEach(doc => {
+
+            container.insertAdjacentHTML(
+                "beforeend",
+
+                `
+                <div class="doc-row">
+
+                    <label class="doc-checkbox">
+
+                        <input type="checkbox"
+                               value="${doc}"
+                               checked>
+
+                        <span>${doc}</span>
+
+                    </label>
+
+                    <button class="doc-delete-btn"
+                            onclick="deleteDocument('${doc}')">
+
+                        <i class="fa-solid fa-trash"></i>
+
+                    </button>
+
+                </div>
+                `
+            );
+
+        });
+
+    }catch(e){
+
+        console.error(
+            "Error loading user documents:",
+            e
+        );
+    }
+}
+
+async function deleteDocument(filename){
+
+    if(
+        !confirm(
+            `Delete ${filename} permanently?`
+        )
+    ){
+        return;
+    }
+
+    try{
+
+        const response = await fetch(
+            "/delete_file",
+            {
+                method: "POST",
+
+                headers:{
+                    "Content-Type":"application/json"
+                },
+
+                body: JSON.stringify({
+                    filename: filename,
+                    session_id: session_id
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if(data.status === "success"){
+
+            loadUserDocuments();
+
+            if(session_id){
+                loadSessionFiles(session_id);
+            }
+
+        }else{
+
+            alert(data.message);
+        }
+
+    }catch(e){
+
+        console.error(
+            "Delete error:",
+            e
+        );
+
+        alert("Error deleting document");
+    }
+}
+
     // Toggle Sidebar
     function toggleSidebar(){
         const sidebar = document.getElementById("sidebar");
@@ -431,6 +554,8 @@
                 // Load files and load chats
                 loadSessionFiles(session_id);
                 loadChats();
+
+                loadUserDocuments();
                 
                 // Hide splash if suggestions are shown
                 if (messagesData.length === 0) {
@@ -511,6 +636,7 @@
             const res = await response.json();
             if (res.status === "success") {
                 loadSessionFiles(session_id);
+                loadUserDocuments();
                 alert(res.message);
             }
         } catch (e) {
@@ -604,7 +730,9 @@
 async function downloadConversationPDF(){
 
     if(messagesData.length === 0){
+
         alert("No conversation available to download.");
+
         return;
     }
 
@@ -617,67 +745,329 @@ async function downloadConversationPDF(){
     });
 
     const pageWidth = doc.internal.pageSize.getWidth();
+
     const pageHeight = doc.internal.pageSize.getHeight();
 
-    let y = 40;
+    const marginX = 40;
 
-    // TITLE
+    const contentWidth = pageWidth - 80;
+
+    let y = 70;
+
+    // =========================================
+    // HEADER SECTION
+    // =========================================
+
+    doc.setFillColor(8, 18, 28);
+
+    doc.rect(0, 0, pageWidth, 95, "F");
+
+    // Logo Title
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(22);
 
-    doc.text("Nexora.AI Conversation Export", 40, y);
+    doc.setTextColor(0, 212, 255);
 
-    y += 40;
+    doc.setFontSize(26);
 
-    doc.setFont("helvetica", "normal");
+    doc.text("Nexora.AI", marginX, 45);
+
+    // Subtitle
+    doc.setFontSize(13);
+
+    doc.setTextColor(220, 230, 240);
+
+    doc.text(
+        "Enterprise RAG Conversation Export",
+        marginX,
+        68
+    );
+
+    // Date
+    const exportDate = new Date().toLocaleString();
+
+    doc.setFontSize(10);
+
+    doc.setTextColor(180, 190, 200);
+
+    doc.text(
+        exportDate,
+        pageWidth - 160,
+        45
+    );
+
+    // Decorative line
+    doc.setDrawColor(0, 212, 255);
+
+    doc.setLineWidth(1.2);
+
+    doc.line(
+        marginX,
+        82,
+        pageWidth - marginX,
+        82
+    );
+
+    // IMPORTANT FIX
+    // =========================================
+// COVER PAGE SPACING
+// =========================================
+
+doc.setFontSize(18);
+
+doc.setTextColor(220,230,240);
+
+doc.text(
+    "AI Conversation Export",
+    marginX,
+    170
+);
+
+doc.setFontSize(12);
+
+doc.setTextColor(160,170,180);
+
+doc.text(
+    "Generated from Nexora.AI Enterprise Workspace",
+    marginX,
+    195
+);
+
+// Decorative divider
+doc.setDrawColor(0,255,198);
+
+doc.setLineWidth(1);
+
+doc.line(
+    marginX,
+    225,
+    pageWidth - marginX,
+    225
+);
+
+// Start actual conversation from NEW PAGE
+doc.addPage();
+
+y = 60;
+
+    // =========================================
+    // CONVERSATION LOOP
+    // =========================================
 
     for(let i = 0; i < messagesData.length; i++){
 
         const msg = messagesData[i];
 
+        // =====================================
         // USER QUESTION
+        // =====================================
+
         if(msg.question){
 
-            doc.setFontSize(14);
-            doc.setFont("helvetica", "bold");
+            const questionText = `Q: ${msg.question}`;
 
             const questionLines = doc.splitTextToSize(
-                `User: ${msg.question}`,
-                pageWidth - 80
+                questionText,
+                contentWidth - 30
             );
 
-            doc.text(questionLines, 40, y);
+            const questionHeight =
+                (questionLines.length * 20) + 28;
 
-            y += (questionLines.length * 20) + 10;
-        }
-
-        // BOT ANSWER
-        if(msg.answer){
-
-            doc.setFontSize(12);
-            doc.setFont("helvetica", "normal");
-
-            const answerLines = doc.splitTextToSize(
-                `Assistant: ${msg.answer.replace(/[#*_>`-]/g, '')}`,
-                pageWidth - 80
-            );
-
-            // PAGE BREAK
-            if(y + (answerLines.length * 18) > pageHeight - 50){
+            // Page break
+            if(
+                y + questionHeight >
+                pageHeight - 80
+            ){
 
                 doc.addPage();
-                y = 40;
+
+                y = 50;
             }
 
-            doc.text(answerLines, 40, y);
+            // Card background
+            doc.setFillColor(0, 212, 255);
 
-            y += (answerLines.length * 18) + 30;
+            doc.roundedRect(
+                marginX,
+                y,
+                contentWidth,
+                questionHeight,
+                12,
+                12,
+                "F"
+            );
+
+            // Question text
+            doc.setTextColor(10, 20, 30);
+
+            doc.setFont(
+                "helvetica",
+                "bold"
+            );
+
+            doc.setFontSize(13);
+
+            doc.text(
+                questionLines,
+                marginX + 15,
+                y + 22
+            );
+
+            y += questionHeight + 18;
+        }
+
+        // =====================================
+        // ASSISTANT ANSWER
+        // =====================================
+
+        if(msg.answer){
+
+            const cleanAnswer =
+                msg.answer
+                .replace(/[#*_`>-]/g, "")
+                .replace(/\n+/g, "\n");
+
+            const answerLines =
+                doc.splitTextToSize(
+                    cleanAnswer,
+                    contentWidth - 36
+                );
+
+            const answerHeight =
+                (answerLines.length * 18) + 36;
+
+            // Page break
+            if(
+                y + answerHeight >
+                pageHeight - 70
+            ){
+
+                doc.addPage();
+
+                y = 50;
+            }
+
+            // Answer card
+            doc.setFillColor(18, 32, 45);
+
+            doc.roundedRect(
+                marginX,
+                y,
+                contentWidth,
+                answerHeight,
+                14,
+                14,
+                "F"
+            );
+
+            // Border
+            doc.setDrawColor(0, 255, 198);
+
+            doc.setLineWidth(0.8);
+
+            doc.roundedRect(
+                marginX,
+                y,
+                contentWidth,
+                answerHeight,
+                14,
+                14
+            );
+
+            // Answer title
+            doc.setFont(
+                "helvetica",
+                "bold"
+            );
+
+            doc.setFontSize(12);
+
+            doc.setTextColor(0, 255, 198);
+
+            doc.text(
+                "AI Response",
+                marginX + 16,
+                y + 20
+            );
+
+            // Divider
+            doc.setDrawColor(
+                40,
+                70,
+                90
+            );
+
+            doc.line(
+                marginX + 15,
+                y + 28,
+                marginX + contentWidth - 15,
+                y + 28
+            );
+
+            // Actual answer
+            doc.setFont(
+                "helvetica",
+                "normal"
+            );
+
+            doc.setFontSize(11.5);
+
+            doc.setTextColor(
+                235,
+                240,
+                245
+            );
+
+            doc.text(
+                answerLines,
+                marginX + 16,
+                y + 50
+            );
+
+            y += answerHeight + 30;
         }
     }
 
-    const currentDate = new Date().toISOString().split("T")[0];
+    // =========================================
+    // FOOTER
+    // =========================================
 
-    doc.save(`Nexora_Conversation_${currentDate}.pdf`);
+    const totalPages =
+        doc.internal.getNumberOfPages();
+
+    for(let i = 1; i <= totalPages; i++){
+
+        doc.setPage(i);
+
+        doc.setFontSize(10);
+
+        doc.setTextColor(140);
+
+        doc.text(
+            `Page ${i} of ${totalPages}`,
+            pageWidth - 100,
+            pageHeight - 20
+        );
+
+        doc.text(
+            "Generated by Nexora.AI",
+            40,
+            pageHeight - 20
+        );
+    }
+
+    // =========================================
+    // SAVE
+    // =========================================
+
+    const currentDate =
+        new Date()
+        .toISOString()
+        .split("T")[0];
+
+    doc.save(
+        `Nexora_AI_Conversation_${currentDate}.pdf`
+    );
 }
 
     // Streaming SSE Logic
@@ -707,6 +1097,17 @@ async function downloadConversationPDF(){
         const botDiv = addMessage(`<span class="typing-loading"><i class="fa-solid fa-spinner fa-spin"></i> Reasoning...</span>`, "bot");
         const botContentDiv = botDiv.querySelector(".message-content");
         
+        const selected_docs = [];
+
+        document
+        .querySelectorAll(
+            "#documentCheckboxList input:checked"
+        )
+        .forEach(cb => {
+
+            selected_docs.push(cb.value);
+
+        });
         isGenerating = true;
 
         try {
@@ -717,6 +1118,7 @@ async function downloadConversationPDF(){
                 question: question,
                 session_id: session_id,
                 messages: messagesData,
+                selected_docs: selected_docs,
                 language: document.getElementById("languageSelector").value,
                 response_type: document.getElementById("responseTypeSelector").value
             })
@@ -886,6 +1288,7 @@ async function downloadConversationPDF(){
             // Trigger file management listing and settings loads
             loadSessionFiles(session_id);
             loadSessionSettings(session_id);
+            loadUserDocuments();
             
             if (messages.length === 0) {
                 messagesDiv.innerHTML = `
@@ -927,7 +1330,7 @@ async function downloadConversationPDF(){
 
     // Delete conversation
     async function deleteChatPrompt(chatId) {
-        if (!confirm("Are you sure you want to delete this chat session? This will also remove all its indexed vector documents.")) return;
+        if (!confirm("Are you sure you want to delete this chat session?")) return;
 
         try {
             const response = await fetch(`/delete_chat/${chatId}`, {
@@ -991,6 +1394,7 @@ async function downloadConversationPDF(){
     // Initialization on window load
     window.onload = function(){
         loadChats();
+        loadUserDocuments();
         
         const savedTheme = localStorage.getItem("theme") || "cyan";
         changeTheme(savedTheme);

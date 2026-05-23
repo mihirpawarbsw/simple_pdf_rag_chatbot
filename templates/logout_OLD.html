@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Logged Out</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+/>
+
+<style>
+
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family:'Inter',sans-serif;
+    }
+
+    body{
+
+        height:100vh;
+
+        display:flex;
+
+        justify-content:center;
+        align-items:center;
+
+        overflow:hidden;
+
+        position:relative;
+
+        background:
+    radial-gradient(
+        circle at top left,
+        rgba(255,255,255,0.04),
+        transparent 32%
+    ),
+
+    radial-gradient(
+        circle at bottom right,
+        rgba(255,255,255,0.03),
+        transparent 28%
+    ),
+
+    linear-gradient(
+        135deg,
+        #050505 0%,
+        #0b0b0b 45%,
+        #121212 100%
+    );
+
+        color:white;
+    }
+
+    /* =========================
+       BACKGROUND IMAGE
+    ========================= */
+
+    .bg-image{
+
+        position:absolute;
+
+        inset:0;
+
+        background-image:
+
+            linear-gradient(
+                rgba(0,0,0,0.18),
+                rgba(0,0,0,0.22)
+            ),
+
+            url('/static/images/glass_bk.jpg');
+
+        background-size:cover;
+
+        background-position:center;
+
+        background-repeat:no-repeat;
+
+        z-index:0;
+    }
+
+    /* =========================
+       MESH BLOBS
+    ========================= */
+
+    .mesh-gradient{
+
+        position:absolute;
+
+        inset:0;
+
+        overflow:hidden;
+
+        z-index:1;
+    }
+
+    .blob{
+
+        position:absolute;
+
+        border-radius:50%;
+
+        filter:blur(120px);
+
+        opacity:0.18;
+    }
+
+    .blob1{
+
+        width:420px;
+        height:420px;
+
+        background:#00ffd5;
+
+        top:-120px;
+        left:-100px;
+    }
+
+    .blob2{
+
+        width:380px;
+        height:380px;
+
+        background:#00c2ff;
+
+        bottom:-120px;
+        right:-80px;
+    }
+
+    .blob3{
+
+        width:280px;
+        height:280px;
+
+        background:#14b8a6;
+
+        top:40%;
+        left:55%;
+    }
+
+    /* =========================
+       NOISE
+    ========================= */
+
+    .noise{
+
+        position:absolute;
+
+        inset:0;
+
+        background-image:
+            radial-gradient(
+                rgba(255,255,255,0.03) 1px,
+                transparent 1px
+            );
+
+        background-size:3px 3px;
+
+        opacity:0.12;
+
+        z-index:2;
+    }
+
+    /* =========================
+       GLASS CARD
+    ========================= */
+
+    .card{
+
+        width:420px;
+
+        padding:48px;
+
+        border-radius:34px;
+
+        background:
+            linear-gradient(
+                145deg,
+                rgba(22,22,22,0.82),
+                rgba(10,10,10,0.76)
+            );
+
+        backdrop-filter:blur(22px);
+
+        -webkit-backdrop-filter:blur(22px);
+
+        border:
+    1px solid rgba(255,255,255,0.08);
+
+        box-shadow:
+
+            0 8px 32px rgba(0,0,0,0.18),
+
+            inset 0 1px 1px rgba(255,255,255,0.12);
+
+        position:relative;
+
+        overflow:hidden;
+
+        z-index:10;
+
+        text-align:center;
+    }
+
+    /* =========================
+       GLASS SHINE
+    ========================= */
+
+    .glass-shine{
+
+        position:absolute;
+
+        width:180px;
+        height:500px;
+
+        background:
+            linear-gradient(
+                to right,
+                rgba(255,255,255,0.22),
+                rgba(255,255,255,0.04)
+            );
+
+        top:-100px;
+        left:-120px;
+
+        transform:rotate(25deg);
+
+        filter:blur(10px);
+
+        pointer-events:none;
+    }
+
+    /* =========================
+       ICON
+    ========================= */
+
+    .logout-icon{
+
+        width:82px;
+        height:82px;
+
+        margin:0 auto 24px;
+
+        border-radius:50%;
+
+        display:flex;
+
+        justify-content:center;
+        align-items:center;
+
+        background:
+            rgba(255,255,255,0.14);
+
+        border:
+            1px solid rgba(255,255,255,0.18);
+
+        backdrop-filter:blur(12px);
+
+        box-shadow:
+            0 0 30px rgba(0,255,200,0.12);
+    }
+
+    .logout-icon i{
+
+        font-size:32px;
+
+        color:white;
+    }
+
+    /* =========================
+       TEXT
+    ========================= */
+
+    h1{
+
+        font-size:34px;
+
+        font-weight:800;
+
+        margin-bottom:14px;
+
+        letter-spacing:-1px;
+    }
+
+    p{
+
+        color:rgba(255,255,255,0.82);
+
+        font-size:15px;
+
+        line-height:1.7;
+    }
+
+    /* =========================
+       BUTTON
+    ========================= */
+
+    a{
+
+        display:inline-flex;
+
+        align-items:center;
+
+        justify-content:center;
+
+        gap:10px;
+
+        margin-top:28px;
+
+        text-decoration:none;
+
+        color:white;
+
+        padding:16px 28px;
+
+        border-radius:18px;
+
+        background:
+            rgba(255,255,255,0.16);
+
+        border:
+            1px solid rgba(255,255,255,0.18);
+
+        backdrop-filter:blur(12px);
+
+        font-size:15px;
+
+        font-weight:600;
+
+        transition:0.28s ease;
+    }
+
+    a:hover{
+
+        transform:
+            translateY(-2px)
+            scale(1.01);
+
+        background:
+            rgba(255,255,255,0.22);
+
+        box-shadow:
+            0 12px 30px rgba(0,0,0,0.12);
+    }
+
+</style>
+
+</head>
+
+<body>
+
+    <!-- Background -->
+
+    <div class="bg-image"></div>
+
+    <!-- Mesh -->
+
+    <div class="mesh-gradient">
+
+        <div class="blob blob1"></div>
+
+        <div class="blob blob2"></div>
+
+        <div class="blob blob3"></div>
+
+    </div>
+
+    <!-- Noise -->
+
+    <div class="noise"></div>
+
+    <!-- Card -->
+
+    <div class="card">
+
+        <div class="glass-shine"></div>
+
+        <!-- Icon -->
+
+        <div class="logout-icon">
+
+            <i class="fa-solid fa-check"></i>
+
+        </div>
+
+        <!-- Content -->
+
+        <h1>
+            Logged Out
+        </h1>
+
+        <p>
+            You have successfully signed out from Nexora AI.
+        </p>
+
+        <!-- Button -->
+
+        <a href="/login">
+
+            <span>
+                Login Again
+            </span>
+
+        </a>
+
+    </div>
+
+</body>
+
+</html>

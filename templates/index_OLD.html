@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexora.AI - RAG Knowledge Workspace</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Marked Markdown Parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="theme-cyan">
+
+<!-- Background Layers -->
+<div class="bg-image"></div>
+<div class="mesh-gradient">
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+    <div class="blob blob3"></div>
+</div>
+<div class="noise"></div>
+
+<div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <button class="toggle-btn" onclick="toggleSidebar()" title="Collapse Sidebar">
+            <i class="fa-solid fa-angle-left"></i>
+        </button>
+
+        <!-- Sidebar Logo -->
+        <div class="sidebar-top">
+            <div class="logo">
+                <i class="fa-solid fa-brain-circuit"></i>
+                <span class="sidebar-text">Nexora.AI</span>
+            </div>
+        </div>
+
+        <!-- Sidebar Document Action Button -->
+        <div class="sidebar-actions">
+            <button class="sidebar-btn new-chat-btn" onclick="createNewChat()" title="Start New Chat">
+                <i class="fa-solid fa-plus"></i>
+                <span class="sidebar-text">New Chat</span>
+            </button>
+            <button class="sidebar-btn upload-trigger-btn" onclick="toggleUploadPanel()" title="Manage Knowledge Base">
+                <i class="fa-solid fa-folder-open"></i>
+                <span class="sidebar-text">Knowledge Base</span>
+            </button>
+
+        </div>
+
+        <!-- Upload Panel / File Manager -->
+        <div class="upload-panel" id="uploadPanel">
+            <h3>Upload Documents</h3>
+            
+            <div class="upload-drag-area" onclick="document.getElementById('pdfFiles').click()">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <p>Click to add files</p>
+                <span>PDF, DOCX, TXT, CSV</span>
+                <input type="file" id="pdfFiles" multiple style="display:none" onchange="handleFileSelection(this)">
+            </div>
+            
+            <div id="fileSelectionList" class="file-selection-list"></div>
+
+            <button class="upload-real-btn" onclick="uploadFiles()">
+                <i class="fa-solid fa-arrows-spin"></i> Process Files
+            </button>
+
+            <div class="status" id="uploadStatus"></div>
+
+
+        </div>
+
+                    <div class="document-filter-box">
+
+                <h4>Select Documents For Query</h4>
+
+                <div id="documentCheckboxList"></div>
+
+            </div>
+
+
+        <!-- Chat History List -->
+        <div class="chat-history">
+            <h3 class="chat-history-title">Conversations</h3>
+            <div class="chat-history-list" id="chatHistoryList"></div>
+        </div>
+    </div>
+
+    <!-- Chat Workspace Area -->
+    <div class="chat-area">
+
+        <div class="chat-header">
+
+    <div class="header-title-section">
+        <i class="fa-solid fa-compass-drafting header-icon"></i>
+        <h1>RAG Knowledge Workspace</h1>
+    </div>
+
+    <div class="top-controls">
+
+        <!-- Language Selector -->
+        <select id="languageSelector" title="Response Language">
+            <option value="English">English</option>
+            <option value="Hindi">Hindi</option>
+            <option value="Marathi">Marathi</option>
+            <option value="Bhojpuri">Bhojpuri</option>
+            <option value="Punjabi">Punjabi</option>
+            <option value="Spanish">Spanish</option>
+            <option value="French">French</option>
+            <option value="Spanish">Spanish</option>
+        </select>
+
+        <!-- Response Type Selector -->
+        <select id="responseTypeSelector" title="Response Style">
+            <option value="detailed">Detailed</option>
+            <option value="short">Short</option>
+        </select>
+
+        <!-- Settings -->
+        <button id="settingsBtn"
+                class="header-icon-btn"
+                onclick="toggleSettingsDrawer()"
+                title="Session Settings">
+            <i class="fa-solid fa-sliders"></i>
+        </button>
+
+        <!-- Theme -->
+        <select id="themeSelector"
+                onchange="changeTheme(this.value)"
+                title="Choose Color Theme">
+
+            <option value="cyan">Cyan Blue</option>
+            <option value="purple">Purple Night</option>
+            <option value="green">Neon Green</option>
+            <option value="orange">Sunset Orange</option>
+            <option value="pink">Pink Rose</option>
+
+        </select>
+
+        <!-- Light/Dark -->
+        <button id="modeToggle"
+                class="header-icon-btn"
+                onclick="toggleMode()"
+                title="Toggle Dark/Light Mode">
+
+            <i class="fa-solid fa-moon"></i>
+
+        </button>
+
+        <!-- Logout -->
+        <button class="logout-btn"
+                onclick="window.location.href='/logout'"
+                title="Logout">
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+        </button>
+
+    </div>
+
+</div>  
+        <!-- Chat Action Bar -->
+<div class="chat-actions-bar">
+
+    <button 
+        class="download-chat-btn"
+        onclick="downloadConversationPDF()"
+        title="Download Conversation PDF"
+    >
+
+        <i class="fa-solid fa-file-arrow-down"></i>
+
+    </button>
+
+</div>
+
+        <!-- Chat Window Messages -->
+        <div class="messages" id="messages">
+            <!-- Welcome Splash (Dynamic based on state) -->
+            <div class="welcome-splash" id="welcomeSplash">
+                <div class="splash-logo">
+                    <i class="fa-solid fa-cube"></i>
+                </div>
+                <h2>Welcome to Nexora Workspace</h2>
+                <p>Upload enterprise documentation or dataset files to query them semantically in real-time. Make sure to check session settings to customize models and instructions.</p>
+            </div>
+        </div>
+
+<!-- Prompt Suggestions Chips -->
+<div class="starter-suggestions" id="starterSuggestions">
+
+    <div class="suggestion-chip" onclick="applySuggestion('Summarize the uploaded documents in a clear structured format.')">
+        <i class="fa-solid fa-file-contract"></i>
+        Summarize Document
+    </div>
+
+    <div class="suggestion-chip" onclick="applySuggestion('What are the key takeaways, insights, and important findings from these documents?')">
+        <i class="fa-solid fa-lightbulb"></i>
+        Key Takeaways
+    </div>
+
+    <div class="suggestion-chip" onclick="applySuggestion('List and explain the important terminologies, concepts, technical terms, and keywords used in these documents.')">
+        <i class="fa-solid fa-book-open"></i>
+        Key Terminologies
+    </div>
+
+</div>
+
+        <!-- Question Chat Input Box -->
+        <div class="chat-input-area">
+            <input type="text" id="questionInput" class="chat-input" placeholder="Ask a question about your knowledge files...">
+            
+            <button class="mic-btn" id="micBtn" onclick="startSpeechRecognition()" title="Voice Dictation">
+                <i class="fa-solid fa-microphone"></i>
+            </button>
+            
+            <button class="send-btn" onclick="sendQuestion()" title="Submit Question">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Settings Slide Drawer -->
+<div class="settings-drawer" id="settingsDrawer">
+    <div class="drawer-header">
+        <h3>Session Settings</h3>
+        <button class="close-drawer-btn" onclick="toggleSettingsDrawer()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+    <div class="drawer-body">
+        <div class="setting-group">
+            <label for="settingsModel">Groq LLM Model</label>
+            <select id="settingsModel">
+                <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Default)</option>
+                <option value="llama-3.1-8b-instant">Llama 3.1 8B (Fast)</option>
+                <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
+                <option value="gemma2-9b-it">Gemma 2 9B</option>
+            </select>
+        </div>
+        
+        <div class="setting-group">
+            <label for="settingsTemperature">Temperature (<span id="tempVal">0.1</span>)</label>
+            <input type="range" id="settingsTemperature" min="0" max="1" step="0.1" value="0.1" oninput="document.getElementById('tempVal').innerText=this.value">
+        </div>
+        
+        <div class="setting-group">
+            <label for="settingsPrompt">System Prompt Override</label>
+            <textarea id="settingsPrompt" rows="6" placeholder="Provide system guidelines for the RAG agent..."></textarea>
+        </div>
+        
+        <button class="save-settings-btn" onclick="saveSessionSettings()">
+            <i class="fa-solid fa-floppy-disk"></i> Save Configuration
+        </button>
+    </div>
+</div>
+
+<!-- Citation Context Modal -->
+<div class="citation-modal" id="citationModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Source Context Inspector</h3>
+            <button class="close-modal-btn" onclick="closeCitationInspector()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="citation-meta">
+                <span><i class="fa-solid fa-file-invoice"></i> Document: <strong id="citationDocName"></strong></span>
+                <span><i class="fa-solid fa-file-lines"></i> Page / Ref: <strong id="citationPageNum"></strong></span>
+            </div>
+            <div class="citation-text-box">
+                <p id="citationText"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script>
+    marked.setOptions({
+        breaks: true
+    });
+
+    let session_id = null;
+    let messagesData = [];
+    let isGenerating = false;
+
+    // Theme Picker
+    function changeTheme(theme){
+        document.body.className = document.body.className.replace(/\btheme-\S+/g, '');
+        document.body.classList.add(`theme-${theme}`);
+        localStorage.setItem("theme", theme);
+    }
+
+    // Light Dark Mode
+    function toggleMode(){
+        document.body.classList.toggle("light-mode");
+        const icon = document.querySelector("#modeToggle i");
+        const isLight = document.body.classList.contains("light-mode");
+        icon.className = isLight ? "fa-solid fa-sun" : "fa-solid fa-moon";
+        localStorage.setItem("mode", isLight ? "light" : "dark");
+    }
+
+async function loadUserDocuments(){
+
+    try{
+
+        const response = await fetch(
+            "/get_user_documents"
+        );
+
+        const docs = await response.json();
+
+        const container = document.getElementById(
+            "documentCheckboxList"
+        );
+
+        container.innerHTML = "";
+
+        if(docs.length === 0){
+
+            container.innerHTML = `
+                <div class="no-files-msg">
+                    No indexed documents.
+                </div>
+            `;
+
+            return;
+        }
+
+        docs.forEach(doc => {
+
+            container.insertAdjacentHTML(
+                "beforeend",
+
+                `
+                <div class="doc-row">
+
+                    <label class="doc-checkbox">
+
+                        <input type="checkbox"
+                               value="${doc}"
+                               checked>
+
+                        <span>${doc}</span>
+
+                    </label>
+
+                    <button class="doc-delete-btn"
+                            onclick="deleteDocument('${doc}')">
+
+                        <i class="fa-solid fa-trash"></i>
+
+                    </button>
+
+                </div>
+                `
+            );
+
+        });
+
+    }catch(e){
+
+        console.error(
+            "Error loading user documents:",
+            e
+        );
+    }
+}
+
+async function deleteDocument(filename){
+
+    if(
+        !confirm(
+            `Delete ${filename} permanently?`
+        )
+    ){
+        return;
+    }
+
+    try{
+
+        const response = await fetch(
+            "/delete_file",
+            {
+                method: "POST",
+
+                headers:{
+                    "Content-Type":"application/json"
+                },
+
+                body: JSON.stringify({
+                    filename: filename,
+                    session_id: session_id
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if(data.status === "success"){
+
+            loadUserDocuments();
+
+            if(session_id){
+                loadSessionFiles(session_id);
+            }
+
+        }else{
+
+            alert(data.message);
+        }
+
+    }catch(e){
+
+        console.error(
+            "Delete error:",
+            e
+        );
+
+        alert("Error deleting document");
+    }
+}
+
+    // Toggle Sidebar
+    function toggleSidebar(){
+        const sidebar = document.getElementById("sidebar");
+        const icon = document.querySelector(".toggle-btn i");
+        sidebar.classList.toggle("collapsed");
+        
+        if(sidebar.classList.contains("collapsed")){
+            icon.className = "fa-solid fa-angle-right";
+            document.getElementById("uploadPanel").classList.remove("active");
+        } else {
+            icon.className = "fa-solid fa-angle-left";
+        }
+    }
+
+    // Toggle Upload Panel Drawer
+    function toggleUploadPanel(){
+        const sidebar = document.getElementById("sidebar");
+        const uploadPanel = document.getElementById("uploadPanel");
+        
+        if(sidebar.classList.contains("collapsed")){
+            sidebar.classList.remove("collapsed");
+            document.querySelector(".toggle-btn i").className = "fa-solid fa-angle-left";
+        }
+        
+        uploadPanel.classList.toggle("active");
+        
+        if (uploadPanel.classList.contains("active") && session_id) {
+            loadSessionFiles(session_id);
+        }
+    }
+
+    // Settings Drawer
+    function toggleSettingsDrawer(){
+        const drawer = document.getElementById("settingsDrawer");
+        drawer.classList.toggle("active");
+        
+        if (drawer.classList.contains("active") && session_id) {
+            loadSessionSettings(session_id);
+        }
+    }
+
+    // File Selection Feedback
+    function handleFileSelection(input) {
+        const list = document.getElementById("fileSelectionList");
+        list.innerHTML = "";
+        
+        if (input.files.length > 0) {
+            for (let file of input.files) {
+                const item = document.createElement("div");
+                item.className = "file-selection-item";
+                item.innerHTML = `<i class="fa-solid fa-file"></i> <span>${file.name}</span>`;
+                list.appendChild(item);
+            }
+        }
+    }
+
+    // Create New Session
+    function createNewChat(){
+        session_id = null;
+        messagesData = [];
+        isGenerating = false;
+        
+        document.getElementById("messages").innerHTML = `
+            <div class="welcome-splash" id="welcomeSplash">
+                <div class="splash-logo">
+                    <i class="fa-solid fa-cube"></i>
+                </div>
+                <h2>Welcome to Nexora Workspace</h2>
+                <p>Upload enterprise documentation or dataset files to query them semantically in real-time. Make sure to check session settings to customize models and instructions.</p>
+            </div>
+        `;
+        document.getElementById("starterSuggestions").style.display = "flex";
+        document.getElementById("uploadStatus").innerText = "";
+        document.getElementById("pdfFiles").value = "";
+        document.getElementById("fileSelectionList").innerHTML = "";
+        document.getElementById("sessionFilesList").innerHTML = `<div class="no-files-msg">No files uploaded.</div>`;
+        
+        // Reset settings inputs to defaults
+        document.getElementById("settingsModel").value = "llama-3.3-70b-versatile";
+        document.getElementById("settingsTemperature").value = "0.1";
+        document.getElementById("tempVal").innerText = "0.1";
+        document.getElementById("settingsPrompt").value = "You are a professional enterprise AI assistant. Use the provided context to answer the user's question accurately.";
+    }
+
+    // Upload & Index Documents
+    async function uploadFiles(){
+        const files = document.getElementById("pdfFiles").files;
+        if(files.length === 0){
+            alert("Please select files first");
+            return;
+        }
+
+        const formData = new FormData();
+        for(let file of files){
+            formData.append("files", file);
+        }
+        
+        if (session_id) {
+            formData.append("session_id", session_id);
+        }
+
+        const submitBtn = document.querySelector(".upload-real-btn");
+        const originalHTML = submitBtn.innerHTML;
+        submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing...`;
+        submitBtn.disabled = true;
+
+        document.getElementById("uploadStatus").innerText = "Parsing, chunking, and embedding documents...";
+
+        try {
+            const response = await fetch("/upload", {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await response.json();
+            
+            if(data.status === "success"){
+                session_id = data.session_id;
+                document.getElementById("uploadStatus").innerHTML = `<span style="color:#00ff9d"><i class="fa-solid fa-circle-check"></i> Indexed successfully!</span>`;
+                document.getElementById("pdfFiles").value = "";
+                document.getElementById("fileSelectionList").innerHTML = "";
+                
+                // Load files and load chats
+                loadSessionFiles(session_id);
+                loadChats();
+
+                loadUserDocuments();
+                
+                // Hide splash if suggestions are shown
+                if (messagesData.length === 0) {
+                    const splash = document.getElementById("welcomeSplash");
+                    if (splash) {
+                        splash.style.display = "none";
+                        document.getElementById("messages").innerHTML = `
+                            <div class="message bot">
+                                <i class="fa-solid fa-robot message-avatar"></i>
+                                <div class="message-content">
+                                    I have processed and indexed your files into the vector database. Ask me any questions based on their content!
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+            } else {
+                alert(data.message);
+                document.getElementById("uploadStatus").innerText = "Error indexing files.";
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Network error during file processing.");
+            document.getElementById("uploadStatus").innerText = "Error indexing files.";
+        } finally {
+            submitBtn.innerHTML = originalHTML;
+            submitBtn.disabled = false;
+        }
+    }
+
+    // Get Active Session Files
+    async function loadSessionFiles(session_id) {
+        if(!session_id) return;
+        
+        try {
+            const response = await fetch(`/get_session_files/${session_id}`);
+            const files = await response.json();
+            const list = document.getElementById("sessionFilesList");
+            list.innerHTML = "";
+            
+            if (files.length === 0) {
+                list.innerHTML = `<div class="no-files-msg">No files uploaded.</div>`;
+                return;
+            }
+            
+            files.forEach(file => {
+                const kb = (file.file_size / 1024).toFixed(1);
+                const item = document.createElement("div");
+                item.className = "session-file-item";
+                item.innerHTML = `
+                    <div class="file-details">
+                        <i class="fa-solid fa-file-shield text-primary"></i>
+                        <span class="file-name" title="${file.filename}">${file.filename}</span>
+                        <span class="file-size">${kb} KB</span>
+                    </div>
+                    <button class="delete-file-btn" onclick="deleteSessionFile('${file.filename}')" title="Delete file from index">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                `;
+                list.appendChild(item);
+            });
+        } catch (e) {
+            console.error("Error loading session files:", e);
+        }
+    }
+
+    // Delete Session File
+    async function deleteSessionFile(filename) {
+        if (!session_id) return;
+        if (!confirm(`Are you sure you want to remove ${filename} from this workspace?`)) return;
+        
+        try {
+            const response = await fetch("/delete_file", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ session_id, filename })
+            });
+            const res = await response.json();
+            if (res.status === "success") {
+                loadSessionFiles(session_id);
+                loadUserDocuments();
+                alert(res.message);
+            }
+        } catch (e) {
+            console.error("Error deleting session file:", e);
+        }
+    }
+
+    // Session Settings Getter / Saver
+    async function loadSessionSettings(session_id) {
+        if(!session_id) return;
+        try {
+            const response = await fetch(`/get_settings/${session_id}`);
+            const data = await response.json();
+            document.getElementById("settingsModel").value = data.model_name;
+            document.getElementById("settingsTemperature").value = data.temperature;
+            document.getElementById("tempVal").innerText = data.temperature;
+            document.getElementById("settingsPrompt").value = data.system_prompt;
+        } catch (e) {
+            console.error("Error loading settings:", e);
+        }
+    }
+
+    async function saveSessionSettings() {
+        // If no session exists, we create one so they can configure settings
+        if (!session_id) {
+            session_id = uuidv4();
+            // Save empty chat
+            await fetch("/upload", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ session_id })
+            });
+        }
+        
+        const model_name = document.getElementById("settingsModel").value;
+        const temperature = parseFloat(document.getElementById("settingsTemperature").value);
+        const system_prompt = document.getElementById("settingsPrompt").value;
+        
+        try {
+            const response = await fetch(`/save_settings/${session_id}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ model_name, temperature, system_prompt })
+            });
+            const data = await response.json();
+            if (data.status === "success") {
+                alert("Session settings saved successfully!");
+                toggleSettingsDrawer();
+            }
+        } catch (e) {
+            console.error("Error saving settings:", e);
+        }
+    }
+
+    // Helper uuid generator for settings check
+    function uuidv4() {
+        return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+            (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+        );
+    }
+
+    // Suggestion chip clicking
+    function applySuggestion(text) {
+        document.getElementById("questionInput").value = text;
+        sendQuestion();
+    }
+
+    // Render Message Bubbles
+    function addMessage(content, type){
+        const messages = document.getElementById("messages");
+        const div = document.createElement("div");
+        div.className = `message ${type}`;
+        
+        const avatarClass = type === "user" ? "fa-user" : "fa-robot";
+        const avatar = `<i class="fa-solid ${avatarClass} message-avatar"></i>`;
+        
+        div.innerHTML = `
+            ${avatar}
+            <div class="message-content">
+                ${content}
+            </div>
+        `;
+        
+        messages.appendChild(div);
+        messages.scrollTop = messages.scrollHeight;
+        return div;
+    }
+
+    /* DOWNLOAD ENTIRE CONVERSATION PDF */
+
+async function downloadConversationPDF(){
+
+    if(messagesData.length === 0){
+
+        alert("No conversation available to download.");
+
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+
+    const doc = new jsPDF({
+        orientation: "portrait",
+        unit: "pt",
+        format: "a4"
+    });
+
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    const marginX = 40;
+
+    const contentWidth = pageWidth - 80;
+
+    let y = 70;
+
+    // =========================================
+    // HEADER SECTION
+    // =========================================
+
+    doc.setFillColor(8, 18, 28);
+
+    doc.rect(0, 0, pageWidth, 95, "F");
+
+    // Logo Title
+    doc.setFont("helvetica", "bold");
+
+    doc.setTextColor(0, 212, 255);
+
+    doc.setFontSize(26);
+
+    doc.text("Nexora.AI", marginX, 45);
+
+    // Subtitle
+    doc.setFontSize(13);
+
+    doc.setTextColor(220, 230, 240);
+
+    doc.text(
+        "Enterprise RAG Conversation Export",
+        marginX,
+        68
+    );
+
+    // Date
+    const exportDate = new Date().toLocaleString();
+
+    doc.setFontSize(10);
+
+    doc.setTextColor(180, 190, 200);
+
+    doc.text(
+        exportDate,
+        pageWidth - 160,
+        45
+    );
+
+    // Decorative line
+    doc.setDrawColor(0, 212, 255);
+
+    doc.setLineWidth(1.2);
+
+    doc.line(
+        marginX,
+        82,
+        pageWidth - marginX,
+        82
+    );
+
+    // IMPORTANT FIX
+    // =========================================
+// COVER PAGE SPACING
+// =========================================
+
+doc.setFontSize(18);
+
+doc.setTextColor(220,230,240);
+
+doc.text(
+    "AI Conversation Export",
+    marginX,
+    170
+);
+
+doc.setFontSize(12);
+
+doc.setTextColor(160,170,180);
+
+doc.text(
+    "Generated from Nexora.AI Enterprise Workspace",
+    marginX,
+    195
+);
+
+// Decorative divider
+doc.setDrawColor(0,255,198);
+
+doc.setLineWidth(1);
+
+doc.line(
+    marginX,
+    225,
+    pageWidth - marginX,
+    225
+);
+
+// Start actual conversation from NEW PAGE
+doc.addPage();
+
+y = 60;
+
+    // =========================================
+    // CONVERSATION LOOP
+    // =========================================
+
+    for(let i = 0; i < messagesData.length; i++){
+
+        const msg = messagesData[i];
+
+        // =====================================
+        // USER QUESTION
+        // =====================================
+
+        if(msg.question){
+
+            const questionText = `Q: ${msg.question}`;
+
+            const questionLines = doc.splitTextToSize(
+                questionText,
+                contentWidth - 30
+            );
+
+            const questionHeight =
+                (questionLines.length * 20) + 28;
+
+            // Page break
+            if(
+                y + questionHeight >
+                pageHeight - 80
+            ){
+
+                doc.addPage();
+
+                y = 50;
+            }
+
+            // Card background
+            doc.setFillColor(0, 212, 255);
+
+            doc.roundedRect(
+                marginX,
+                y,
+                contentWidth,
+                questionHeight,
+                12,
+                12,
+                "F"
+            );
+
+            // Question text
+            doc.setTextColor(10, 20, 30);
+
+            doc.setFont(
+                "helvetica",
+                "bold"
+            );
+
+            doc.setFontSize(13);
+
+            doc.text(
+                questionLines,
+                marginX + 15,
+                y + 22
+            );
+
+            y += questionHeight + 18;
+        }
+
+        // =====================================
+        // ASSISTANT ANSWER
+        // =====================================
+
+        if(msg.answer){
+
+            const cleanAnswer =
+                msg.answer
+                .replace(/[#*_`>-]/g, "")
+                .replace(/\n+/g, "\n");
+
+            const answerLines =
+                doc.splitTextToSize(
+                    cleanAnswer,
+                    contentWidth - 36
+                );
+
+            const answerHeight =
+                (answerLines.length * 18) + 36;
+
+            // Page break
+            if(
+                y + answerHeight >
+                pageHeight - 70
+            ){
+
+                doc.addPage();
+
+                y = 50;
+            }
+
+            // Answer card
+            doc.setFillColor(18, 32, 45);
+
+            doc.roundedRect(
+                marginX,
+                y,
+                contentWidth,
+                answerHeight,
+                14,
+                14,
+                "F"
+            );
+
+            // Border
+            doc.setDrawColor(0, 255, 198);
+
+            doc.setLineWidth(0.8);
+
+            doc.roundedRect(
+                marginX,
+                y,
+                contentWidth,
+                answerHeight,
+                14,
+                14
+            );
+
+            // Answer title
+            doc.setFont(
+                "helvetica",
+                "bold"
+            );
+
+            doc.setFontSize(12);
+
+            doc.setTextColor(0, 255, 198);
+
+            doc.text(
+                "AI Response",
+                marginX + 16,
+                y + 20
+            );
+
+            // Divider
+            doc.setDrawColor(
+                40,
+                70,
+                90
+            );
+
+            doc.line(
+                marginX + 15,
+                y + 28,
+                marginX + contentWidth - 15,
+                y + 28
+            );
+
+            // Actual answer
+            doc.setFont(
+                "helvetica",
+                "normal"
+            );
+
+            doc.setFontSize(11.5);
+
+            doc.setTextColor(
+                235,
+                240,
+                245
+            );
+
+            doc.text(
+                answerLines,
+                marginX + 16,
+                y + 50
+            );
+
+            y += answerHeight + 30;
+        }
+    }
+
+    // =========================================
+    // FOOTER
+    // =========================================
+
+    const totalPages =
+        doc.internal.getNumberOfPages();
+
+    for(let i = 1; i <= totalPages; i++){
+
+        doc.setPage(i);
+
+        doc.setFontSize(10);
+
+        doc.setTextColor(140);
+
+        doc.text(
+            `Page ${i} of ${totalPages}`,
+            pageWidth - 100,
+            pageHeight - 20
+        );
+
+        doc.text(
+            "Generated by Nexora.AI",
+            40,
+            pageHeight - 20
+        );
+    }
+
+    // =========================================
+    // SAVE
+    // =========================================
+
+    const currentDate =
+        new Date()
+        .toISOString()
+        .split("T")[0];
+
+    doc.save(
+        `Nexora_AI_Conversation_${currentDate}.pdf`
+    );
+}
+
+    // Streaming SSE Logic
+    async function sendQuestion(){
+        if (isGenerating) return;
+        
+        const input = document.getElementById("questionInput");
+        const question = input.value.trim();
+        if(!question) return;
+
+        if(!session_id){
+            // If they haven't uploaded PDFs, check if they are asking a casual question
+            // We generate a dynamic temporary session ID for casual chatting
+            session_id = uuidv4();
+        }
+
+        // Hide starter suggestions & splash
+        document.getElementById("starterSuggestions").style.display = "none";
+        const splash = document.getElementById("welcomeSplash");
+        if (splash) splash.style.display = "none";
+
+        // Render user message
+        addMessage(question, "user");
+        input.value = "";
+
+        // Render bot message placeholder
+        const botDiv = addMessage(`<span class="typing-loading"><i class="fa-solid fa-spinner fa-spin"></i> Reasoning...</span>`, "bot");
+        const botContentDiv = botDiv.querySelector(".message-content");
+        
+        const selected_docs = [];
+
+        document
+        .querySelectorAll(
+            "#documentCheckboxList input:checked"
+        )
+        .forEach(cb => {
+
+            selected_docs.push(cb.value);
+
+        });
+        isGenerating = true;
+
+        try {
+            const response = await fetch("/ask_stream", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                question: question,
+                session_id: session_id,
+                messages: messagesData,
+                selected_docs: selected_docs,
+                language: document.getElementById("languageSelector").value,
+                response_type: document.getElementById("responseTypeSelector").value
+            })
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                botContentDiv.innerHTML = `<span style="color:#ff5252"><i class="fa-solid fa-circle-exclamation"></i> Error: ${err.message || 'Server error'}</span>`;
+                isGenerating = false;
+                return;
+            }
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder("utf-8");
+            let buffer = "";
+            let answerText = "";
+            botContentDiv.innerHTML = ""; // Clear loader
+
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done) break;
+                
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split("\n");
+                buffer = lines.pop(); // Hold partial line
+                
+                for (const line of lines) {
+                    if (line.startsWith("data: ")) {
+                        const dataStr = line.slice(6);
+                        try {
+                            const data = JSON.parse(dataStr);
+                            
+                            if (data.token) {
+                                answerText += data.token;
+                                botContentDiv.innerHTML = marked.parse(answerText);
+                            }
+                            
+                            if (data.error) {
+                                botContentDiv.innerHTML = `<span style="color:#ff5252"><i class="fa-solid fa-circle-exclamation"></i> Error: ${data.error}</span>`;
+                            }
+                            
+                            if (data.done) {
+                                // Stream finished, append sources
+                                let sourceHTML = "";
+                                if (data.sources && data.sources.length > 0) {
+                                    sourceHTML += `<div class="sources-panel"><h4>Verified Sources:</h4><div class="sources-list">`;
+                                    data.sources.forEach(src => {
+                                        // Escape source content for JS call
+                                        const cleanContent = src.content.replace(/'/g, "\\'").replace(/"/g, '\\"').replace(/\n/g, ' ');
+                                        sourceHTML += `
+                                            <div class="citation-pill" onclick="openCitationInspector('${src.source}', '${src.page}', '${cleanContent}')">
+                                                <i class="fa-solid fa-circle-nodes"></i> ${src.source} | Page ${src.page}
+                                            </div>
+                                        `;
+                                    });
+                                    sourceHTML += `</div></div>`;
+                                    botContentDiv.innerHTML += sourceHTML;
+                                }
+                                
+                                // Save locally
+                                messagesData.push({ question, answer: answerText });
+                                loadChats();
+                            }
+                        } catch (err) {
+                            console.error("SSE parse error", err, line);
+                        }
+                    }
+                }
+            }
+        } catch (e) {
+            console.error("SSE request error", e);
+            botContentDiv.innerHTML = `<span style="color:#ff5252"><i class="fa-solid fa-triangle-exclamation"></i> Generation failed. Please try again.</span>`;
+        } finally {
+            isGenerating = false;
+            document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
+        }
+    }
+
+    // Submit on Enter key
+    document.getElementById("questionInput").addEventListener("keypress", function(event){
+        if(event.key === "Enter"){
+            sendQuestion();
+        }
+    });
+
+    // Chat History List Loading
+    async function loadChats(){
+        try {
+            const response = await fetch("/get_chats");
+            const chats = await response.json();
+            const historyDiv = document.getElementById("chatHistoryList");
+            historyDiv.innerHTML = "";
+
+            chats.forEach(chat => {
+                // Skip empty chats or chats named "New Chat" with no history
+                if(!chat[1] || chat[1].trim() === "") return;
+
+                const item = document.createElement("div");
+                item.className = "chat-history-item";
+                if (chat[0] === session_id) {
+                    item.classList.add("active");
+                }
+                
+                item.innerHTML = `
+                    <div class="chat-item-main" onclick="loadChatMessages('${chat[0]}')">
+                        <i class="fa-solid fa-message"></i>
+                        <span title="${chat[1]}">${chat[1]}</span>
+                    </div>
+                    <div class="chat-item-actions">
+                        <button class="chat-action-btn rename-btn" onclick="renameChatPrompt('${chat[0]}', '${chat[1]}')" title="Rename Conversation">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button class="chat-action-btn delete-btn" onclick="deleteChatPrompt('${chat[0]}')" title="Delete Conversation">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                `;
+                historyDiv.appendChild(item);
+            });
+        } catch (e) {
+            console.error("Error loading chats:", e);
+        }
+    }
+
+    // Load messages of an existing chat
+    async function loadChatMessages(chatSessionId){
+        if (isGenerating) return;
+        session_id = chatSessionId;
+
+        // Visual active state
+        document.querySelectorAll(".chat-history-item").forEach(item => {
+            item.classList.remove("active");
+        });
+        // Find and highlight
+        loadChats(); // updates layout
+
+        const messagesDiv = document.getElementById("messages");
+        messagesDiv.innerHTML = `<div class="loading-messages"><i class="fa-solid fa-spinner fa-spin"></i> Loading chat session...</div>`;
+        document.getElementById("starterSuggestions").style.display = "none";
+
+        try {
+            const response = await fetch(`/load_chat/${chatSessionId}`);
+            const messages = await response.json();
+            messagesDiv.innerHTML = "";
+            messagesData = [];
+
+            messages.forEach(msg => {
+                if(msg.question){
+                    addMessage(msg.question, "user");
+                    messagesData.push({ question: msg.question });
+                }
+
+                if(msg.answer){
+                    // Sources parsing inside existing messages
+                    // First we render answer
+                    const div = addMessage(marked.parse(msg.answer), "bot");
+                    
+                    // We also push answer
+                    if (messagesData.length > 0 && !messagesData[messagesData.length - 1].answer) {
+                        messagesData[messagesData.length - 1].answer = msg.answer;
+                    } else {
+                        messagesData.push({ answer: msg.answer });
+                    }
+                }
+            });
+            
+            // Trigger file management listing and settings loads
+            loadSessionFiles(session_id);
+            loadSessionSettings(session_id);
+            loadUserDocuments();
+            
+            if (messages.length === 0) {
+                messagesDiv.innerHTML = `
+                    <div class="welcome-splash" id="welcomeSplash">
+                        <div class="splash-logo">
+                            <i class="fa-solid fa-cube"></i>
+                        </div>
+                        <h2>Knowledge Session Loaded</h2>
+                        <p>Upload documentation files to contextually search or configure specific models in the settings drawer.</p>
+                    </div>
+                `;
+                document.getElementById("starterSuggestions").style.display = "flex";
+            }
+        } catch (e) {
+            console.error("Error loading chat messages:", e);
+            messagesDiv.innerHTML = `<div class="loading-error"><i class="fa-solid fa-circle-exclamation"></i> Error loading messages.</div>`;
+        }
+    }
+
+    // Rename conversation
+    async function renameChatPrompt(chatId, oldTitle) {
+        const newTitle = prompt("Enter a new title for this conversation:", oldTitle);
+        if (!newTitle || newTitle.trim() === "" || newTitle === oldTitle) return;
+
+        try {
+            const response = await fetch(`/rename_chat/${chatId}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title: newTitle.trim() })
+            });
+            const data = await response.json();
+            if (data.status === "success") {
+                loadChats();
+            }
+        } catch (e) {
+            console.error("Error renaming chat:", e);
+        }
+    }
+
+    // Delete conversation
+    async function deleteChatPrompt(chatId) {
+        if (!confirm("Are you sure you want to delete this chat session?")) return;
+
+        try {
+            const response = await fetch(`/delete_chat/${chatId}`, {
+                method: "POST"
+            });
+            const data = await response.json();
+            if (data.status === "success") {
+                if (chatId === session_id) {
+                    createNewChat();
+                }
+                loadChats();
+            }
+        } catch (e) {
+            console.error("Error deleting chat:", e);
+        }
+    }
+
+    // Citation Context Viewer Modal
+    function openCitationInspector(source, page, content) {
+        document.getElementById("citationDocName").innerText = source;
+        document.getElementById("citationPageNum").innerText = page;
+        document.getElementById("citationText").innerText = content;
+        document.getElementById("citationModal").classList.add("active");
+    }
+
+    function closeCitationInspector() {
+        document.getElementById("citationModal").classList.remove("active");
+    }
+
+    // Speech Dictation Recognition
+    function startSpeechRecognition(){
+        const micBtn = document.getElementById("micBtn");
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        if(!SpeechRecognition){
+            alert("Voice Dictation is not supported by your current browser. Try Chrome or Safari.");
+            return;
+        }
+
+        const recognition = new SpeechRecognition();
+        recognition.lang = "en-US";
+        recognition.interimResults = false;
+        recognition.start();
+
+        micBtn.classList.add("recording");
+
+        recognition.onresult = function(event){
+            const transcript = event.results[0][0].transcript;
+            document.getElementById("questionInput").value = transcript;
+        };
+
+        recognition.onend = function(){
+            micBtn.classList.remove("recording");
+        };
+
+        recognition.onerror = function(){
+            micBtn.classList.remove("recording");
+        };
+    }
+
+    // Initialization on window load
+    window.onload = function(){
+        loadChats();
+        loadUserDocuments();
+        
+        const savedTheme = localStorage.getItem("theme") || "cyan";
+        changeTheme(savedTheme);
+        document.getElementById("themeSelector").value = savedTheme;
+
+        const savedMode = localStorage.getItem("mode");
+        if(savedMode === "light"){
+            document.body.classList.add("light-mode");
+            document.querySelector("#modeToggle i").className = "fa-solid fa-sun";
+        }
+    };
+</script>
+</body>
+</html>

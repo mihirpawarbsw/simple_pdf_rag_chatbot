@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Register</title>
+
+<link
+href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Inter',sans-serif;
+}
+
+body{
+
+    height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    overflow:hidden;
+
+    background:
+    radial-gradient(
+        circle at top left,
+        rgba(255,255,255,0.04),
+        transparent 32%
+    ),
+
+    radial-gradient(
+        circle at bottom right,
+        rgba(255,255,255,0.03),
+        transparent 28%
+    ),
+
+    linear-gradient(
+        135deg,
+        #050505 0%,
+        #0b0b0b 45%,
+        #121212 100%
+    );
+
+    position:relative;
+}
+
+.bg-image{
+
+    position:absolute;
+
+    inset:0;
+
+    background-image:
+        linear-gradient(
+            rgba(0,0,0,0.18),
+            rgba(0,0,0,0.22)
+        ),
+        url('/static/images/glass_bk.jpg');
+
+    background-size:cover;
+
+    background-position:center;
+
+    z-index:0;
+}
+
+.register-card{
+
+    width:410px;
+
+    padding:42px;
+
+    border-radius:34px;
+
+    background:
+    linear-gradient(
+        145deg,
+        rgba(22,22,22,0.82),
+        rgba(10,10,10,0.76)
+    );
+
+    backdrop-filter:blur(22px);
+
+    border:
+    1px solid rgba(255,255,255,0.08);
+
+    position:relative;
+
+    z-index:10;
+}
+
+h1{
+
+    color:white;
+
+    text-align:center;
+
+    margin-bottom:26px;
+}
+
+.input-group{
+
+    margin-bottom:18px;
+}
+
+input{
+
+    width:100%;
+
+    height:58px;
+
+    border:none;
+
+    border-radius:18px;
+
+    padding:0 20px;
+
+    background:
+        rgba(255,255,255,0.05);
+
+    color:white;
+
+    outline:none;
+
+    font-size:14px;
+
+    border:
+        1px solid rgba(255,255,255,0.08);
+
+    backdrop-filter:blur(12px);
+
+    transition:0.25s ease;
+}
+
+input::placeholder{
+
+    color:
+        rgba(255,255,255,0.42);
+}
+
+input:focus{
+
+    background:
+        rgba(255,255,255,0.07);
+
+    border:
+        1px solid rgba(255,255,255,0.14);
+
+    box-shadow:
+        0 0 0 4px rgba(255,255,255,0.03);
+}
+
+button{
+
+    width:100%;
+
+    height:58px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,0.10),
+            rgba(255,255,255,0.04)
+        );
+
+    color:white;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    letter-spacing:0.3px;
+
+    border:
+        1px solid rgba(255,255,255,0.08);
+
+    transition:0.28s ease;
+
+    margin-top:10px;
+}
+
+button:hover{
+
+    transform:
+        translateY(-2px);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,0.16),
+            rgba(255,255,255,0.07)
+        );
+
+    box-shadow:
+        0 12px 30px rgba(0,0,0,0.32);
+}
+
+.error{
+
+    background:rgba(255,0,0,0.15);
+
+    color:white;
+
+    padding:12px;
+
+    border-radius:12px;
+
+    margin-bottom:18px;
+
+    text-align:center;
+}
+
+.login-link{
+
+    margin-top:22px;
+
+    text-align:center;
+
+    color:white;
+}
+
+.login-link a{
+
+    color:#ffffff;
+
+    text-decoration:none;
+
+    font-weight:600;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="bg-image"></div>
+
+<div class="register-card">
+
+<h1>Create Account</h1>
+
+{% if error %}
+
+<div class="error">
+
+    {{ error }}
+
+</div>
+
+{% endif %}
+
+<form method="POST">
+
+    <div class="input-group">
+
+        <input
+            type="text"
+            name="username"
+            placeholder="Username"
+            required
+        >
+
+    </div>
+
+    <div class="input-group">
+
+        <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            required
+        >
+
+    </div>
+
+    <button type="submit">
+
+        Register
+
+    </button>
+
+</form>
+
+<div class="login-link">
+
+    Already have an account?
+
+    <a href="/login">
+        Login
+    </a>
+
+</div>
+
+</div>
+
+</body>
+
+</html>

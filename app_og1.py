@@ -208,21 +208,6 @@ def save_session_settings(session_id, model_name, temperature, system_prompt):
     conn.close()
 
 # -----------------------------
-# Greeting Helper
-# -----------------------------
-def get_greeting():
-    """Return time-based greeting."""
-    hour = datetime.now().hour
-    if 5 <= hour < 12:
-        return "Good morning"
-    elif 12 <= hour < 17:
-        return "Good afternoon"
-    elif 17 <= hour < 21:
-        return "Good evening"
-    else:
-        return "Good night"
-
-# -----------------------------
 # LLM Loader
 # -----------------------------
 def get_llm(session_id):
@@ -249,7 +234,7 @@ def get_embeddings():
             )
         except Exception as e:
             print(f"Failed to create HuggingFaceEndpointEmbeddings: {e}. Falling back to local embeddings.")
-
+            
     # Local fallback
     try:
         from langchain_huggingface import HuggingFaceEmbeddings
@@ -268,7 +253,7 @@ def get_embeddings():
 def parse_document(filepath, filename):
     ext = os.path.splitext(filename)[1].lower()
     docs = []
-
+    
     if ext == ".pdf":
         loader = PyMuPDFLoader(filepath)
         docs = loader.load()
@@ -312,7 +297,7 @@ def parse_document(filepath, filename):
         doc.metadata["source"] = filename
         if "page" not in doc.metadata:
             doc.metadata["page"] = 0
-
+            
     return docs
 
 # -----------------------------
@@ -525,21 +510,21 @@ def save_chat(session_id, title, messages):
 def update_chat(session_id, messages):
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-
+    
     # Generate chat title if it is "New Chat" or currently empty
     cursor.execute("SELECT title FROM chats WHERE session_id = ?", (session_id,))
     row = cursor.fetchone()
     current_title = row[0] if row else "New Chat"
-
+    
     generated_title = current_title
     if current_title == "New Chat" and len(messages) > 0:
         try:
             conversation_text = ""
             for msg in messages[:2]: # Use first two exchanges to make a title
                 conversation_text += f"User: {msg.get('question','')}\nAssistant: {msg.get('answer','')}\n"
-
+                
             title_prompt = f"""You are an AI assistant. Generate a SHORT, professional, concise title for this conversation based on the initial messages.
-
+            
 Rules:
 - Max 5 words
 - No quotes or punctuation
@@ -594,15 +579,15 @@ def get_chat_messages(session_id):
 def condense_question(session_id, question, chat_history):
     if not chat_history:
         return question
-
+        
     try:
         llm = get_llm(session_id)
         history_str = ""
         for msg in chat_history[-3:]: # use last 3 turns
             history_str += f"User: {msg.get('question', '')}\nAssistant: {msg.get('answer', '')}\n"
-
+            
         condense_prompt = f"""Given the following conversation history and a follow-up question, rephrase the follow-up question to be a standalone question, in its original language.
-
+        
 Conversation History:
 {history_str}
 
@@ -616,7 +601,7 @@ Standalone Question (do not output any explanation, just the question itself):""
             return standalone
     except Exception as e:
         print(f"Error condensing question: {e}")
-
+        
     return question
 
 # -----------------------------
@@ -629,9 +614,7 @@ def is_logged_in():
 def index():
     if not is_logged_in():
         return redirect(url_for("login"))
-    username = session.get("username", "User")
-    greeting = get_greeting()
-    return render_template("index.html", username=username, greeting=greeting)
+    return render_template("index.html")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -1333,12 +1316,12 @@ def get_settings(session_id):
 def save_settings_route(session_id):
     if not is_logged_in():
         return jsonify({"status": "error", "message": "Unauthorized"}), 401
-
+        
     data = request.json or {}
     model_name = data.get("model_name", "llama-3.3-70b-versatile")
     temperature = data.get("temperature", 0.1)
     system_prompt = data.get("system_prompt", "You are a professional enterprise AI assistant.")
-
+    
     save_session_settings(session_id, model_name, temperature, system_prompt)
     return jsonify({"status": "success", "message": "Settings updated"})
 
@@ -1368,7 +1351,7 @@ def rename_chat(session_id):
     title = data.get("title")
     if not title:
         return jsonify({"status": "error", "message": "Title is required"}), 400
-
+        
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     cursor.execute("UPDATE chats SET title = ? WHERE session_id = ?", (title, session_id))

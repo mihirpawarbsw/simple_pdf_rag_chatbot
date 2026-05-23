@@ -45,182 +45,11 @@
             justify-content: center;
             padding: 0;
         }
-
-        /* ---- LAVENDER THEME OVERRIDE (locked) ---- */
-        :root {
-            --lavender: #B18FCF;
-            --lavender-light: #C9A8E0;
-            --lavender-deep: #8B5FBF;
-            --lavender-glow: rgba(177, 143, 207, 0.35);
-            --lavender-glow-soft: rgba(177, 143, 207, 0.12);
-            --lavender-border: rgba(177, 143, 207, 0.25);
-            --lavender-border-hover: rgba(177, 143, 207, 0.45);
-            --lavender-text: #D4B8E8;
-            --lavender-bg: rgba(177, 143, 207, 0.06);
-        }
-
-        /* ---- GREETING SPLASH (Claude-style) ---- */
-        .greeting-splash {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            min-height: 60vh;
-            padding: 40px 24px;
-            animation: fadeInUp 0.6s cubic-bezier(0.22,1,0.36,1) both;
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .greeting-emoji {
-            font-size: 32px;
-            margin-bottom: 16px;
-            animation: gentleBounce 2s ease-in-out infinite;
-        }
-
-        @keyframes gentleBounce {
-            0%, 100% { transform: translateY(0); }
-            50%      { transform: translateY(-6px); }
-        }
-
-        .greeting-title {
-            font-family: 'Sora', sans-serif;
-            font-size: clamp(32px, 5vw, 56px);
-            font-weight: 300;
-            letter-spacing: -1.5px;
-            color: var(--text-primary);
-            margin-bottom: 12px;
-            line-height: 1.15;
-        }
-
-        .greeting-title .user-name {
-            font-weight: 600;
-            background: linear-gradient(135deg, #ffffff 0%, var(--lavender-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .greeting-sub {
-            font-family: 'DM Sans', sans-serif;
-            font-size: clamp(14px, 2vw, 18px);
-            font-weight: 400;
-            color: var(--text-secondary);
-            max-width: 520px;
-            line-height: 1.7;
-            margin-bottom: 8px;
-        }
-
-        .greeting-tagline {
-            font-family: 'DM Sans', sans-serif;
-            font-size: 13px;
-            color: var(--lavender-text);
-            letter-spacing: 0.3px;
-            max-width: 480px;
-            line-height: 1.6;
-        }
-
-        /* Lavender accent on header elements */
-        .header-icon-btn:hover,
-        .logout-btn:hover {
-            border-color: var(--lavender-border-hover) !important;
-            color: var(--lavender-light) !important;
-            box-shadow: 0 0 20px rgba(177,143,207,0.15) !important;
-        }
-
-        .send-btn {
-            background: linear-gradient(135deg, #ffffff 0%, var(--lavender-light) 100%) !important;
-            color: #080808 !important;
-        }
-        .send-btn:hover {
-            box-shadow: 0 8px 28px rgba(177,143,207,0.35) !important;
-        }
-
-        .mic-btn.recording {
-            color: var(--lavender) !important;
-            box-shadow: 0 0 20px rgba(177,143,207,0.3) !important;
-        }
-
-        .suggestion-chip:hover {
-            border-color: var(--lavender-border-hover) !important;
-            background: var(--lavender-bg) !important;
-        }
-
-        .new-chat-btn {
-            background: linear-gradient(135deg, #ffffff 0%, var(--lavender-light) 100%) !important;
-            color: #080808 !important;
-        }
-
-        .upload-trigger-btn:hover {
-            border-color: var(--lavender-border-hover) !important;
-            color: var(--lavender-light) !important;
-        }
-
-        .upload-real-btn {
-            background: linear-gradient(135deg, #ffffff 0%, var(--lavender-light) 100%) !important;
-            color: #080808 !important;
-        }
-
-        .save-settings-btn {
-            background: linear-gradient(135deg, #ffffff 0%, var(--lavender-light) 100%) !important;
-            color: #080808 !important;
-        }
-
-        .download-chat-btn:hover {
-            border-color: var(--lavender-border-hover) !important;
-            color: var(--lavender-light) !important;
-        }
-
-        .chat-history-item.active {
-            border-left: 3px solid var(--lavender) !important;
-            background: var(--lavender-bg) !important;
-        }
-
-        .citation-pill:hover {
-            border-color: var(--lavender-border-hover) !important;
-            background: var(--lavender-bg) !important;
-        }
-
-        .sources-panel h4 {
-            color: var(--lavender-text) !important;
-        }
-
-        .typing-loading {
-            color: var(--lavender-text) !important;
-        }
-
-        /* Input focus lavender glow */
-        .chat-input:focus {
-            border-color: var(--lavender-border-hover) !important;
-            box-shadow: 0 0 0 3px rgba(177,143,207,0.08) !important;
-        }
-
-        /* Settings drawer lavender accents */
-        .settings-drawer {
-            border-left: 1px solid var(--lavender-border) !important;
-        }
-
-        .setting-group input[type="range"] {
-            accent-color: var(--lavender) !important;
-        }
-
-        /* Modal lavender */
-        .citation-modal .modal-content {
-            border: 1px solid var(--lavender-border) !important;
-        }
-
-        .citation-meta strong {
-            color: var(--lavender-light) !important;
-        }
     </style>
     <!-- Sora + DM Sans — same as login/register/logout -->
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 </head>
-<body class="theme-lavender">
+<body class="theme-cyan">
 
 <!-- Ambient layers -->
 <div class="mesh-gradient">
@@ -338,6 +167,14 @@
                     <i class="fa-solid fa-sliders"></i>
                 </button>
 
+                <select id="themeSelector" onchange="changeTheme(this.value)" title="Color Theme">
+                    <option value="cyan">Cyan Blue</option>
+                    <option value="purple">Purple Night</option>
+                    <option value="green">Neon Green</option>
+                    <option value="orange">Sunset Orange</option>
+                    <option value="pink">Pink Rose</option>
+                </select>
+
                 <button id="modeToggle" class="header-icon-btn" onclick="toggleMode()" title="Toggle Dark/Light">
                     <i class="fa-solid fa-moon"></i>
                 </button>
@@ -358,11 +195,12 @@
 
         <!-- Messages -->
         <div class="messages" id="messages">
-            <div class="greeting-splash" id="greetingSplash">
-                <div class="greeting-emoji" id="greetingEmoji">☀️</div>
-                <h2 class="greeting-title">{{ greeting }}, <span class="user-name">{{ username }}</span></h2>
-                <p class="greeting-sub">Welcome to Nexora.AI</p>
-                <p class="greeting-tagline">Upload enterprise documentation or dataset files to query them semantically in real-time. Check session settings to customise models and instructions.</p>
+            <div class="welcome-splash" id="welcomeSplash">
+                <div class="splash-logo">
+                    <i class="fa-solid fa-cube"></i>
+                </div>
+                <h2>Welcome to Nexora Workspace</h2>
+                <p>Upload enterprise documentation or dataset files to query them semantically in real-time. Check session settings to customise models and instructions.</p>
             </div>
         </div>
 
@@ -599,11 +437,10 @@
     function createNewChat(){
         session_id = null; messagesData = []; isGenerating = false;
         document.getElementById("messages").innerHTML = `
-            <div class="greeting-splash" id="greetingSplash">
-                <div class="greeting-emoji" id="greetingEmoji">☀️</div>
-                <h2 class="greeting-title">{{ greeting }}, <span class="user-name">{{ username }}</span></h2>
-                <p class="greeting-sub">Welcome to Nexora.AI</p>
-                <p class="greeting-tagline">Upload enterprise documentation or dataset files to query them semantically in real-time. Check session settings to customise models and instructions.</p>
+            <div class="welcome-splash" id="welcomeSplash">
+                <div class="splash-logo"><i class="fa-solid fa-cube"></i></div>
+                <h2>Welcome to Nexora Workspace</h2>
+                <p>Upload enterprise documentation or dataset files to query them semantically in real-time. Make sure to check session settings to customise models and instructions.</p>
             </div>`;
         document.getElementById("starterSuggestions").style.display = "flex";
         document.getElementById("uploadStatus").innerText = "";
@@ -658,7 +495,7 @@
                 loadChats();
                 loadUserDocuments();
                 if(messagesData.length === 0){
-                    const splash = document.getElementById("greetingSplash");
+                    const splash = document.getElementById("welcomeSplash");
                     if(splash){ splash.style.display="none";
                         document.getElementById("messages").innerHTML = `
                         <div class="message bot">
@@ -976,7 +813,7 @@
         if(!session_id) session_id = uuidv4();
 
         document.getElementById("starterSuggestions").style.display = "none";
-        const splash = document.getElementById("greetingSplash");
+        const splash = document.getElementById("welcomeSplash");
         if(splash) splash.style.display = "none";
 
         addMessage(question, "user");
@@ -1112,11 +949,10 @@
             loadUserDocuments();
             if(messages.length === 0){
                 messagesDiv.innerHTML = `
-                    <div class="greeting-splash" id="greetingSplash">
-                        <div class="greeting-emoji" id="greetingEmoji">☀️</div>
-                        <h2 class="greeting-title">{{ greeting }}, <span class="user-name">{{ username }}</span></h2>
-                        <p class="greeting-sub">Welcome to Nexora.AI</p>
-                        <p class="greeting-tagline">Upload enterprise documentation or dataset files to query them semantically in real-time. Check session settings to customise models and instructions.</p>
+                    <div class="welcome-splash" id="welcomeSplash">
+                        <div class="splash-logo"><i class="fa-solid fa-cube"></i></div>
+                        <h2>Knowledge Session Loaded</h2>
+                        <p>Upload documentation files to contextually search or configure specific models in the settings drawer.</p>
                     </div>`;
                 document.getElementById("starterSuggestions").style.display = "flex";
             }
@@ -1211,7 +1047,9 @@
     window.onload = function(){
         loadChats();
         loadUserDocuments();
-        // Lavender theme is locked, no theme selector
+        const savedTheme = localStorage.getItem("theme") || "cyan";
+        changeTheme(savedTheme);
+        document.getElementById("themeSelector").value = savedTheme;
         const savedMode = localStorage.getItem("mode");
         if(savedMode === "light"){
             document.body.classList.add("light-mode");

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nexora.AI — Enterprise AI Knowledge Workspace</title>
+<title>Nexora.AI — Transforming Documents Into Intelligent Conversations</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
 
@@ -26,15 +26,15 @@
   --font-body: 'DM Sans', sans-serif;
 
   /* ── LAVENDER ACCENTS ── */
-  --lavender: #B18FCF;
-  --lavender-light: #C9A8E0;
-  --lavender-deep: #8B5FBF;
-  --lavender-glow: rgba(177, 143, 207, 0.35);
-  --lavender-glow-soft: rgba(177, 143, 207, 0.12);
-  --lavender-border: rgba(177, 143, 207, 0.25);
-  --lavender-border-hover: rgba(177, 143, 207, 0.45);
-  --lavender-text: #D4B8E8;
-  --lavender-bg: rgba(177, 143, 207, 0.06);
+  --lavender: #D8B4FE;
+  --lavender-light: #E9D5FF;
+  --lavender-deep: #C084FC;
+  --lavender-glow: rgba(216, 180, 254, 0.40);
+  --lavender-glow-soft: rgba(216, 180, 254, 0.14);
+  --lavender-border: rgba(216, 180, 254, 0.30);
+  --lavender-border-hover: rgba(216, 180, 254, 0.55);
+  --lavender-text: #F3E8FF;
+  --lavender-bg: rgba(216, 180, 254, 0.08);
 }
 
 html { scroll-behavior: smooth; }
@@ -62,12 +62,12 @@ body::before {
 .ambient::before {
   content: '';
   position: absolute; top: -20%; left: -10%; width: 60%; height: 70%;
-  background: radial-gradient(ellipse, rgba(177,143,207,0.035) 0%, transparent 65%);
+  background: radial-gradient(ellipse, rgba(216,180,254,0.035) 0%, transparent 65%);
 }
 .ambient::after {
   content: '';
   position: absolute; bottom: -10%; right: -10%; width: 55%; height: 60%;
-  background: radial-gradient(ellipse, rgba(177,143,207,0.022) 0%, transparent 65%);
+  background: radial-gradient(ellipse, rgba(216,180,254,0.022) 0%, transparent 65%);
 }
 
 /* =============================================
@@ -92,14 +92,14 @@ body::before {
 .brand-orb {
   width: 26px; height: 26px; border-radius: 50%;
   background: linear-gradient(135deg, #ffffff 0%, var(--lavender) 100%);
-  box-shadow: 0 0 22px rgba(177,143,207,0.35), 0 0 7px rgba(177,143,207,0.5);
+  box-shadow: 0 0 22px rgba(216,180,254,0.35), 0 0 7px rgba(216,180,254,0.5);
   animation: breathe 3s ease-in-out infinite;
   flex-shrink: 0;
 }
 
 @keyframes breathe {
-  0%,100% { box-shadow: 0 0 22px rgba(177,143,207,0.32), 0 0 7px rgba(177,143,207,0.45); transform: scale(1); }
-  50%      { box-shadow: 0 0 34px rgba(177,143,207,0.50), 0 0 12px rgba(177,143,207,0.6); transform: scale(1.05); }
+  0%,100% { box-shadow: 0 0 22px rgba(216,180,254,0.32), 0 0 7px rgba(216,180,254,0.45); transform: scale(1); }
+  50%      { box-shadow: 0 0 34px rgba(216,180,254,0.50), 0 0 12px rgba(216,180,254,0.6); transform: scale(1.05); }
 }
 
 .brand-name {
@@ -137,7 +137,7 @@ body::before {
 }
 .nav-cta:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 28px rgba(177,143,207,0.35);
+  box-shadow: 0 8px 28px rgba(216,180,254,0.35);
 }
 
 /* =============================================
@@ -178,7 +178,7 @@ body::before {
 .eyebrow-dot {
   width: 6px; height: 6px; border-radius: 50%;
   background: var(--lavender); opacity: 0.85;
-  box-shadow: 0 0 8px rgba(177,143,207,0.5);
+  box-shadow: 0 0 8px rgba(216,180,254,0.5);
 }
 
 .hero-headline {
@@ -191,7 +191,7 @@ body::before {
   color: var(--text-primary);
 }
 
-.hero-headline .dimmed { color: rgba(212,184,232,0.35); }
+.hero-headline .dimmed { color: rgba(233,213,255,0.45); }
 
 .hero-desc {
   font-size: 17px; line-height: 1.85;
@@ -216,7 +216,7 @@ body::before {
 }
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 36px rgba(177,143,207,0.35);
+  box-shadow: 0 14px 36px rgba(216,180,254,0.35);
 }
 
 .btn-ghost {
@@ -230,7 +230,7 @@ body::before {
   border-color: var(--lavender-border-hover); color: var(--lavender-light);
   background: var(--lavender-bg);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(177,143,207,0.12);
+  box-shadow: 0 8px 24px rgba(216,180,254,0.12);
 }
 
 /* HERO FEATURE GRID — 4 cols */
@@ -250,7 +250,7 @@ body::before {
 .hero-feat-card:hover {
   border-color: var(--lavender-border-hover);
   transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(177,143,207,0.08);
+  box-shadow: 0 12px 32px rgba(216,180,254,0.08);
 }
 .feat-icon {
   font-size: 18px; margin-bottom: 12px;
@@ -310,7 +310,7 @@ body::before {
   letter-spacing: -1.5px; line-height: 1.1;
   max-width: 580px; margin-bottom: 60px;
 }
-.section-title .dimmed { color: rgba(212,184,232,0.3); }
+.section-title .dimmed { color: rgba(233,213,255,0.40); }
 
 .features-big-grid {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
@@ -324,19 +324,19 @@ body::before {
 .big-feature-card::after {
   content: ''; position: absolute; inset: 0; border-radius: 24px;
   opacity: 0;
-  background: radial-gradient(ellipse at 50% 0%, rgba(177,143,207,0.06) 0%, transparent 70%);
+  background: radial-gradient(ellipse at 50% 0%, rgba(216,180,254,0.06) 0%, transparent 70%);
   transition: opacity 0.3s; pointer-events: none;
 }
 .big-feature-card:hover {
   border-color: var(--lavender-border-hover);
   transform: translateY(-3px);
-  box-shadow: 0 16px 40px rgba(177,143,207,0.08);
+  box-shadow: 0 16px 40px rgba(216,180,254,0.08);
 }
 .big-feature-card:hover::after { opacity: 1; }
 
 .big-feature-card.featured {
   grid-column: span 2;
-  background: linear-gradient(180deg, rgba(177,143,207,0.06) 0%, var(--bg-glass) 100%);
+  background: linear-gradient(180deg, rgba(216,180,254,0.06) 0%, var(--bg-glass) 100%);
   border-color: var(--lavender-border);
 }
 
@@ -367,7 +367,7 @@ body::before {
 }
 .stack-col:hover {
   border-color: var(--lavender-border-hover);
-  box-shadow: 0 12px 32px rgba(177,143,207,0.06);
+  box-shadow: 0 12px 32px rgba(216,180,254,0.06);
 }
 .stack-col-title {
   font-family: var(--font-display); font-size: 12px; font-weight: 600;
@@ -408,7 +408,7 @@ body::before {
   color: var(--lavender-light);
   background: var(--lavender-bg);
   transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(177,143,207,0.08);
+  box-shadow: 0 8px 20px rgba(216,180,254,0.08);
 }
 
 /* =============================================
@@ -426,7 +426,7 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
 .footer-orb {
   width: 14px; height: 14px; border-radius: 50%;
   background: linear-gradient(135deg, #ffffff 0%, var(--lavender) 100%);
-  box-shadow: 0 0 10px rgba(177,143,207,0.35);
+  box-shadow: 0 0 10px rgba(216,180,254,0.35);
 }
 .footer-links { display: flex; gap: 28px; }
 .footer-links a { font-size: 13px; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
@@ -463,7 +463,7 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
   padding: 44px 40px 36px;
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
-  box-shadow: 0 40px 100px rgba(0,0,0,0.7), 0 0 60px rgba(177,143,207,0.06), inset 0 1px 0 rgba(255,255,255,0.07);
+  box-shadow: 0 40px 100px rgba(0,0,0,0.7), 0 0 60px rgba(216,180,254,0.06), inset 0 1px 0 rgba(255,255,255,0.07);
   overflow: hidden;
 
   /* hidden state */
@@ -477,20 +477,20 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
 /* shimmer top line — lavender */
 .modal-card::before {
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(177,143,207,0.25) 40%, rgba(177,143,207,0.25) 60%, transparent);
+  background: linear-gradient(90deg, transparent, rgba(216,180,254,0.25) 40%, rgba(216,180,254,0.25) 60%, transparent);
 }
 
 /* close button */
 .modal-close {
   position: absolute; top: 18px; right: 18px;
   width: 34px; height: 34px; border-radius: 50%;
-  background: rgba(177,143,207,0.08); border: 1px solid var(--lavender-border);
+  background: rgba(216,180,254,0.08); border: 1px solid var(--lavender-border);
   color: var(--lavender-text); font-size: 16px; line-height: 1;
   cursor: pointer; display: flex; align-items: center; justify-content: center;
   transition: all 0.2s;
 }
 .modal-close:hover {
-  background: rgba(177,143,207,0.15);
+  background: rgba(216,180,254,0.15);
   color: var(--lavender-light);
   border-color: var(--lavender-border-hover);
 }
@@ -505,7 +505,7 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
 .modal-orb {
   width: 18px; height: 18px; border-radius: 50%;
   background: linear-gradient(135deg, #ffffff 0%, var(--lavender) 100%);
-  box-shadow: 0 0 16px rgba(177,143,207,0.4);
+  box-shadow: 0 0 16px rgba(216,180,254,0.4);
   animation: breathe 3s ease-in-out infinite;
 }
 .modal-brand-name {
@@ -531,11 +531,11 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
   font-size: 13px; text-align: center;
 }
 .alert-error {
-  background: rgba(177,143,207,0.05); border: 1px solid var(--lavender-border);
+  background: rgba(216,180,254,0.05); border: 1px solid var(--lavender-border);
   color: rgba(212,184,232,0.9);
 }
 .alert-success {
-  background: rgba(177,143,207,0.06); border: 1px solid var(--lavender-border-hover);
+  background: rgba(216,180,254,0.06); border: 1px solid var(--lavender-border-hover);
   color: rgba(200,255,220,0.9);
 }
 
@@ -550,9 +550,9 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
 }
 .input-group input::placeholder { color: var(--text-muted); }
 .input-group input:focus {
-  background: rgba(177,143,207,0.05);
+  background: rgba(216,180,254,0.05);
   border-color: var(--lavender-border-hover);
-  box-shadow: 0 0 0 3px rgba(177,143,207,0.08);
+  box-shadow: 0 0 0 3px rgba(216,180,254,0.08);
 }
 
 /* SUBMIT */
@@ -566,7 +566,7 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
 }
 .submit-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 36px rgba(177,143,207,0.35);
+  box-shadow: 0 14px 36px rgba(216,180,254,0.35);
 }
 
 .register-link {
@@ -644,12 +644,13 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
 
     <button class="modal-close" onclick="closeLogin()" aria-label="Close">&#x2715;</button>
 
-    <div class="modal-brand">
+        <div class="modal-brand">
       <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora.AI" class="modal-logo">
       <p class="modal-tagline">Transforming Documents Into Intelligent Conversations</p>
     </div>
 
-    <h2 class="modal-heading">Welcome back</h2>
+    <h2 class="modal-heading">Welcome</h2>
+
 
     {% if error %}
     <div class="alert alert-error">{{ error }}</div>
@@ -708,10 +709,10 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
   <!-- HERO -->
   <section class="hero-section">
 
-    <div class="hero-eyebrow">
+<!--     <div class="hero-eyebrow">
       <div class="eyebrow-dot"></div>
-      Enterprise AI Knowledge Workspace
-    </div>
+      Nexora.AI — Transforming Documents Into Intelligent Conversations
+    </div> -->
 
     <h1 class="hero-headline">
       Transform Documents Into<br>
@@ -719,7 +720,7 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
     </h1>
 
     <p class="hero-desc">
-      Nexora.AI is a secure enterprise-grade Retrieval-Augmented Generation platform that enables intelligent document querying, semantic AI search, contextual conversations, and knowledge discovery across PDFs, research papers, reports, SOPs, and enterprise datasets.
+      Nexora.AI is a next-generation enterprise AI assistant built on advanced Retrieval-Augmented Generation (RAG) architecture. Upload, manage, search, and interact with enterprise knowledge bases through natural language. Combines semantic vector retrieval, BM25 hybrid search, contextual reasoning, and intelligent response generation to deliver accurate, grounded, and explainable answers from your documents.
     </p>
 
     <div class="hero-actions">
@@ -730,34 +731,34 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
     <div class="hero-feature-grid">
       <div class="hero-feat-card">
         <div class="feat-icon">&#x27C1;</div>
-        <h3>Hybrid Search</h3>
-        <p>BM25 + Vector semantic retrieval for enterprise-grade accuracy.</p>
+        <h3>Hybrid AI Search</h3>
+        <p>Combines dense vector retrieval and BM25 sparse retrieval for highly accurate semantic and keyword-aware document search.</p>
       </div>
       <div class="hero-feat-card">
         <div class="feat-icon">&#x25C8;</div>
-        <h3>Multiuser RAG</h3>
-        <p>Secure isolated vector databases with user-level document filtering.</p>
+        <h3>Multiuser RAG Workspace</h3>
+        <p>Secure isolated vector databases and personalized AI workspaces for each user and organization.</p>
       </div>
       <div class="hero-feat-card">
         <div class="feat-icon">&#x2B21;</div>
-        <h3>AI Guardrails</h3>
-        <p>Prompt injection protection, hallucination reduction, and PII safety.</p>
+        <h3>AI Guardrails & Security</h3>
+        <p>Built-in prompt injection protection, hallucination reduction, PII detection, and enterprise-grade AI safety.</p>
       </div>
       <div class="hero-feat-card">
         <div class="feat-icon">&#x229E;</div>
-        <h3>Enterprise PDFs</h3>
-        <p>AI-powered summaries, contextual insights, and document analytics.</p>
+        <h3>Semantic PDF Intelligence</h3>
+        <p>Upload PDFs and instantly ask contextual questions, generate summaries, and discover hidden knowledge.</p>
       </div>
     </div>
 
     <div class="tech-strip">
-      Flask &ensp;&#183;&ensp; LangChain &ensp;&#183;&ensp; ChromaDB &ensp;&#183;&ensp; BM25 &ensp;&#183;&ensp; Hybrid Search &ensp;&#183;&ensp; RAG &ensp;&#183;&ensp; Semantic AI &ensp;&#183;&ensp; Python
+      Flask &ensp;&#183;&ensp; Python &ensp;&#183;&ensp; LangChain &ensp;&#183;&ensp; ChromaDB &ensp;&#183;&ensp; BM25 &ensp;&#183;&ensp; Hybrid Search &ensp;&#183;&ensp; RAG &ensp;&#183;&ensp; Semantic AI &ensp;&#183;&ensp; Vector Embeddings
     </div>
 
     <div class="stats-row">
-      <div class="stat-box"><h2>Hybrid AI</h2><p>Dense + Sparse Retrieval</p></div>
-      <div class="stat-box"><h2>Multiuser</h2><p>Secure Vector Isolation</p></div>
-      <div class="stat-box"><h2>Enterprise</h2><p>AI Guardrails &amp; Security</p></div>
+      <div class="stat-box"><h2>Hybrid AI</h2><p>Semantic + Keyword Search</p></div>
+      <div class="stat-box"><h2>Multiuser</h2><p>Isolated Vector Workspaces</p></div>
+      <div class="stat-box"><h2>Enterprise</h2><p>AI Guardrails &amp; Safety</p></div>
     </div>
 
   </section>
@@ -765,38 +766,38 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
   <!-- FEATURES -->
   <section class="features-section" id="features">
     <div class="section-label">Platform Capabilities</div>
-    <h2 class="section-title">Built for <span class="dimmed">enterprise-grade</span><br>AI intelligence</h2>
+    <h2 class="section-title">Built for <span class="dimmed">enterprise-grade</span><br>AI Knowledge Intelligence</h2>
 
     <div class="features-big-grid">
       <div class="big-feature-card featured">
         <div class="feat-num">01 &#8212; Core</div>
-        <h3>Hybrid Retrieval Architecture</h3>
-        <p>Nexora.AI combines dense vector retrieval with BM25 sparse search for unparalleled document recall. The fusion engine merges semantic similarity with keyword precision, ensuring no relevant passage is missed &#8212; even across large enterprise corpora with thousands of document chunks.</p>
+        <h3>Hybrid AI Search</h3>
+        <p>Combines dense vector retrieval and BM25 sparse retrieval for highly accurate semantic and keyword-aware document search. The fusion engine merges semantic similarity with keyword precision, ensuring no relevant passage is missed across large enterprise corpora.</p>
       </div>
       <div class="big-feature-card">
         <div class="feat-num">02</div>
         <h3>Multiuser RAG Workspace</h3>
-        <p>Each user operates within a securely isolated vector namespace. Documents, embeddings, and conversation history are fully separated at the database level &#8212; no cross-user data leakage, ever.</p>
+        <p>Secure isolated vector databases and personalized AI workspaces for each user and organization. Documents, embeddings, and conversation history are fully separated at the database level with no cross-user data leakage.</p>
       </div>
       <div class="big-feature-card">
         <div class="feat-num">03</div>
         <h3>AI Guardrails &amp; Security</h3>
-        <p>Built-in prompt injection defense, jailbreak detection, PII identification, and hallucination reduction. Enterprise-safe RAG with grounded, explainable, source-verified answers.</p>
+        <p>Built-in prompt injection protection, jailbreak detection, PII identification, and hallucination reduction. Enterprise-safe RAG with grounded, explainable, source-verified answers.</p>
       </div>
       <div class="big-feature-card">
         <div class="feat-num">04</div>
         <h3>Semantic PDF Intelligence</h3>
-        <p>Upload PDFs and instantly query them in natural language. Get contextual summaries, extract key insights, and discover knowledge hidden across hundreds of pages &#8212; in seconds.</p>
+        <p>Upload PDFs and instantly ask contextual questions, generate summaries, extract insights, and discover knowledge hidden across hundreds of pages in seconds.</p>
       </div>
       <div class="big-feature-card">
         <div class="feat-num">05</div>
         <h3>Streaming AI Conversations</h3>
-        <p>Real-time token streaming for responsive, conversational interactions. Multi-turn memory with contextual continuity across the full session, all grounded to your documents.</p>
+        <p>Real-time AI response streaming with contextual multi-turn memory and source-grounded answers. Responsive conversational interactions grounded to your documents.</p>
       </div>
       <div class="big-feature-card">
         <div class="feat-num">06</div>
         <h3>Source Verification</h3>
-        <p>Every AI response cites the exact document chunks it was derived from. No fabricated references. Complete traceability for compliance, auditing, and trust.</p>
+        <p>Every answer is backed by verified document chunks and page-level citations for explainable AI responses. Complete traceability for compliance, auditing, and trust.</p>
       </div>
     </div>
   </section>
@@ -805,7 +806,7 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
   <section class="stack-section" id="stack">
     <div class="stack-inner">
       <div class="section-label">Technology</div>
-      <h2 class="section-title">Production-grade <span class="dimmed">engineering</span></h2>
+      <h2 class="section-title">Production-grade <span class="dimmed">AI Engineering</span></h2>
       <div class="stack-grid">
         <div class="stack-col">
           <div class="stack-col-title">Backend</div>
@@ -852,19 +853,19 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
     <div class="usecases-inner">
       <div class="usecases-left">
         <div class="section-label">Use Cases</div>
-        <h2 class="section-title">Built for every<br><span class="dimmed">knowledge workflow</span></h2>
+        <h2 class="section-title">Built for every<br><span class="dimmed">enterprise knowledge workflow</span></h2>
         <p style="color:var(--text-secondary);font-size:15px;line-height:1.8;max-width:380px;margin-top:16px;">
-          From legal research to financial analysis, Nexora.AI adapts to any enterprise knowledge workflow &#8212; with secure, grounded AI responses every time.
+          From legal research to financial analysis, Nexora.AI adapts to any enterprise knowledge workflow with secure, grounded AI responses. Faster knowledge discovery, reduced manual document analysis, and AI-powered enterprise productivity.
         </p>
       </div>
       <div class="usecases-list">
         <div class="use-pill">Enterprise Knowledge Management</div>
-        <div class="use-pill">AI Research Assistant</div>
+        <div class="use-pill">AI-Powered Research Assistant</div>
         <div class="use-pill">Legal Document Intelligence</div>
         <div class="use-pill">Financial Report Analysis</div>
         <div class="use-pill">Research Paper Querying</div>
         <div class="use-pill">SOP &amp; Policy Assistants</div>
-        <div class="use-pill">Internal AI Copilot</div>
+        <div class="use-pill">Internal AI Copilots</div>
         <div class="use-pill">Intelligent Business Search</div>
       </div>
     </div>

@@ -586,6 +586,22 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
 .badge { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--text-muted); }
 .badge span { color: var(--lavender); }
 
+/* ---- NAVBAR LOGO ---- */
+.nav-logo {
+  width: 140px;
+  height: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* ---- MODAL LOGO ---- */
+.modal-logo {
+  width: 160px;
+  height: auto;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+
 /* =============================================
    RESPONSIVE
 ============================================= */
@@ -629,11 +645,8 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
     <button class="modal-close" onclick="closeLogin()" aria-label="Close">&#x2715;</button>
 
     <div class="modal-brand">
-      <div class="modal-orb-row">
-        <div class="modal-orb"></div>
-        <span class="modal-brand-name">Nexora AI</span>
-      </div>
-      <p class="modal-tagline">Your AI Knowledge Workspace</p>
+      <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora.AI" class="modal-logo">
+      <p class="modal-tagline">Transforming Documents Into Intelligent Conversations</p>
     </div>
 
     <h2 class="modal-heading">Welcome back</h2>
@@ -674,8 +687,7 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
 =========================================== -->
 <nav class="navbar">
   <a class="nav-brand" href="#">
-    <div class="brand-orb"></div>
-    <span class="brand-name">Nexora.AI</span>
+    <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora.AI" class="nav-logo">
   </a>
 
   <ul class="nav-links">

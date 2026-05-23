@@ -1,1411 +1,844 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexora.AI - RAG Knowledge Workspace</title>
-    <!-- CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <!-- Marked Markdown Parser -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexora.AI — Enterprise AI Knowledge Workspace</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+
+/* =============================================
+   RESET + VARIABLES
+============================================= */
+*, *::before, *::after {
+  margin: 0; padding: 0; box-sizing: border-box;
+}
+
+:root {
+  --bg-base: #080808;
+  --bg-glass: rgba(255,255,255,0.04);
+  --border: rgba(255,255,255,0.07);
+  --border-hover: rgba(255,255,255,0.14);
+  --text-primary: #f0f0f0;
+  --text-secondary: rgba(240,240,240,0.54);
+  --text-muted: rgba(240,240,240,0.30);
+  --font-display: 'Sora', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* grain texture */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.32; z-index: 1; pointer-events: none;
+}
+
+/* ambient glows */
+.ambient {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+}
+.ambient::before {
+  content: '';
+  position: absolute; top: -20%; left: -10%; width: 60%; height: 70%;
+  background: radial-gradient(ellipse, rgba(255,255,255,0.022) 0%, transparent 65%);
+}
+.ambient::after {
+  content: '';
+  position: absolute; bottom: -10%; right: -10%; width: 55%; height: 60%;
+  background: radial-gradient(ellipse, rgba(255,255,255,0.016) 0%, transparent 65%);
+}
+
+/* =============================================
+   NAVBAR
+============================================= */
+.navbar {
+  position: fixed; top: 0; left: 0; width: 100%; height: 72px;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 56px;
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(8,8,8,0.65);
+  z-index: 200;
+}
+
+.nav-brand {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none;
+}
+
+.brand-orb {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: white;
+  box-shadow: 0 0 22px rgba(255,255,255,0.3), 0 0 7px rgba(255,255,255,0.5);
+  animation: breathe 3s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes breathe {
+  0%,100% { box-shadow: 0 0 22px rgba(255,255,255,0.28), 0 0 7px rgba(255,255,255,0.5); transform: scale(1); }
+  50%      { box-shadow: 0 0 34px rgba(255,255,255,0.44), 0 0 12px rgba(255,255,255,0.6); transform: scale(1.05); }
+}
+
+.brand-name {
+  font-family: var(--font-display);
+  font-size: 20px; font-weight: 700; letter-spacing: -0.5px;
+  color: var(--text-primary);
+}
+
+.nav-links {
+  display: flex; align-items: center; gap: 36px; list-style: none;
+}
+
+.nav-links a {
+  font-size: 13.5px; color: var(--text-secondary);
+  text-decoration: none; transition: color 0.2s; letter-spacing: 0.2px;
+}
+.nav-links a:hover { color: var(--text-primary); }
+
+.nav-cta {
+  height: 42px; padding: 0 22px;
+  background: white; color: #080808;
+  border: none; border-radius: 12px;
+  font-family: var(--font-display); font-size: 13.5px; font-weight: 600;
+  cursor: pointer; transition: all 0.25s ease; letter-spacing: -0.2px;
+}
+.nav-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 28px rgba(255,255,255,0.18);
+}
+
+/* =============================================
+   PAGE WRAPPER
+============================================= */
+.page-wrapper { position: relative; z-index: 2; }
+
+/* =============================================
+   HERO — FULL WIDTH (no right panel)
+============================================= */
+.hero-section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 120px 56px 80px;
+  max-width: 1100px;
+  margin: 0 auto;
+  animation: fadeUp 0.7s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 18px; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--bg-glass);
+  font-size: 12px; font-weight: 500; color: var(--text-secondary);
+  letter-spacing: 0.7px; text-transform: uppercase;
+  margin-bottom: 36px;
+}
+
+.eyebrow-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: white; opacity: 0.55;
+}
+
+.hero-headline {
+  font-family: var(--font-display);
+  font-size: clamp(52px, 7vw, 88px);
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -3px;
+  margin-bottom: 30px;
+  color: var(--text-primary);
+}
+
+.hero-headline .dimmed { color: rgba(240,240,240,0.32); }
+
+.hero-desc {
+  font-size: 17px; line-height: 1.85;
+  color: var(--text-secondary);
+  max-width: 680px;
+  margin: 0 auto 44px;
+}
+
+/* HERO ACTIONS */
+.hero-actions {
+  display: flex; gap: 14px; justify-content: center;
+  flex-wrap: wrap; margin-bottom: 72px;
+}
+
+.btn-primary {
+  height: 56px; padding: 0 32px;
+  background: white; color: #080808;
+  border: none; border-radius: 16px;
+  font-family: var(--font-display); font-size: 15px; font-weight: 600;
+  cursor: pointer; transition: all 0.25s ease; letter-spacing: -0.2px;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px rgba(255,255,255,0.2);
+}
+
+.btn-ghost {
+  height: 56px; padding: 0 28px;
+  background: var(--bg-glass); color: var(--text-secondary);
+  border: 1px solid var(--border); border-radius: 16px;
+  font-family: var(--font-body); font-size: 15px; font-weight: 400;
+  cursor: pointer; transition: all 0.25s ease;
+}
+.btn-ghost:hover {
+  border-color: var(--border-hover); color: var(--text-primary);
+  transform: translateY(-2px);
+}
+
+/* HERO FEATURE GRID — 4 cols */
+.hero-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  width: 100%;
+}
+
+.hero-feat-card {
+  padding: 22px 20px; border-radius: 20px;
+  background: var(--bg-glass); border: 1px solid var(--border);
+  text-align: left;
+  transition: border-color 0.25s, transform 0.25s;
+}
+.hero-feat-card:hover {
+  border-color: var(--border-hover); transform: translateY(-2px);
+}
+.feat-icon { font-size: 18px; margin-bottom: 12px; opacity: 0.65; }
+.hero-feat-card h3 {
+  font-family: var(--font-display); font-size: 14px; font-weight: 600;
+  margin-bottom: 7px; letter-spacing: -0.2px;
+}
+.hero-feat-card p { font-size: 12.5px; line-height: 1.65; color: var(--text-secondary); }
+
+/* TECH STRIP */
+.tech-strip {
+  margin-top: 48px; padding: 16px 0;
+  border-top: 1px solid var(--border);
+  font-size: 11.5px; letter-spacing: 0.9px;
+  text-transform: uppercase; color: var(--text-muted);
+  width: 100%; text-align: center;
+}
+
+/* STATS */
+.stats-row {
+  display: flex; gap: 48px; justify-content: center;
+  margin-top: 32px; flex-wrap: wrap;
+}
+.stat-box { text-align: center; }
+.stat-box h2 {
+  font-family: var(--font-display); font-size: 15px; font-weight: 700;
+  color: var(--text-primary); margin-bottom: 4px;
+}
+.stat-box p { font-size: 12px; color: var(--text-muted); }
+
+/* =============================================
+   FEATURES SECTION
+============================================= */
+.features-section {
+  padding: 100px 56px;
+  max-width: 1340px; margin: 0 auto;
+  border-top: 1px solid var(--border);
+}
+
+.section-label {
+  font-size: 11.5px; font-weight: 500; letter-spacing: 1.2px;
+  text-transform: uppercase; color: var(--text-muted); margin-bottom: 18px;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 3.5vw, 48px); font-weight: 800;
+  letter-spacing: -1.5px; line-height: 1.1;
+  max-width: 580px; margin-bottom: 60px;
+}
+.section-title .dimmed { color: rgba(240,240,240,0.3); }
+
+.features-big-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+}
+
+.big-feature-card {
+  padding: 30px; border-radius: 24px;
+  background: var(--bg-glass); border: 1px solid var(--border);
+  transition: all 0.28s ease; position: relative; overflow: hidden;
+}
+.big-feature-card::after {
+  content: ''; position: absolute; inset: 0; border-radius: 24px;
+  opacity: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.04) 0%, transparent 70%);
+  transition: opacity 0.3s; pointer-events: none;
+}
+.big-feature-card:hover { border-color: var(--border-hover); transform: translateY(-3px); }
+.big-feature-card:hover::after { opacity: 1; }
+
+.big-feature-card.featured {
+  grid-column: span 2;
+  background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);
+}
+
+.feat-num {
+  font-family: var(--font-display); font-size: 11px; font-weight: 600;
+  letter-spacing: 1px; color: var(--text-muted); margin-bottom: 20px; text-transform: uppercase;
+}
+.big-feature-card h3 {
+  font-family: var(--font-display); font-size: 18px; font-weight: 700;
+  letter-spacing: -0.3px; margin-bottom: 12px;
+}
+.big-feature-card p { font-size: 14px; line-height: 1.7; color: var(--text-secondary); }
+
+/* =============================================
+   STACK SECTION
+============================================= */
+.stack-section { padding: 80px 56px; border-top: 1px solid var(--border); }
+.stack-inner { max-width: 1340px; margin: 0 auto; }
+
+.stack-grid {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-top: 48px;
+}
+.stack-col {
+  padding: 26px; border-radius: 20px;
+  background: var(--bg-glass); border: 1px solid var(--border);
+}
+.stack-col-title {
+  font-family: var(--font-display); font-size: 12px; font-weight: 600;
+  letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 18px;
+}
+.stack-items { display: flex; flex-direction: column; gap: 10px; }
+.stack-item {
+  font-size: 13.5px; color: var(--text-secondary);
+  padding: 8px 12px; border-radius: 10px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.04);
+  transition: all 0.2s;
+}
+.stack-item:hover { color: var(--text-primary); background: rgba(255,255,255,0.06); }
+
+/* =============================================
+   USE CASES
+============================================= */
+.usecases-section { padding: 80px 56px; border-top: 1px solid var(--border); }
+.usecases-inner {
+  max-width: 1340px; margin: 0 auto;
+  display: flex; gap: 80px; align-items: flex-start;
+}
+.usecases-left { flex: 1; }
+.usecases-list {
+  flex: 1; display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; padding-top: 8px;
+}
+.use-pill {
+  padding: 13px 18px; border-radius: 14px;
+  background: var(--bg-glass); border: 1px solid var(--border);
+  font-size: 13.5px; color: var(--text-secondary); transition: all 0.22s;
+}
+.use-pill:hover { border-color: var(--border-hover); color: var(--text-primary); }
+
+/* =============================================
+   FOOTER
+============================================= */
+footer { border-top: 1px solid var(--border); padding: 40px 56px; }
+.footer-inner {
+  max-width: 1340px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.footer-brand {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-display); font-size: 15px; font-weight: 700;
+}
+.footer-orb {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: white; box-shadow: 0 0 10px rgba(255,255,255,0.3);
+}
+.footer-links { display: flex; gap: 28px; }
+.footer-links a { font-size: 13px; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+.footer-links a:hover { color: var(--text-secondary); }
+.footer-copy { font-size: 12.5px; color: var(--text-muted); }
+
+/* =============================================
+   LOGIN MODAL
+============================================= */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 999;
+  background: rgba(4,4,4,0.82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+
+  /* hidden state */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s cubic-bezier(0.22,1,0.36,1);
+}
+.modal-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-card {
+  position: relative;
+  width: 100%; max-width: 440px;
+  background: rgba(11,11,11,0.96);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 28px;
+  padding: 44px 40px 36px;
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  box-shadow: 0 40px 100px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.07);
+  overflow: hidden;
+
+  /* hidden state */
+  transform: translateY(28px) scale(0.96);
+  transition: transform 0.4s cubic-bezier(0.22,1,0.36,1);
+}
+.modal-backdrop.open .modal-card {
+  transform: translateY(0) scale(1);
+}
+
+/* shimmer top line */
+.modal-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.13) 40%, rgba(255,255,255,0.13) 60%, transparent);
+}
+
+/* close button */
+.modal-close {
+  position: absolute; top: 18px; right: 18px;
+  width: 34px; height: 34px; border-radius: 50%;
+  background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+  color: var(--text-secondary); font-size: 16px; line-height: 1;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.modal-close:hover { background: rgba(255,255,255,0.11); color: var(--text-primary); }
+
+/* modal brand */
+.modal-brand {
+  display: flex; flex-direction: column; align-items: center; margin-bottom: 28px;
+}
+.modal-orb-row {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 7px;
+}
+.modal-orb {
+  width: 18px; height: 18px; border-radius: 50%; background: white;
+  box-shadow: 0 0 16px rgba(255,255,255,0.35);
+  animation: breathe 3s ease-in-out infinite;
+}
+.modal-brand-name {
+  font-family: var(--font-display); font-size: 20px; font-weight: 800; letter-spacing: -0.5px;
+}
+.modal-tagline { font-size: 12px; color: var(--text-muted); letter-spacing: 0.3px; }
+
+.modal-heading {
+  font-family: var(--font-display); font-size: 22px; font-weight: 700;
+  text-align: center; letter-spacing: -0.5px;
+  margin-bottom: 26px; color: var(--text-primary);
+}
+
+/* ALERTS */
+.alert {
+  width: 100%; padding: 13px 16px;
+  border-radius: 14px; margin-bottom: 18px;
+  font-size: 13px; text-align: center;
+}
+.alert-error {
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,200,200,0.9);
+}
+.alert-success {
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(200,255,220,0.9);
+}
+
+/* INPUTS */
+.input-group { margin-bottom: 13px; }
+.input-group input {
+  width: 100%; height: 54px; padding: 0 18px;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+  border-radius: 16px; color: var(--text-primary);
+  font-family: var(--font-body); font-size: 14px;
+  outline: none; transition: all 0.22s ease;
+}
+.input-group input::placeholder { color: var(--text-muted); }
+.input-group input:focus {
+  background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.22);
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.04);
+}
+
+/* SUBMIT */
+.submit-btn {
+  width: 100%; height: 54px; border: none; border-radius: 16px;
+  background: white; color: #080808;
+  font-family: var(--font-display); font-size: 15px; font-weight: 700;
+  cursor: pointer; letter-spacing: -0.2px; margin-top: 8px;
+  transition: all 0.25s ease;
+}
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px rgba(255,255,255,0.22);
+}
+
+.register-link {
+  text-align: center; font-size: 13.5px; color: var(--text-secondary); margin-top: 20px;
+}
+.register-link a {
+  color: var(--text-primary); text-decoration: none; font-weight: 600;
+  border-bottom: 1px solid rgba(255,255,255,0.18); padding-bottom: 1px;
+  transition: border-color 0.2s;
+}
+.register-link a:hover { border-color: rgba(255,255,255,0.5); }
+
+.trust-badges {
+  display: flex; align-items: center; justify-content: center;
+  gap: 18px; margin-top: 22px; flex-wrap: wrap;
+}
+.badge { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--text-muted); }
+
+/* =============================================
+   RESPONSIVE
+============================================= */
+@media (max-width: 1100px) {
+  .hero-feature-grid { grid-template-columns: repeat(2,1fr); }
+  .features-big-grid { grid-template-columns: repeat(2,1fr); }
+  .big-feature-card.featured { grid-column: span 1; }
+  .stack-grid { grid-template-columns: repeat(2,1fr); }
+  .usecases-inner { flex-direction: column; gap: 40px; }
+}
+
+@media (max-width: 720px) {
+  .navbar { padding: 0 24px; }
+  .nav-links { display: none; }
+  .hero-section { padding: 100px 24px 60px; }
+  .hero-headline { font-size: 44px; letter-spacing: -2px; }
+  .hero-feature-grid { grid-template-columns: 1fr; }
+  .features-section, .stack-section, .usecases-section { padding: 60px 24px; }
+  .features-big-grid { grid-template-columns: 1fr; }
+  .stack-grid { grid-template-columns: 1fr; }
+  .usecases-list { grid-template-columns: 1fr; }
+  footer { padding: 32px 24px; }
+  .footer-inner { flex-direction: column; gap: 20px; text-align: center; }
+  .footer-links { flex-wrap: wrap; justify-content: center; gap: 18px; }
+  .modal-card { padding: 36px 26px 28px; }
+}
+
+</style>
 </head>
-<body class="theme-cyan">
+<body>
 
-<!-- Background Layers -->
-<div class="bg-image"></div>
-<div class="mesh-gradient">
-    <div class="blob blob1"></div>
-    <div class="blob blob2"></div>
-    <div class="blob blob3"></div>
-</div>
-<div class="noise"></div>
+<div class="ambient"></div>
 
-<div class="container">
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <button class="toggle-btn" onclick="toggleSidebar()" title="Collapse Sidebar">
-            <i class="fa-solid fa-angle-left"></i>
-        </button>
+<!-- ==========================================
+     LOGIN MODAL (hidden by default)
+=========================================== -->
+<div class="modal-backdrop" id="loginModal" role="dialog" aria-modal="true" aria-label="Sign in">
 
-        <!-- Sidebar Logo -->
-        <div class="sidebar-top">
-            <div class="logo">
-                <i class="fa-solid fa-brain-circuit"></i>
-                <span class="sidebar-text">Nexora.AI</span>
-            </div>
-        </div>
+  <div class="modal-card" id="modalCard">
 
-        <!-- Sidebar Document Action Button -->
-        <div class="sidebar-actions">
-            <button class="sidebar-btn new-chat-btn" onclick="createNewChat()" title="Start New Chat">
-                <i class="fa-solid fa-plus"></i>
-                <span class="sidebar-text">New Chat</span>
-            </button>
-            <button class="sidebar-btn upload-trigger-btn" onclick="toggleUploadPanel()" title="Manage Knowledge Base">
-                <i class="fa-solid fa-folder-open"></i>
-                <span class="sidebar-text">Knowledge Base</span>
-            </button>
+    <button class="modal-close" onclick="closeLogin()" aria-label="Close">&#x2715;</button>
 
-        </div>
-
-        <!-- Upload Panel / File Manager -->
-        <div class="upload-panel" id="uploadPanel">
-            <h3>Upload Documents</h3>
-            
-            <div class="upload-drag-area" onclick="document.getElementById('pdfFiles').click()">
-                <i class="fa-solid fa-cloud-arrow-up"></i>
-                <p>Click to add files</p>
-                <span>PDF, DOCX, TXT, CSV</span>
-                <input type="file" id="pdfFiles" multiple style="display:none" onchange="handleFileSelection(this)">
-            </div>
-            
-            <div id="fileSelectionList" class="file-selection-list"></div>
-
-            <button class="upload-real-btn" onclick="uploadFiles()">
-                <i class="fa-solid fa-arrows-spin"></i> Process Files
-            </button>
-
-            <div class="status" id="uploadStatus"></div>
-
-
-        </div>
-
-                    <div class="document-filter-box">
-
-                <h4>Select Documents For Query</h4>
-
-                <div id="documentCheckboxList"></div>
-
-            </div>
-
-
-        <!-- Chat History List -->
-        <div class="chat-history">
-            <h3 class="chat-history-title">Conversations</h3>
-            <div class="chat-history-list" id="chatHistoryList"></div>
-        </div>
+    <div class="modal-brand">
+      <div class="modal-orb-row">
+        <div class="modal-orb"></div>
+        <span class="modal-brand-name">Nexora AI</span>
+      </div>
+      <p class="modal-tagline">Your AI Knowledge Workspace</p>
     </div>
 
-    <!-- Chat Workspace Area -->
-    <div class="chat-area">
+    <h2 class="modal-heading">Welcome back</h2>
 
-        <div class="chat-header">
+    {% if error %}
+    <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
 
-    <div class="header-title-section">
-        <i class="fa-solid fa-compass-drafting header-icon"></i>
-        <h1>RAG Knowledge Workspace</h1>
+    {% if success %}
+    <div class="alert alert-success">{{ success }}</div>
+    {% endif %}
+
+    <form method="POST">
+      <div class="input-group">
+        <input type="text" name="username" placeholder="Username" required autocomplete="username">
+      </div>
+      <div class="input-group">
+        <input type="password" name="password" placeholder="Password" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="submit-btn">Sign In</button>
+    </form>
+
+    <div class="register-link">
+      Don't have an account? <a href="/register">Create one</a>
     </div>
 
-    <div class="top-controls">
-
-        <!-- Language Selector -->
-        <select id="languageSelector" title="Response Language">
-            <option value="English">English</option>
-            <option value="Hindi">Hindi</option>
-            <option value="Marathi">Marathi</option>
-            <option value="Bhojpuri">Bhojpuri</option>
-            <option value="Punjabi">Punjabi</option>
-            <option value="Spanish">Spanish</option>
-            <option value="French">French</option>
-            <option value="Spanish">Spanish</option>
-        </select>
-
-        <!-- Response Type Selector -->
-        <select id="responseTypeSelector" title="Response Style">
-            <option value="detailed">Detailed</option>
-            <option value="short">Short</option>
-        </select>
-
-        <!-- Settings -->
-        <button id="settingsBtn"
-                class="header-icon-btn"
-                onclick="toggleSettingsDrawer()"
-                title="Session Settings">
-            <i class="fa-solid fa-sliders"></i>
-        </button>
-
-        <!-- Theme -->
-        <select id="themeSelector"
-                onchange="changeTheme(this.value)"
-                title="Choose Color Theme">
-
-            <option value="cyan">Cyan Blue</option>
-            <option value="purple">Purple Night</option>
-            <option value="green">Neon Green</option>
-            <option value="orange">Sunset Orange</option>
-            <option value="pink">Pink Rose</option>
-
-        </select>
-
-        <!-- Light/Dark -->
-        <button id="modeToggle"
-                class="header-icon-btn"
-                onclick="toggleMode()"
-                title="Toggle Dark/Light Mode">
-
-            <i class="fa-solid fa-moon"></i>
-
-        </button>
-
-        <!-- Logout -->
-        <button class="logout-btn"
-                onclick="window.location.href='/logout'"
-                title="Logout">
-
-            <i class="fa-solid fa-right-from-bracket"></i>
-
-        </button>
-
+    <div class="trust-badges">
+      <div class="badge"><span>🔒</span> Encrypted</div>
+      <div class="badge"><span>⚡</span> Instant Access</div>
+      <div class="badge"><span>◎</span> Multi-user Safe</div>
     </div>
 
-</div>  
-        <!-- Chat Action Bar -->
-<div class="chat-actions-bar">
-
-    <button 
-        class="download-chat-btn"
-        onclick="downloadConversationPDF()"
-        title="Download Conversation PDF"
-    >
-
-        <i class="fa-solid fa-file-arrow-down"></i>
-
-    </button>
-
+  </div>
 </div>
 
-        <!-- Chat Window Messages -->
-        <div class="messages" id="messages">
-            <!-- Welcome Splash (Dynamic based on state) -->
-            <div class="welcome-splash" id="welcomeSplash">
-                <div class="splash-logo">
-                    <i class="fa-solid fa-cube"></i>
-                </div>
-                <h2>Welcome to Nexora Workspace</h2>
-                <p>Upload enterprise documentation or dataset files to query them semantically in real-time. Make sure to check session settings to customize models and instructions.</p>
-            </div>
-        </div>
+<!-- ==========================================
+     NAVBAR
+=========================================== -->
+<nav class="navbar">
+  <a class="nav-brand" href="#">
+    <div class="brand-orb"></div>
+    <span class="brand-name">Nexora.AI</span>
+  </a>
 
-<!-- Prompt Suggestions Chips -->
-<div class="starter-suggestions" id="starterSuggestions">
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#stack">Technology</a></li>
+    <li><a href="#usecases">Use Cases</a></li>
+    <li><a href="#security">Security</a></li>
+  </ul>
 
-    <div class="suggestion-chip" onclick="applySuggestion('Summarize the uploaded documents in a clear structured format.')">
-        <i class="fa-solid fa-file-contract"></i>
-        Summarize Document
+  <button class="nav-cta" onclick="openLogin()">Get Started</button>
+</nav>
+
+<!-- ==========================================
+     PAGE CONTENT
+=========================================== -->
+<div class="page-wrapper">
+
+  <!-- HERO -->
+  <section class="hero-section">
+
+    <div class="hero-eyebrow">
+      <div class="eyebrow-dot"></div>
+      Enterprise AI Knowledge Workspace
     </div>
 
-    <div class="suggestion-chip" onclick="applySuggestion('What are the key takeaways, insights, and important findings from these documents?')">
-        <i class="fa-solid fa-lightbulb"></i>
-        Key Takeaways
+    <h1 class="hero-headline">
+      Transform Documents Into<br>
+      <span class="dimmed">Intelligent Conversations</span>
+    </h1>
+
+    <p class="hero-desc">
+      Nexora.AI is a secure enterprise-grade Retrieval-Augmented Generation platform that enables intelligent document querying, semantic AI search, contextual conversations, and knowledge discovery across PDFs, research papers, reports, SOPs, and enterprise datasets.
+    </p>
+
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="openLogin()">Get Started</button>
+      <button class="btn-ghost" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">Explore Features</button>
     </div>
 
-    <div class="suggestion-chip" onclick="applySuggestion('List and explain the important terminologies, concepts, technical terms, and keywords used in these documents.')">
-        <i class="fa-solid fa-book-open"></i>
-        Key Terminologies
+    <div class="hero-feature-grid">
+      <div class="hero-feat-card">
+        <div class="feat-icon">⟁</div>
+        <h3>Hybrid Search</h3>
+        <p>BM25 + Vector semantic retrieval for enterprise-grade accuracy.</p>
+      </div>
+      <div class="hero-feat-card">
+        <div class="feat-icon">◈</div>
+        <h3>Multiuser RAG</h3>
+        <p>Secure isolated vector databases with user-level document filtering.</p>
+      </div>
+      <div class="hero-feat-card">
+        <div class="feat-icon">⬡</div>
+        <h3>AI Guardrails</h3>
+        <p>Prompt injection protection, hallucination reduction, and PII safety.</p>
+      </div>
+      <div class="hero-feat-card">
+        <div class="feat-icon">⊞</div>
+        <h3>Enterprise PDFs</h3>
+        <p>AI-powered summaries, contextual insights, and document analytics.</p>
+      </div>
     </div>
 
-</div>
-
-        <!-- Question Chat Input Box -->
-        <div class="chat-input-area">
-            <input type="text" id="questionInput" class="chat-input" placeholder="Ask a question about your knowledge files...">
-            
-            <button class="mic-btn" id="micBtn" onclick="startSpeechRecognition()" title="Voice Dictation">
-                <i class="fa-solid fa-microphone"></i>
-            </button>
-            
-            <button class="send-btn" onclick="sendQuestion()" title="Submit Question">
-                <i class="fa-solid fa-paper-plane"></i>
-            </button>
-        </div>
+    <div class="tech-strip">
+      Flask &ensp;·&ensp; LangChain &ensp;·&ensp; ChromaDB &ensp;·&ensp; BM25 &ensp;·&ensp; Hybrid Search &ensp;·&ensp; RAG &ensp;·&ensp; Semantic AI &ensp;·&ensp; Python
     </div>
-</div>
 
-<!-- Settings Slide Drawer -->
-<div class="settings-drawer" id="settingsDrawer">
-    <div class="drawer-header">
-        <h3>Session Settings</h3>
-        <button class="close-drawer-btn" onclick="toggleSettingsDrawer()">
-            <i class="fa-solid fa-xmark"></i>
-        </button>
+    <div class="stats-row">
+      <div class="stat-box"><h2>Hybrid AI</h2><p>Dense + Sparse Retrieval</p></div>
+      <div class="stat-box"><h2>Multiuser</h2><p>Secure Vector Isolation</p></div>
+      <div class="stat-box"><h2>Enterprise</h2><p>AI Guardrails &amp; Security</p></div>
     </div>
-    <div class="drawer-body">
-        <div class="setting-group">
-            <label for="settingsModel">Groq LLM Model</label>
-            <select id="settingsModel">
-                <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Default)</option>
-                <option value="llama-3.1-8b-instant">Llama 3.1 8B (Fast)</option>
-                <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
-                <option value="gemma2-9b-it">Gemma 2 9B</option>
-            </select>
-        </div>
-        
-        <div class="setting-group">
-            <label for="settingsTemperature">Temperature (<span id="tempVal">0.1</span>)</label>
-            <input type="range" id="settingsTemperature" min="0" max="1" step="0.1" value="0.1" oninput="document.getElementById('tempVal').innerText=this.value">
-        </div>
-        
-        <div class="setting-group">
-            <label for="settingsPrompt">System Prompt Override</label>
-            <textarea id="settingsPrompt" rows="6" placeholder="Provide system guidelines for the RAG agent..."></textarea>
-        </div>
-        
-        <button class="save-settings-btn" onclick="saveSessionSettings()">
-            <i class="fa-solid fa-floppy-disk"></i> Save Configuration
-        </button>
-    </div>
-</div>
 
-<!-- Citation Context Modal -->
-<div class="citation-modal" id="citationModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>Source Context Inspector</h3>
-            <button class="close-modal-btn" onclick="closeCitationInspector()">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-        </div>
-        <div class="modal-body">
-            <div class="citation-meta">
-                <span><i class="fa-solid fa-file-invoice"></i> Document: <strong id="citationDocName"></strong></span>
-                <span><i class="fa-solid fa-file-lines"></i> Page / Ref: <strong id="citationPageNum"></strong></span>
-            </div>
-            <div class="citation-text-box">
-                <p id="citationText"></p>
-            </div>
-        </div>
-    </div>
-</div>
+  </section>
 
-<!-- Scripts -->
+  <!-- FEATURES -->
+  <section class="features-section" id="features">
+    <div class="section-label">Platform Capabilities</div>
+    <h2 class="section-title">Built for <span class="dimmed">enterprise-grade</span><br>AI intelligence</h2>
+
+    <div class="features-big-grid">
+      <div class="big-feature-card featured">
+        <div class="feat-num">01 — Core</div>
+        <h3>Hybrid Retrieval Architecture</h3>
+        <p>Nexora.AI combines dense vector retrieval with BM25 sparse search for unparalleled document recall. The fusion engine merges semantic similarity with keyword precision, ensuring no relevant passage is missed — even across large enterprise corpora with thousands of document chunks.</p>
+      </div>
+      <div class="big-feature-card">
+        <div class="feat-num">02</div>
+        <h3>Multiuser RAG Workspace</h3>
+        <p>Each user operates within a securely isolated vector namespace. Documents, embeddings, and conversation history are fully separated at the database level — no cross-user data leakage, ever.</p>
+      </div>
+      <div class="big-feature-card">
+        <div class="feat-num">03</div>
+        <h3>AI Guardrails &amp; Security</h3>
+        <p>Built-in prompt injection defense, jailbreak detection, PII identification, and hallucination reduction. Enterprise-safe RAG with grounded, explainable, source-verified answers.</p>
+      </div>
+      <div class="big-feature-card">
+        <div class="feat-num">04</div>
+        <h3>Semantic PDF Intelligence</h3>
+        <p>Upload PDFs and instantly query them in natural language. Get contextual summaries, extract key insights, and discover knowledge hidden across hundreds of pages — in seconds.</p>
+      </div>
+      <div class="big-feature-card">
+        <div class="feat-num">05</div>
+        <h3>Streaming AI Conversations</h3>
+        <p>Real-time token streaming for responsive, conversational interactions. Multi-turn memory with contextual continuity across the full session, all grounded to your documents.</p>
+      </div>
+      <div class="big-feature-card">
+        <div class="feat-num">06</div>
+        <h3>Source Verification</h3>
+        <p>Every AI response cites the exact document chunks it was derived from. No fabricated references. Complete traceability for compliance, auditing, and trust.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- STACK -->
+  <section class="stack-section" id="stack">
+    <div class="stack-inner">
+      <div class="section-label">Technology</div>
+      <h2 class="section-title">Production-grade <span class="dimmed">engineering</span></h2>
+      <div class="stack-grid">
+        <div class="stack-col">
+          <div class="stack-col-title">Backend</div>
+          <div class="stack-items">
+            <div class="stack-item">Flask</div>
+            <div class="stack-item">Python</div>
+            <div class="stack-item">LangChain</div>
+            <div class="stack-item">SQLite</div>
+          </div>
+        </div>
+        <div class="stack-col">
+          <div class="stack-col-title">AI &amp; Retrieval</div>
+          <div class="stack-items">
+            <div class="stack-item">RAG Architecture</div>
+            <div class="stack-item">ChromaDB</div>
+            <div class="stack-item">BM25 Search</div>
+            <div class="stack-item">Vector Embeddings</div>
+          </div>
+        </div>
+        <div class="stack-col">
+          <div class="stack-col-title">Security</div>
+          <div class="stack-items">
+            <div class="stack-item">AI Guardrails</div>
+            <div class="stack-item">PII Detection</div>
+            <div class="stack-item">Jailbreak Filter</div>
+            <div class="stack-item">User Isolation</div>
+          </div>
+        </div>
+        <div class="stack-col">
+          <div class="stack-col-title">Document Intelligence</div>
+          <div class="stack-items">
+            <div class="stack-item">PDF Parsing</div>
+            <div class="stack-item">Chunk Embeddings</div>
+            <div class="stack-item">Context Retrieval</div>
+            <div class="stack-item">AI Summarization</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- USE CASES -->
+  <section class="usecases-section" id="usecases">
+    <div class="usecases-inner">
+      <div class="usecases-left">
+        <div class="section-label">Use Cases</div>
+        <h2 class="section-title">Built for every<br><span class="dimmed">knowledge workflow</span></h2>
+        <p style="color:var(--text-secondary);font-size:15px;line-height:1.8;max-width:380px;margin-top:16px;">
+          From legal research to financial analysis, Nexora.AI adapts to any enterprise knowledge workflow — with secure, grounded AI responses every time.
+        </p>
+      </div>
+      <div class="usecases-list">
+        <div class="use-pill">Enterprise Knowledge Management</div>
+        <div class="use-pill">AI Research Assistant</div>
+        <div class="use-pill">Legal Document Intelligence</div>
+        <div class="use-pill">Financial Report Analysis</div>
+        <div class="use-pill">Research Paper Querying</div>
+        <div class="use-pill">SOP &amp; Policy Assistants</div>
+        <div class="use-pill">Internal AI Copilot</div>
+        <div class="use-pill">Intelligent Business Search</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-orb"></div>
+        Nexora.AI
+      </div>
+      <div class="footer-links">
+        <a href="#features">Features</a>
+        <a href="#stack">Technology</a>
+        <a href="#usecases">Use Cases</a>
+        <a href="#" id="security">Security</a>
+        <a href="#">Documentation</a>
+      </div>
+      <p class="footer-copy">© 2026 Nexora.AI. All rights reserved.</p>
+    </div>
+  </footer>
+
+</div><!-- /page-wrapper -->
+
 <script>
-    marked.setOptions({
-        breaks: true
-    });
-
-    let session_id = null;
-    let messagesData = [];
-    let isGenerating = false;
-
-    // Theme Picker
-    function changeTheme(theme){
-        document.body.className = document.body.className.replace(/\btheme-\S+/g, '');
-        document.body.classList.add(`theme-${theme}`);
-        localStorage.setItem("theme", theme);
-    }
-
-    // Light Dark Mode
-    function toggleMode(){
-        document.body.classList.toggle("light-mode");
-        const icon = document.querySelector("#modeToggle i");
-        const isLight = document.body.classList.contains("light-mode");
-        icon.className = isLight ? "fa-solid fa-sun" : "fa-solid fa-moon";
-        localStorage.setItem("mode", isLight ? "light" : "dark");
-    }
-
-async function loadUserDocuments(){
-
-    try{
-
-        const response = await fetch(
-            "/get_user_documents"
-        );
-
-        const docs = await response.json();
-
-        const container = document.getElementById(
-            "documentCheckboxList"
-        );
-
-        container.innerHTML = "";
-
-        if(docs.length === 0){
-
-            container.innerHTML = `
-                <div class="no-files-msg">
-                    No indexed documents.
-                </div>
-            `;
-
-            return;
-        }
-
-        docs.forEach(doc => {
-
-            container.insertAdjacentHTML(
-                "beforeend",
-
-                `
-                <div class="doc-row">
-
-                    <label class="doc-checkbox">
-
-                        <input type="checkbox"
-                               value="${doc}"
-                               checked>
-
-                        <span>${doc}</span>
-
-                    </label>
-
-                    <button class="doc-delete-btn"
-                            onclick="deleteDocument('${doc}')">
-
-                        <i class="fa-solid fa-trash"></i>
-
-                    </button>
-
-                </div>
-                `
-            );
-
-        });
-
-    }catch(e){
-
-        console.error(
-            "Error loading user documents:",
-            e
-        );
-    }
+// Open modal
+function openLogin() {
+  const modal = document.getElementById('loginModal');
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  // focus username after animation
+  setTimeout(() => {
+    const u = modal.querySelector('input[name="username"]');
+    if (u) u.focus();
+  }, 200);
 }
 
-async function deleteDocument(filename){
-
-    if(
-        !confirm(
-            `Delete ${filename} permanently?`
-        )
-    ){
-        return;
-    }
-
-    try{
-
-        const response = await fetch(
-            "/delete_file",
-            {
-                method: "POST",
-
-                headers:{
-                    "Content-Type":"application/json"
-                },
-
-                body: JSON.stringify({
-                    filename: filename,
-                    session_id: session_id
-                })
-            }
-        );
-
-        const data = await response.json();
-
-        if(data.status === "success"){
-
-            loadUserDocuments();
-
-            if(session_id){
-                loadSessionFiles(session_id);
-            }
-
-        }else{
-
-            alert(data.message);
-        }
-
-    }catch(e){
-
-        console.error(
-            "Delete error:",
-            e
-        );
-
-        alert("Error deleting document");
-    }
+// Close modal
+function closeLogin() {
+  document.getElementById('loginModal').classList.remove('open');
+  document.body.style.overflow = '';
 }
 
-    // Toggle Sidebar
-    function toggleSidebar(){
-        const sidebar = document.getElementById("sidebar");
-        const icon = document.querySelector(".toggle-btn i");
-        sidebar.classList.toggle("collapsed");
-        
-        if(sidebar.classList.contains("collapsed")){
-            icon.className = "fa-solid fa-angle-right";
-            document.getElementById("uploadPanel").classList.remove("active");
-        } else {
-            icon.className = "fa-solid fa-angle-left";
-        }
-    }
-
-    // Toggle Upload Panel Drawer
-    function toggleUploadPanel(){
-        const sidebar = document.getElementById("sidebar");
-        const uploadPanel = document.getElementById("uploadPanel");
-        
-        if(sidebar.classList.contains("collapsed")){
-            sidebar.classList.remove("collapsed");
-            document.querySelector(".toggle-btn i").className = "fa-solid fa-angle-left";
-        }
-        
-        uploadPanel.classList.toggle("active");
-        
-        if (uploadPanel.classList.contains("active") && session_id) {
-            loadSessionFiles(session_id);
-        }
-    }
-
-    // Settings Drawer
-    function toggleSettingsDrawer(){
-        const drawer = document.getElementById("settingsDrawer");
-        drawer.classList.toggle("active");
-        
-        if (drawer.classList.contains("active") && session_id) {
-            loadSessionSettings(session_id);
-        }
-    }
-
-    // File Selection Feedback
-    function handleFileSelection(input) {
-        const list = document.getElementById("fileSelectionList");
-        list.innerHTML = "";
-        
-        if (input.files.length > 0) {
-            for (let file of input.files) {
-                const item = document.createElement("div");
-                item.className = "file-selection-item";
-                item.innerHTML = `<i class="fa-solid fa-file"></i> <span>${file.name}</span>`;
-                list.appendChild(item);
-            }
-        }
-    }
-
-    // Create New Session
-    function createNewChat(){
-        session_id = null;
-        messagesData = [];
-        isGenerating = false;
-        
-        document.getElementById("messages").innerHTML = `
-            <div class="welcome-splash" id="welcomeSplash">
-                <div class="splash-logo">
-                    <i class="fa-solid fa-cube"></i>
-                </div>
-                <h2>Welcome to Nexora Workspace</h2>
-                <p>Upload enterprise documentation or dataset files to query them semantically in real-time. Make sure to check session settings to customize models and instructions.</p>
-            </div>
-        `;
-        document.getElementById("starterSuggestions").style.display = "flex";
-        document.getElementById("uploadStatus").innerText = "";
-        document.getElementById("pdfFiles").value = "";
-        document.getElementById("fileSelectionList").innerHTML = "";
-        document.getElementById("sessionFilesList").innerHTML = `<div class="no-files-msg">No files uploaded.</div>`;
-        
-        // Reset settings inputs to defaults
-        document.getElementById("settingsModel").value = "llama-3.3-70b-versatile";
-        document.getElementById("settingsTemperature").value = "0.1";
-        document.getElementById("tempVal").innerText = "0.1";
-        document.getElementById("settingsPrompt").value = "You are a professional enterprise AI assistant. Use the provided context to answer the user's question accurately.";
-    }
-
-    // Upload & Index Documents
-    async function uploadFiles(){
-        const files = document.getElementById("pdfFiles").files;
-        if(files.length === 0){
-            alert("Please select files first");
-            return;
-        }
-
-        const formData = new FormData();
-        for(let file of files){
-            formData.append("files", file);
-        }
-        
-        if (session_id) {
-            formData.append("session_id", session_id);
-        }
-
-        const submitBtn = document.querySelector(".upload-real-btn");
-        const originalHTML = submitBtn.innerHTML;
-        submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing...`;
-        submitBtn.disabled = true;
-
-        document.getElementById("uploadStatus").innerText = "Parsing, chunking, and embedding documents...";
-
-        try {
-            const response = await fetch("/upload", {
-                method: "POST",
-                body: formData
-            });
-
-            const data = await response.json();
-            
-            if(data.status === "success"){
-                session_id = data.session_id;
-                document.getElementById("uploadStatus").innerHTML = `<span style="color:#00ff9d"><i class="fa-solid fa-circle-check"></i> Indexed successfully!</span>`;
-                document.getElementById("pdfFiles").value = "";
-                document.getElementById("fileSelectionList").innerHTML = "";
-                
-                // Load files and load chats
-                loadSessionFiles(session_id);
-                loadChats();
-
-                loadUserDocuments();
-                
-                // Hide splash if suggestions are shown
-                if (messagesData.length === 0) {
-                    const splash = document.getElementById("welcomeSplash");
-                    if (splash) {
-                        splash.style.display = "none";
-                        document.getElementById("messages").innerHTML = `
-                            <div class="message bot">
-                                <i class="fa-solid fa-robot message-avatar"></i>
-                                <div class="message-content">
-                                    I have processed and indexed your files into the vector database. Ask me any questions based on their content!
-                                </div>
-                            </div>
-                        `;
-                    }
-                }
-            } else {
-                alert(data.message);
-                document.getElementById("uploadStatus").innerText = "Error indexing files.";
-            }
-        } catch (e) {
-            console.error(e);
-            alert("Network error during file processing.");
-            document.getElementById("uploadStatus").innerText = "Error indexing files.";
-        } finally {
-            submitBtn.innerHTML = originalHTML;
-            submitBtn.disabled = false;
-        }
-    }
-
-    // Get Active Session Files
-    async function loadSessionFiles(session_id) {
-        if(!session_id) return;
-        
-        try {
-            const response = await fetch(`/get_session_files/${session_id}`);
-            const files = await response.json();
-            const list = document.getElementById("sessionFilesList");
-            list.innerHTML = "";
-            
-            if (files.length === 0) {
-                list.innerHTML = `<div class="no-files-msg">No files uploaded.</div>`;
-                return;
-            }
-            
-            files.forEach(file => {
-                const kb = (file.file_size / 1024).toFixed(1);
-                const item = document.createElement("div");
-                item.className = "session-file-item";
-                item.innerHTML = `
-                    <div class="file-details">
-                        <i class="fa-solid fa-file-shield text-primary"></i>
-                        <span class="file-name" title="${file.filename}">${file.filename}</span>
-                        <span class="file-size">${kb} KB</span>
-                    </div>
-                    <button class="delete-file-btn" onclick="deleteSessionFile('${file.filename}')" title="Delete file from index">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                `;
-                list.appendChild(item);
-            });
-        } catch (e) {
-            console.error("Error loading session files:", e);
-        }
-    }
-
-    // Delete Session File
-    async function deleteSessionFile(filename) {
-        if (!session_id) return;
-        if (!confirm(`Are you sure you want to remove ${filename} from this workspace?`)) return;
-        
-        try {
-            const response = await fetch("/delete_file", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ session_id, filename })
-            });
-            const res = await response.json();
-            if (res.status === "success") {
-                loadSessionFiles(session_id);
-                loadUserDocuments();
-                alert(res.message);
-            }
-        } catch (e) {
-            console.error("Error deleting session file:", e);
-        }
-    }
-
-    // Session Settings Getter / Saver
-    async function loadSessionSettings(session_id) {
-        if(!session_id) return;
-        try {
-            const response = await fetch(`/get_settings/${session_id}`);
-            const data = await response.json();
-            document.getElementById("settingsModel").value = data.model_name;
-            document.getElementById("settingsTemperature").value = data.temperature;
-            document.getElementById("tempVal").innerText = data.temperature;
-            document.getElementById("settingsPrompt").value = data.system_prompt;
-        } catch (e) {
-            console.error("Error loading settings:", e);
-        }
-    }
-
-    async function saveSessionSettings() {
-        // If no session exists, we create one so they can configure settings
-        if (!session_id) {
-            session_id = uuidv4();
-            // Save empty chat
-            await fetch("/upload", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ session_id })
-            });
-        }
-        
-        const model_name = document.getElementById("settingsModel").value;
-        const temperature = parseFloat(document.getElementById("settingsTemperature").value);
-        const system_prompt = document.getElementById("settingsPrompt").value;
-        
-        try {
-            const response = await fetch(`/save_settings/${session_id}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ model_name, temperature, system_prompt })
-            });
-            const data = await response.json();
-            if (data.status === "success") {
-                alert("Session settings saved successfully!");
-                toggleSettingsDrawer();
-            }
-        } catch (e) {
-            console.error("Error saving settings:", e);
-        }
-    }
-
-    // Helper uuid generator for settings check
-    function uuidv4() {
-        return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-            (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-        );
-    }
-
-    // Suggestion chip clicking
-    function applySuggestion(text) {
-        document.getElementById("questionInput").value = text;
-        sendQuestion();
-    }
-
-    // Render Message Bubbles
-    function addMessage(content, type){
-        const messages = document.getElementById("messages");
-        const div = document.createElement("div");
-        div.className = `message ${type}`;
-        
-        const avatarClass = type === "user" ? "fa-user" : "fa-robot";
-        const avatar = `<i class="fa-solid ${avatarClass} message-avatar"></i>`;
-        
-        div.innerHTML = `
-            ${avatar}
-            <div class="message-content">
-                ${content}
-            </div>
-        `;
-        
-        messages.appendChild(div);
-        messages.scrollTop = messages.scrollHeight;
-        return div;
-    }
-
-    /* DOWNLOAD ENTIRE CONVERSATION PDF */
-
-async function downloadConversationPDF(){
-
-    if(messagesData.length === 0){
-
-        alert("No conversation available to download.");
-
-        return;
-    }
-
-    const { jsPDF } = window.jspdf;
-
-    const doc = new jsPDF({
-        orientation: "portrait",
-        unit: "pt",
-        format: "a4"
-    });
-
-    const pageWidth = doc.internal.pageSize.getWidth();
-
-    const pageHeight = doc.internal.pageSize.getHeight();
-
-    const marginX = 40;
-
-    const contentWidth = pageWidth - 80;
-
-    let y = 70;
-
-    // =========================================
-    // HEADER SECTION
-    // =========================================
-
-    doc.setFillColor(8, 18, 28);
-
-    doc.rect(0, 0, pageWidth, 95, "F");
-
-    // Logo Title
-    doc.setFont("helvetica", "bold");
-
-    doc.setTextColor(0, 212, 255);
-
-    doc.setFontSize(26);
-
-    doc.text("Nexora.AI", marginX, 45);
-
-    // Subtitle
-    doc.setFontSize(13);
-
-    doc.setTextColor(220, 230, 240);
-
-    doc.text(
-        "Enterprise RAG Conversation Export",
-        marginX,
-        68
-    );
-
-    // Date
-    const exportDate = new Date().toLocaleString();
-
-    doc.setFontSize(10);
-
-    doc.setTextColor(180, 190, 200);
-
-    doc.text(
-        exportDate,
-        pageWidth - 160,
-        45
-    );
-
-    // Decorative line
-    doc.setDrawColor(0, 212, 255);
-
-    doc.setLineWidth(1.2);
-
-    doc.line(
-        marginX,
-        82,
-        pageWidth - marginX,
-        82
-    );
-
-    // IMPORTANT FIX
-    // =========================================
-// COVER PAGE SPACING
-// =========================================
-
-doc.setFontSize(18);
-
-doc.setTextColor(220,230,240);
-
-doc.text(
-    "AI Conversation Export",
-    marginX,
-    170
-);
-
-doc.setFontSize(12);
-
-doc.setTextColor(160,170,180);
-
-doc.text(
-    "Generated from Nexora.AI Enterprise Workspace",
-    marginX,
-    195
-);
-
-// Decorative divider
-doc.setDrawColor(0,255,198);
-
-doc.setLineWidth(1);
-
-doc.line(
-    marginX,
-    225,
-    pageWidth - marginX,
-    225
-);
-
-// Start actual conversation from NEW PAGE
-doc.addPage();
-
-y = 60;
-
-    // =========================================
-    // CONVERSATION LOOP
-    // =========================================
-
-    for(let i = 0; i < messagesData.length; i++){
-
-        const msg = messagesData[i];
-
-        // =====================================
-        // USER QUESTION
-        // =====================================
-
-        if(msg.question){
-
-            const questionText = `Q: ${msg.question}`;
-
-            const questionLines = doc.splitTextToSize(
-                questionText,
-                contentWidth - 30
-            );
-
-            const questionHeight =
-                (questionLines.length * 20) + 28;
-
-            // Page break
-            if(
-                y + questionHeight >
-                pageHeight - 80
-            ){
-
-                doc.addPage();
-
-                y = 50;
-            }
-
-            // Card background
-            doc.setFillColor(0, 212, 255);
-
-            doc.roundedRect(
-                marginX,
-                y,
-                contentWidth,
-                questionHeight,
-                12,
-                12,
-                "F"
-            );
-
-            // Question text
-            doc.setTextColor(10, 20, 30);
-
-            doc.setFont(
-                "helvetica",
-                "bold"
-            );
-
-            doc.setFontSize(13);
-
-            doc.text(
-                questionLines,
-                marginX + 15,
-                y + 22
-            );
-
-            y += questionHeight + 18;
-        }
-
-        // =====================================
-        // ASSISTANT ANSWER
-        // =====================================
-
-        if(msg.answer){
-
-            const cleanAnswer =
-                msg.answer
-                .replace(/[#*_`>-]/g, "")
-                .replace(/\n+/g, "\n");
-
-            const answerLines =
-                doc.splitTextToSize(
-                    cleanAnswer,
-                    contentWidth - 36
-                );
-
-            const answerHeight =
-                (answerLines.length * 18) + 36;
-
-            // Page break
-            if(
-                y + answerHeight >
-                pageHeight - 70
-            ){
-
-                doc.addPage();
-
-                y = 50;
-            }
-
-            // Answer card
-            doc.setFillColor(18, 32, 45);
-
-            doc.roundedRect(
-                marginX,
-                y,
-                contentWidth,
-                answerHeight,
-                14,
-                14,
-                "F"
-            );
-
-            // Border
-            doc.setDrawColor(0, 255, 198);
-
-            doc.setLineWidth(0.8);
-
-            doc.roundedRect(
-                marginX,
-                y,
-                contentWidth,
-                answerHeight,
-                14,
-                14
-            );
-
-            // Answer title
-            doc.setFont(
-                "helvetica",
-                "bold"
-            );
-
-            doc.setFontSize(12);
-
-            doc.setTextColor(0, 255, 198);
-
-            doc.text(
-                "AI Response",
-                marginX + 16,
-                y + 20
-            );
-
-            // Divider
-            doc.setDrawColor(
-                40,
-                70,
-                90
-            );
-
-            doc.line(
-                marginX + 15,
-                y + 28,
-                marginX + contentWidth - 15,
-                y + 28
-            );
-
-            // Actual answer
-            doc.setFont(
-                "helvetica",
-                "normal"
-            );
-
-            doc.setFontSize(11.5);
-
-            doc.setTextColor(
-                235,
-                240,
-                245
-            );
-
-            doc.text(
-                answerLines,
-                marginX + 16,
-                y + 50
-            );
-
-            y += answerHeight + 30;
-        }
-    }
-
-    // =========================================
-    // FOOTER
-    // =========================================
-
-    const totalPages =
-        doc.internal.getNumberOfPages();
-
-    for(let i = 1; i <= totalPages; i++){
-
-        doc.setPage(i);
-
-        doc.setFontSize(10);
-
-        doc.setTextColor(140);
-
-        doc.text(
-            `Page ${i} of ${totalPages}`,
-            pageWidth - 100,
-            pageHeight - 20
-        );
-
-        doc.text(
-            "Generated by Nexora.AI",
-            40,
-            pageHeight - 20
-        );
-    }
-
-    // =========================================
-    // SAVE
-    // =========================================
-
-    const currentDate =
-        new Date()
-        .toISOString()
-        .split("T")[0];
-
-    doc.save(
-        `Nexora_AI_Conversation_${currentDate}.pdf`
-    );
-}
-
-    // Streaming SSE Logic
-    async function sendQuestion(){
-        if (isGenerating) return;
-        
-        const input = document.getElementById("questionInput");
-        const question = input.value.trim();
-        if(!question) return;
-
-        if(!session_id){
-            // If they haven't uploaded PDFs, check if they are asking a casual question
-            // We generate a dynamic temporary session ID for casual chatting
-            session_id = uuidv4();
-        }
-
-        // Hide starter suggestions & splash
-        document.getElementById("starterSuggestions").style.display = "none";
-        const splash = document.getElementById("welcomeSplash");
-        if (splash) splash.style.display = "none";
-
-        // Render user message
-        addMessage(question, "user");
-        input.value = "";
-
-        // Render bot message placeholder
-        const botDiv = addMessage(`<span class="typing-loading"><i class="fa-solid fa-spinner fa-spin"></i> Reasoning...</span>`, "bot");
-        const botContentDiv = botDiv.querySelector(".message-content");
-        
-        const selected_docs = [];
-
-        document
-        .querySelectorAll(
-            "#documentCheckboxList input:checked"
-        )
-        .forEach(cb => {
-
-            selected_docs.push(cb.value);
-
-        });
-        isGenerating = true;
-
-        try {
-            const response = await fetch("/ask_stream", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                question: question,
-                session_id: session_id,
-                messages: messagesData,
-                selected_docs: selected_docs,
-                language: document.getElementById("languageSelector").value,
-                response_type: document.getElementById("responseTypeSelector").value
-            })
-            });
-
-            if (!response.ok) {
-                const err = await response.json();
-                botContentDiv.innerHTML = `<span style="color:#ff5252"><i class="fa-solid fa-circle-exclamation"></i> Error: ${err.message || 'Server error'}</span>`;
-                isGenerating = false;
-                return;
-            }
-
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder("utf-8");
-            let buffer = "";
-            let answerText = "";
-            botContentDiv.innerHTML = ""; // Clear loader
-
-            while (true) {
-                const { value, done } = await reader.read();
-                if (done) break;
-                
-                buffer += decoder.decode(value, { stream: true });
-                const lines = buffer.split("\n");
-                buffer = lines.pop(); // Hold partial line
-                
-                for (const line of lines) {
-                    if (line.startsWith("data: ")) {
-                        const dataStr = line.slice(6);
-                        try {
-                            const data = JSON.parse(dataStr);
-                            
-                            if (data.token) {
-                                answerText += data.token;
-                                botContentDiv.innerHTML = marked.parse(answerText);
-                            }
-                            
-                            if (data.error) {
-                                botContentDiv.innerHTML = `<span style="color:#ff5252"><i class="fa-solid fa-circle-exclamation"></i> Error: ${data.error}</span>`;
-                            }
-                            
-                            if (data.done) {
-                                // Stream finished, append sources
-                                let sourceHTML = "";
-                                if (data.sources && data.sources.length > 0) {
-                                    sourceHTML += `<div class="sources-panel"><h4>Verified Sources:</h4><div class="sources-list">`;
-                                    data.sources.forEach(src => {
-                                        // Escape source content for JS call
-                                        const cleanContent = src.content.replace(/'/g, "\\'").replace(/"/g, '\\"').replace(/\n/g, ' ');
-                                        sourceHTML += `
-                                            <div class="citation-pill" onclick="openCitationInspector('${src.source}', '${src.page}', '${cleanContent}')">
-                                                <i class="fa-solid fa-circle-nodes"></i> ${src.source} | Page ${src.page}
-                                            </div>
-                                        `;
-                                    });
-                                    sourceHTML += `</div></div>`;
-                                    botContentDiv.innerHTML += sourceHTML;
-                                }
-                                
-                                // Save locally
-                                messagesData.push({ question, answer: answerText });
-                                loadChats();
-                            }
-                        } catch (err) {
-                            console.error("SSE parse error", err, line);
-                        }
-                    }
-                }
-            }
-        } catch (e) {
-            console.error("SSE request error", e);
-            botContentDiv.innerHTML = `<span style="color:#ff5252"><i class="fa-solid fa-triangle-exclamation"></i> Generation failed. Please try again.</span>`;
-        } finally {
-            isGenerating = false;
-            document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
-        }
-    }
-
-    // Submit on Enter key
-    document.getElementById("questionInput").addEventListener("keypress", function(event){
-        if(event.key === "Enter"){
-            sendQuestion();
-        }
-    });
-
-    // Chat History List Loading
-    async function loadChats(){
-        try {
-            const response = await fetch("/get_chats");
-            const chats = await response.json();
-            const historyDiv = document.getElementById("chatHistoryList");
-            historyDiv.innerHTML = "";
-
-            chats.forEach(chat => {
-                // Skip empty chats or chats named "New Chat" with no history
-                if(!chat[1] || chat[1].trim() === "") return;
-
-                const item = document.createElement("div");
-                item.className = "chat-history-item";
-                if (chat[0] === session_id) {
-                    item.classList.add("active");
-                }
-                
-                item.innerHTML = `
-                    <div class="chat-item-main" onclick="loadChatMessages('${chat[0]}')">
-                        <i class="fa-solid fa-message"></i>
-                        <span title="${chat[1]}">${chat[1]}</span>
-                    </div>
-                    <div class="chat-item-actions">
-                        <button class="chat-action-btn rename-btn" onclick="renameChatPrompt('${chat[0]}', '${chat[1]}')" title="Rename Conversation">
-                            <i class="fa-solid fa-pen"></i>
-                        </button>
-                        <button class="chat-action-btn delete-btn" onclick="deleteChatPrompt('${chat[0]}')" title="Delete Conversation">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
-                    </div>
-                `;
-                historyDiv.appendChild(item);
-            });
-        } catch (e) {
-            console.error("Error loading chats:", e);
-        }
-    }
-
-    // Load messages of an existing chat
-    async function loadChatMessages(chatSessionId){
-        if (isGenerating) return;
-        session_id = chatSessionId;
-
-        // Visual active state
-        document.querySelectorAll(".chat-history-item").forEach(item => {
-            item.classList.remove("active");
-        });
-        // Find and highlight
-        loadChats(); // updates layout
-
-        const messagesDiv = document.getElementById("messages");
-        messagesDiv.innerHTML = `<div class="loading-messages"><i class="fa-solid fa-spinner fa-spin"></i> Loading chat session...</div>`;
-        document.getElementById("starterSuggestions").style.display = "none";
-
-        try {
-            const response = await fetch(`/load_chat/${chatSessionId}`);
-            const messages = await response.json();
-            messagesDiv.innerHTML = "";
-            messagesData = [];
-
-            messages.forEach(msg => {
-                if(msg.question){
-                    addMessage(msg.question, "user");
-                    messagesData.push({ question: msg.question });
-                }
-
-                if(msg.answer){
-                    // Sources parsing inside existing messages
-                    // First we render answer
-                    const div = addMessage(marked.parse(msg.answer), "bot");
-                    
-                    // We also push answer
-                    if (messagesData.length > 0 && !messagesData[messagesData.length - 1].answer) {
-                        messagesData[messagesData.length - 1].answer = msg.answer;
-                    } else {
-                        messagesData.push({ answer: msg.answer });
-                    }
-                }
-            });
-            
-            // Trigger file management listing and settings loads
-            loadSessionFiles(session_id);
-            loadSessionSettings(session_id);
-            loadUserDocuments();
-            
-            if (messages.length === 0) {
-                messagesDiv.innerHTML = `
-                    <div class="welcome-splash" id="welcomeSplash">
-                        <div class="splash-logo">
-                            <i class="fa-solid fa-cube"></i>
-                        </div>
-                        <h2>Knowledge Session Loaded</h2>
-                        <p>Upload documentation files to contextually search or configure specific models in the settings drawer.</p>
-                    </div>
-                `;
-                document.getElementById("starterSuggestions").style.display = "flex";
-            }
-        } catch (e) {
-            console.error("Error loading chat messages:", e);
-            messagesDiv.innerHTML = `<div class="loading-error"><i class="fa-solid fa-circle-exclamation"></i> Error loading messages.</div>`;
-        }
-    }
-
-    // Rename conversation
-    async function renameChatPrompt(chatId, oldTitle) {
-        const newTitle = prompt("Enter a new title for this conversation:", oldTitle);
-        if (!newTitle || newTitle.trim() === "" || newTitle === oldTitle) return;
-
-        try {
-            const response = await fetch(`/rename_chat/${chatId}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ title: newTitle.trim() })
-            });
-            const data = await response.json();
-            if (data.status === "success") {
-                loadChats();
-            }
-        } catch (e) {
-            console.error("Error renaming chat:", e);
-        }
-    }
-
-    // Delete conversation
-    async function deleteChatPrompt(chatId) {
-        if (!confirm("Are you sure you want to delete this chat session?")) return;
-
-        try {
-            const response = await fetch(`/delete_chat/${chatId}`, {
-                method: "POST"
-            });
-            const data = await response.json();
-            if (data.status === "success") {
-                if (chatId === session_id) {
-                    createNewChat();
-                }
-                loadChats();
-            }
-        } catch (e) {
-            console.error("Error deleting chat:", e);
-        }
-    }
-
-    // Citation Context Viewer Modal
-    function openCitationInspector(source, page, content) {
-        document.getElementById("citationDocName").innerText = source;
-        document.getElementById("citationPageNum").innerText = page;
-        document.getElementById("citationText").innerText = content;
-        document.getElementById("citationModal").classList.add("active");
-    }
-
-    function closeCitationInspector() {
-        document.getElementById("citationModal").classList.remove("active");
-    }
-
-    // Speech Dictation Recognition
-    function startSpeechRecognition(){
-        const micBtn = document.getElementById("micBtn");
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-        if(!SpeechRecognition){
-            alert("Voice Dictation is not supported by your current browser. Try Chrome or Safari.");
-            return;
-        }
-
-        const recognition = new SpeechRecognition();
-        recognition.lang = "en-US";
-        recognition.interimResults = false;
-        recognition.start();
-
-        micBtn.classList.add("recording");
-
-        recognition.onresult = function(event){
-            const transcript = event.results[0][0].transcript;
-            document.getElementById("questionInput").value = transcript;
-        };
-
-        recognition.onend = function(){
-            micBtn.classList.remove("recording");
-        };
-
-        recognition.onerror = function(){
-            micBtn.classList.remove("recording");
-        };
-    }
-
-    // Initialization on window load
-    window.onload = function(){
-        loadChats();
-        loadUserDocuments();
-        
-        const savedTheme = localStorage.getItem("theme") || "cyan";
-        changeTheme(savedTheme);
-        document.getElementById("themeSelector").value = savedTheme;
-
-        const savedMode = localStorage.getItem("mode");
-        if(savedMode === "light"){
-            document.body.classList.add("light-mode");
-            document.querySelector("#modeToggle i").className = "fa-solid fa-sun";
-        }
-    };
+// Click backdrop to close (but not the card itself)
+document.getElementById('loginModal').addEventListener('click', function(e) {
+  if (e.target === this) closeLogin();
+});
+
+// ESC key to close
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeLogin();
+});
+
+// Auto-open if Flask returned error/success (after POST)
+(function() {
+  if (document.querySelector('.alert')) openLogin();
+})();
 </script>
+
 </body>
 </html>

@@ -19,6 +19,17 @@
   --text-muted: rgba(240,240,240,0.30);
   --font-display: 'Sora', sans-serif;
   --font-body: 'DM Sans', sans-serif;
+
+  /* ── LAVENDER ACCENTS ── */
+  --lavender: #B18FCF;
+  --lavender-light: #C9A8E0;
+  --lavender-deep: #8B5FBF;
+  --lavender-glow: rgba(177, 143, 207, 0.35);
+  --lavender-glow-soft: rgba(177, 143, 207, 0.12);
+  --lavender-border: rgba(177, 143, 207, 0.25);
+  --lavender-border-hover: rgba(177, 143, 207, 0.45);
+  --lavender-text: #D4B8E8;
+  --lavender-bg: rgba(177, 143, 207, 0.06);
 }
 
 body {
@@ -41,17 +52,17 @@ body::before {
   opacity: 0.32; z-index: 1; pointer-events: none;
 }
 
-/* ambient glows */
+/* ambient glows — lavender hint */
 .ambient { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 .ambient::before {
   content: '';
   position: absolute; top: -20%; left: -10%; width: 60%; height: 70%;
-  background: radial-gradient(ellipse, rgba(255,255,255,0.022) 0%, transparent 65%);
+  background: radial-gradient(ellipse, rgba(177,143,207,0.035) 0%, transparent 65%);
 }
 .ambient::after {
   content: '';
   position: absolute; bottom: -10%; right: -10%; width: 55%; height: 60%;
-  background: radial-gradient(ellipse, rgba(255,255,255,0.016) 0%, transparent 65%);
+  background: radial-gradient(ellipse, rgba(177,143,207,0.022) 0%, transparent 65%);
 }
 
 /* navbar */
@@ -67,31 +78,20 @@ body::before {
 
 .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
 
-.brand-orb {
-  width: 26px; height: 26px; border-radius: 50%; background: white;
-  box-shadow: 0 0 22px rgba(255,255,255,0.3), 0 0 7px rgba(255,255,255,0.5);
-  animation: breathe 3s ease-in-out infinite; flex-shrink: 0;
-}
-
-@keyframes breathe {
-  0%,100% { box-shadow: 0 0 22px rgba(255,255,255,0.28), 0 0 7px rgba(255,255,255,0.5); transform: scale(1); }
-  50%      { box-shadow: 0 0 34px rgba(255,255,255,0.44), 0 0 12px rgba(255,255,255,0.6); transform: scale(1.05); }
-}
-
-.brand-name {
-  font-family: var(--font-display); font-size: 20px; font-weight: 700;
-  letter-spacing: -0.5px; color: var(--text-primary);
-}
-
 .nav-login {
   height: 42px; padding: 0 22px;
-  background: var(--bg-glass); color: var(--text-secondary);
-  border: 1px solid var(--border); border-radius: 12px;
+  background: var(--bg-glass); color: var(--lavender-text);
+  border: 1px solid var(--lavender-border); border-radius: 12px;
   font-family: var(--font-display); font-size: 13.5px; font-weight: 500;
   text-decoration: none; display: flex; align-items: center;
   transition: all 0.25s ease;
 }
-.nav-login:hover { border-color: var(--border-hover); color: var(--text-primary); }
+.nav-login:hover {
+  border-color: var(--lavender-border-hover);
+  color: var(--lavender-light);
+  background: var(--lavender-bg);
+  box-shadow: 0 8px 24px rgba(177,143,207,0.12);
+}
 
 /* card wrapper */
 .card-wrapper {
@@ -109,41 +109,33 @@ body::before {
 .register-card {
   position: relative;
   background: rgba(11,11,11,0.96);
-  border: 1px solid var(--border);
+  border: 1px solid var(--lavender-border);
   border-radius: 28px;
   padding: 44px 40px 36px;
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
-  box-shadow: 0 40px 100px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.07);
+  box-shadow: 0 40px 100px rgba(0,0,0,0.7), 0 0 60px rgba(177,143,207,0.06), inset 0 1px 0 rgba(255,255,255,0.07);
   overflow: hidden;
 }
 
-/* shimmer line */
+/* shimmer line — lavender */
 .register-card::before {
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.13) 40%, rgba(255,255,255,0.13) 60%, transparent);
+  background: linear-gradient(90deg, transparent, rgba(177,143,207,0.25) 40%, rgba(177,143,207,0.25) 60%, transparent);
 }
 
 .card-brand {
   display: flex; flex-direction: column; align-items: center; margin-bottom: 28px;
 }
-.card-orb-row {
-  display: flex; align-items: center; gap: 10px; margin-bottom: 7px;
-}
-.card-orb {
-  width: 18px; height: 18px; border-radius: 50%; background: white;
-  box-shadow: 0 0 16px rgba(255,255,255,0.35);
-  animation: breathe 3s ease-in-out infinite;
-}
-.card-brand-name {
-  font-family: var(--font-display); font-size: 20px; font-weight: 800; letter-spacing: -0.5px;
-}
-.card-tagline { font-size: 12px; color: var(--text-muted); letter-spacing: 0.3px; }
 
 .card-heading {
   font-family: var(--font-display); font-size: 22px; font-weight: 700;
   text-align: center; letter-spacing: -0.5px;
-  margin-bottom: 26px; color: var(--text-primary);
+  margin-bottom: 26px;
+  background: linear-gradient(135deg, #ffffff 0%, var(--lavender-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* alert */
@@ -152,11 +144,11 @@ body::before {
   margin-bottom: 18px; font-size: 13px; text-align: center;
 }
 .alert-error {
-  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-  color: rgba(255,200,200,0.9);
+  background: rgba(177,143,207,0.05); border: 1px solid var(--lavender-border);
+  color: rgba(212,184,232,0.9);
 }
 .alert-success {
-  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(177,143,207,0.06); border: 1px solid var(--lavender-border-hover);
   color: rgba(200,255,220,0.9);
 }
 
@@ -171,32 +163,34 @@ body::before {
 }
 .input-group input::placeholder { color: var(--text-muted); }
 .input-group input:focus {
-  background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.22);
-  box-shadow: 0 0 0 3px rgba(255,255,255,0.04);
+  background: rgba(177,143,207,0.05);
+  border-color: var(--lavender-border-hover);
+  box-shadow: 0 0 0 3px rgba(177,143,207,0.08);
 }
 
 /* button */
 .submit-btn {
   width: 100%; height: 54px; border: none; border-radius: 16px;
-  background: white; color: #080808;
+  background: linear-gradient(135deg, #ffffff 0%, var(--lavender-light) 100%);
+  color: #080808;
   font-family: var(--font-display); font-size: 15px; font-weight: 700;
   cursor: pointer; letter-spacing: -0.2px; margin-top: 8px;
   transition: all 0.25s ease;
 }
 .submit-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 36px rgba(255,255,255,0.22);
+  box-shadow: 0 14px 36px rgba(177,143,207,0.35);
 }
 
 .login-link {
   text-align: center; font-size: 13.5px; color: var(--text-secondary); margin-top: 20px;
 }
 .login-link a {
-  color: var(--text-primary); text-decoration: none; font-weight: 600;
-  border-bottom: 1px solid rgba(255,255,255,0.18); padding-bottom: 1px;
+  color: var(--lavender-light); text-decoration: none; font-weight: 600;
+  border-bottom: 1px solid var(--lavender-border); padding-bottom: 1px;
   transition: border-color 0.2s;
 }
-.login-link a:hover { border-color: rgba(255,255,255,0.5); }
+.login-link a:hover { border-color: var(--lavender-border-hover); }
 
 /* password strength indicator */
 .strength-bar {
@@ -207,13 +201,39 @@ body::before {
 }
 .strength-fill {
   height: 100%; width: 0%; border-radius: 99px;
-  background: white; transition: width 0.3s ease, background 0.3s ease;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+/* ---- NAVBAR LOGO ---- */
+.nav-logo {
+  width: 140px;
+  height: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* ---- CARD LOGO ---- */
+.card-logo {
+  width: 160px;
+  height: auto;
+  object-fit: contain;
+  margin-bottom: 8px;
+}
+
+/* ---- CARD SLOGAN ---- */
+.card-slogan {
+  font-size: 12px;
+  color: var(--lavender-text);
+  letter-spacing: 0.3px;
+  margin-top: 4px;
 }
 
 @media (max-width: 520px) {
   .navbar { padding: 0 20px; }
   .register-card { padding: 36px 24px 28px; }
   .card-wrapper { padding: 16px; }
+  .nav-logo { width: 120px; }
+  .card-logo { width: 140px; }
 }
 
 </style>
@@ -224,8 +244,7 @@ body::before {
 
 <nav class="navbar">
   <a class="nav-brand" href="/login">
-    <div class="brand-orb"></div>
-    <span class="brand-name">Nexora.AI</span>
+    <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora.AI" class="nav-logo">
   </a>
   <a class="nav-login" href="/login">Sign In</a>
 </nav>
@@ -234,11 +253,8 @@ body::before {
   <div class="register-card">
 
     <div class="card-brand">
-      <div class="card-orb-row">
-        <div class="card-orb"></div>
-        <span class="card-brand-name">Nexora AI</span>
-      </div>
-      <p class="card-tagline">Your AI Knowledge Workspace</p>
+      <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora.AI" class="card-logo">
+      <p class="card-slogan">Your AI Knowledge Workspace</p>
     </div>
 
     <h2 class="card-heading">Create your account</h2>
@@ -287,9 +303,9 @@ pwInput.addEventListener('input', function() {
   if (/[A-Z]/.test(val) && /[0-9]/.test(val)) score++;
   if (/[^A-Za-z0-9]/.test(val)) score++;
   const pcts = ['20%','45%','72%','100%'];
-  const cols = ['rgba(255,120,120,0.8)','rgba(255,200,100,0.8)','rgba(160,220,160,0.8)','rgba(200,255,220,0.9)'];
+  const cols = ['rgba(177,143,207,0.5)','rgba(177,143,207,0.7)','rgba(201,168,224,0.85)','rgba(212,184,232,0.95)'];
   fill.style.width = pcts[score - 1] || '10%';
-  fill.style.background = cols[score - 1] || 'rgba(255,120,120,0.5)';
+  fill.style.background = cols[score - 1] || 'rgba(177,143,207,0.3)';
 });
 </script>
 

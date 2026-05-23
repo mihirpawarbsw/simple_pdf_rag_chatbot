@@ -24,6 +24,17 @@
   --text-muted: rgba(240,240,240,0.30);
   --font-display: 'Sora', sans-serif;
   --font-body: 'DM Sans', sans-serif;
+
+  /* ── LAVENDER ACCENTS ── */
+  --lavender: #B18FCF;
+  --lavender-light: #C9A8E0;
+  --lavender-deep: #8B5FBF;
+  --lavender-glow: rgba(177, 143, 207, 0.35);
+  --lavender-glow-soft: rgba(177, 143, 207, 0.12);
+  --lavender-border: rgba(177, 143, 207, 0.25);
+  --lavender-border-hover: rgba(177, 143, 207, 0.45);
+  --lavender-text: #D4B8E8;
+  --lavender-bg: rgba(177, 143, 207, 0.06);
 }
 
 html { scroll-behavior: smooth; }
@@ -44,19 +55,19 @@ body::before {
   opacity: 0.32; z-index: 1; pointer-events: none;
 }
 
-/* ambient glows */
+/* ambient glows — now with lavender hint */
 .ambient {
   position: fixed; inset: 0; z-index: 0; pointer-events: none;
 }
 .ambient::before {
   content: '';
   position: absolute; top: -20%; left: -10%; width: 60%; height: 70%;
-  background: radial-gradient(ellipse, rgba(255,255,255,0.022) 0%, transparent 65%);
+  background: radial-gradient(ellipse, rgba(177,143,207,0.035) 0%, transparent 65%);
 }
 .ambient::after {
   content: '';
   position: absolute; bottom: -10%; right: -10%; width: 55%; height: 60%;
-  background: radial-gradient(ellipse, rgba(255,255,255,0.016) 0%, transparent 65%);
+  background: radial-gradient(ellipse, rgba(177,143,207,0.022) 0%, transparent 65%);
 }
 
 /* =============================================
@@ -80,15 +91,15 @@ body::before {
 
 .brand-orb {
   width: 26px; height: 26px; border-radius: 50%;
-  background: white;
-  box-shadow: 0 0 22px rgba(255,255,255,0.3), 0 0 7px rgba(255,255,255,0.5);
+  background: linear-gradient(135deg, #ffffff 0%, var(--lavender) 100%);
+  box-shadow: 0 0 22px rgba(177,143,207,0.35), 0 0 7px rgba(177,143,207,0.5);
   animation: breathe 3s ease-in-out infinite;
   flex-shrink: 0;
 }
 
 @keyframes breathe {
-  0%,100% { box-shadow: 0 0 22px rgba(255,255,255,0.28), 0 0 7px rgba(255,255,255,0.5); transform: scale(1); }
-  50%      { box-shadow: 0 0 34px rgba(255,255,255,0.44), 0 0 12px rgba(255,255,255,0.6); transform: scale(1.05); }
+  0%,100% { box-shadow: 0 0 22px rgba(177,143,207,0.32), 0 0 7px rgba(177,143,207,0.45); transform: scale(1); }
+  50%      { box-shadow: 0 0 34px rgba(177,143,207,0.50), 0 0 12px rgba(177,143,207,0.6); transform: scale(1.05); }
 }
 
 .brand-name {
@@ -104,19 +115,29 @@ body::before {
 .nav-links a {
   font-size: 13.5px; color: var(--text-secondary);
   text-decoration: none; transition: color 0.2s; letter-spacing: 0.2px;
+  position: relative;
 }
-.nav-links a:hover { color: var(--text-primary); }
+.nav-links a::after {
+  content: '';
+  position: absolute; bottom: -4px; left: 0; width: 0; height: 1.5px;
+  background: var(--lavender);
+  transition: width 0.3s ease;
+  border-radius: 1px;
+}
+.nav-links a:hover { color: var(--lavender-light); }
+.nav-links a:hover::after { width: 100%; }
 
 .nav-cta {
   height: 42px; padding: 0 22px;
-  background: white; color: #080808;
+  background: linear-gradient(135deg, #ffffff 0%, var(--lavender-light) 100%);
+  color: #080808;
   border: none; border-radius: 12px;
   font-family: var(--font-display); font-size: 13.5px; font-weight: 600;
   cursor: pointer; transition: all 0.25s ease; letter-spacing: -0.2px;
 }
 .nav-cta:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 28px rgba(255,255,255,0.18);
+  box-shadow: 0 8px 28px rgba(177,143,207,0.35);
 }
 
 /* =============================================
@@ -148,15 +169,16 @@ body::before {
 .hero-eyebrow {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 8px 18px; border-radius: 999px;
-  border: 1px solid var(--border); background: var(--bg-glass);
-  font-size: 12px; font-weight: 500; color: var(--text-secondary);
+  border: 1px solid var(--lavender-border); background: var(--lavender-bg);
+  font-size: 12px; font-weight: 500; color: var(--lavender-text);
   letter-spacing: 0.7px; text-transform: uppercase;
   margin-bottom: 36px;
 }
 
 .eyebrow-dot {
   width: 6px; height: 6px; border-radius: 50%;
-  background: white; opacity: 0.55;
+  background: var(--lavender); opacity: 0.85;
+  box-shadow: 0 0 8px rgba(177,143,207,0.5);
 }
 
 .hero-headline {
@@ -169,7 +191,7 @@ body::before {
   color: var(--text-primary);
 }
 
-.hero-headline .dimmed { color: rgba(240,240,240,0.32); }
+.hero-headline .dimmed { color: rgba(212,184,232,0.35); }
 
 .hero-desc {
   font-size: 17px; line-height: 1.85;
@@ -186,26 +208,29 @@ body::before {
 
 .btn-primary {
   height: 56px; padding: 0 32px;
-  background: white; color: #080808;
+  background: linear-gradient(135deg, #ffffff 0%, var(--lavender-light) 100%);
+  color: #080808;
   border: none; border-radius: 16px;
   font-family: var(--font-display); font-size: 15px; font-weight: 600;
   cursor: pointer; transition: all 0.25s ease; letter-spacing: -0.2px;
 }
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 36px rgba(255,255,255,0.2);
+  box-shadow: 0 14px 36px rgba(177,143,207,0.35);
 }
 
 .btn-ghost {
   height: 56px; padding: 0 28px;
-  background: var(--bg-glass); color: var(--text-secondary);
-  border: 1px solid var(--border); border-radius: 16px;
+  background: var(--bg-glass); color: var(--lavender-text);
+  border: 1px solid var(--lavender-border); border-radius: 16px;
   font-family: var(--font-body); font-size: 15px; font-weight: 400;
   cursor: pointer; transition: all 0.25s ease;
 }
 .btn-ghost:hover {
-  border-color: var(--border-hover); color: var(--text-primary);
+  border-color: var(--lavender-border-hover); color: var(--lavender-light);
+  background: var(--lavender-bg);
   transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(177,143,207,0.12);
 }
 
 /* HERO FEATURE GRID — 4 cols */
@@ -220,15 +245,24 @@ body::before {
   padding: 22px 20px; border-radius: 20px;
   background: var(--bg-glass); border: 1px solid var(--border);
   text-align: left;
-  transition: border-color 0.25s, transform 0.25s;
+  transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
 }
 .hero-feat-card:hover {
-  border-color: var(--border-hover); transform: translateY(-2px);
+  border-color: var(--lavender-border-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(177,143,207,0.08);
 }
-.feat-icon { font-size: 18px; margin-bottom: 12px; opacity: 0.65; }
+.feat-icon {
+  font-size: 18px; margin-bottom: 12px;
+  background: linear-gradient(135deg, var(--lavender) 0%, var(--lavender-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 .hero-feat-card h3 {
   font-family: var(--font-display); font-size: 14px; font-weight: 600;
   margin-bottom: 7px; letter-spacing: -0.2px;
+  color: var(--text-primary);
 }
 .hero-feat-card p { font-size: 12.5px; line-height: 1.65; color: var(--text-secondary); }
 
@@ -237,7 +271,7 @@ body::before {
   margin-top: 48px; padding: 16px 0;
   border-top: 1px solid var(--border);
   font-size: 11.5px; letter-spacing: 0.9px;
-  text-transform: uppercase; color: var(--text-muted);
+  text-transform: uppercase; color: var(--lavender-text);
   width: 100%; text-align: center;
 }
 
@@ -249,7 +283,11 @@ body::before {
 .stat-box { text-align: center; }
 .stat-box h2 {
   font-family: var(--font-display); font-size: 15px; font-weight: 700;
-  color: var(--text-primary); margin-bottom: 4px;
+  background: linear-gradient(135deg, #ffffff 0%, var(--lavender) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 4px;
 }
 .stat-box p { font-size: 12px; color: var(--text-muted); }
 
@@ -264,7 +302,7 @@ body::before {
 
 .section-label {
   font-size: 11.5px; font-weight: 500; letter-spacing: 1.2px;
-  text-transform: uppercase; color: var(--text-muted); margin-bottom: 18px;
+  text-transform: uppercase; color: var(--lavender-text); margin-bottom: 18px;
 }
 .section-title {
   font-family: var(--font-display);
@@ -272,7 +310,7 @@ body::before {
   letter-spacing: -1.5px; line-height: 1.1;
   max-width: 580px; margin-bottom: 60px;
 }
-.section-title .dimmed { color: rgba(240,240,240,0.3); }
+.section-title .dimmed { color: rgba(212,184,232,0.3); }
 
 .features-big-grid {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
@@ -286,24 +324,30 @@ body::before {
 .big-feature-card::after {
   content: ''; position: absolute; inset: 0; border-radius: 24px;
   opacity: 0;
-  background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.04) 0%, transparent 70%);
+  background: radial-gradient(ellipse at 50% 0%, rgba(177,143,207,0.06) 0%, transparent 70%);
   transition: opacity 0.3s; pointer-events: none;
 }
-.big-feature-card:hover { border-color: var(--border-hover); transform: translateY(-3px); }
+.big-feature-card:hover {
+  border-color: var(--lavender-border-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(177,143,207,0.08);
+}
 .big-feature-card:hover::after { opacity: 1; }
 
 .big-feature-card.featured {
   grid-column: span 2;
-  background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);
+  background: linear-gradient(180deg, rgba(177,143,207,0.06) 0%, var(--bg-glass) 100%);
+  border-color: var(--lavender-border);
 }
 
 .feat-num {
   font-family: var(--font-display); font-size: 11px; font-weight: 600;
-  letter-spacing: 1px; color: var(--text-muted); margin-bottom: 20px; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--lavender); margin-bottom: 20px; text-transform: uppercase;
 }
 .big-feature-card h3 {
   font-family: var(--font-display); font-size: 18px; font-weight: 700;
   letter-spacing: -0.3px; margin-bottom: 12px;
+  color: var(--text-primary);
 }
 .big-feature-card p { font-size: 14px; line-height: 1.7; color: var(--text-secondary); }
 
@@ -319,10 +363,15 @@ body::before {
 .stack-col {
   padding: 26px; border-radius: 20px;
   background: var(--bg-glass); border: 1px solid var(--border);
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+.stack-col:hover {
+  border-color: var(--lavender-border-hover);
+  box-shadow: 0 12px 32px rgba(177,143,207,0.06);
 }
 .stack-col-title {
   font-family: var(--font-display); font-size: 12px; font-weight: 600;
-  letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 18px;
+  letter-spacing: 0.8px; text-transform: uppercase; color: var(--lavender); margin-bottom: 18px;
 }
 .stack-items { display: flex; flex-direction: column; gap: 10px; }
 .stack-item {
@@ -331,7 +380,11 @@ body::before {
   background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.04);
   transition: all 0.2s;
 }
-.stack-item:hover { color: var(--text-primary); background: rgba(255,255,255,0.06); }
+.stack-item:hover {
+  color: var(--lavender-light);
+  background: var(--lavender-bg);
+  border-color: var(--lavender-border);
+}
 
 /* =============================================
    USE CASES
@@ -350,7 +403,13 @@ body::before {
   background: var(--bg-glass); border: 1px solid var(--border);
   font-size: 13.5px; color: var(--text-secondary); transition: all 0.22s;
 }
-.use-pill:hover { border-color: var(--border-hover); color: var(--text-primary); }
+.use-pill:hover {
+  border-color: var(--lavender-border-hover);
+  color: var(--lavender-light);
+  background: var(--lavender-bg);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(177,143,207,0.08);
+}
 
 /* =============================================
    FOOTER
@@ -366,11 +425,12 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
 }
 .footer-orb {
   width: 14px; height: 14px; border-radius: 50%;
-  background: white; box-shadow: 0 0 10px rgba(255,255,255,0.3);
+  background: linear-gradient(135deg, #ffffff 0%, var(--lavender) 100%);
+  box-shadow: 0 0 10px rgba(177,143,207,0.35);
 }
 .footer-links { display: flex; gap: 28px; }
 .footer-links a { font-size: 13px; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
-.footer-links a:hover { color: var(--text-secondary); }
+.footer-links a:hover { color: var(--lavender-light); }
 .footer-copy { font-size: 12.5px; color: var(--text-muted); }
 
 /* =============================================
@@ -398,12 +458,12 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
   position: relative;
   width: 100%; max-width: 440px;
   background: rgba(11,11,11,0.96);
-  border: 1px solid rgba(255,255,255,0.09);
+  border: 1px solid var(--lavender-border);
   border-radius: 28px;
   padding: 44px 40px 36px;
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
-  box-shadow: 0 40px 100px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.07);
+  box-shadow: 0 40px 100px rgba(0,0,0,0.7), 0 0 60px rgba(177,143,207,0.06), inset 0 1px 0 rgba(255,255,255,0.07);
   overflow: hidden;
 
   /* hidden state */
@@ -414,22 +474,26 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
   transform: translateY(0) scale(1);
 }
 
-/* shimmer top line */
+/* shimmer top line — lavender */
 .modal-card::before {
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.13) 40%, rgba(255,255,255,0.13) 60%, transparent);
+  background: linear-gradient(90deg, transparent, rgba(177,143,207,0.25) 40%, rgba(177,143,207,0.25) 60%, transparent);
 }
 
 /* close button */
 .modal-close {
   position: absolute; top: 18px; right: 18px;
   width: 34px; height: 34px; border-radius: 50%;
-  background: rgba(255,255,255,0.06); border: 1px solid var(--border);
-  color: var(--text-secondary); font-size: 16px; line-height: 1;
+  background: rgba(177,143,207,0.08); border: 1px solid var(--lavender-border);
+  color: var(--lavender-text); font-size: 16px; line-height: 1;
   cursor: pointer; display: flex; align-items: center; justify-content: center;
   transition: all 0.2s;
 }
-.modal-close:hover { background: rgba(255,255,255,0.11); color: var(--text-primary); }
+.modal-close:hover {
+  background: rgba(177,143,207,0.15);
+  color: var(--lavender-light);
+  border-color: var(--lavender-border-hover);
+}
 
 /* modal brand */
 .modal-brand {
@@ -439,19 +503,25 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
   display: flex; align-items: center; gap: 10px; margin-bottom: 7px;
 }
 .modal-orb {
-  width: 18px; height: 18px; border-radius: 50%; background: white;
-  box-shadow: 0 0 16px rgba(255,255,255,0.35);
+  width: 18px; height: 18px; border-radius: 50%;
+  background: linear-gradient(135deg, #ffffff 0%, var(--lavender) 100%);
+  box-shadow: 0 0 16px rgba(177,143,207,0.4);
   animation: breathe 3s ease-in-out infinite;
 }
 .modal-brand-name {
   font-family: var(--font-display); font-size: 20px; font-weight: 800; letter-spacing: -0.5px;
+  color: var(--text-primary);
 }
-.modal-tagline { font-size: 12px; color: var(--text-muted); letter-spacing: 0.3px; }
+.modal-tagline { font-size: 12px; color: var(--lavender-text); letter-spacing: 0.3px; }
 
 .modal-heading {
   font-family: var(--font-display); font-size: 22px; font-weight: 700;
   text-align: center; letter-spacing: -0.5px;
-  margin-bottom: 26px; color: var(--text-primary);
+  margin-bottom: 26px;
+  background: linear-gradient(135deg, #ffffff 0%, var(--lavender-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* ALERTS */
@@ -461,11 +531,11 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
   font-size: 13px; text-align: center;
 }
 .alert-error {
-  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-  color: rgba(255,200,200,0.9);
+  background: rgba(177,143,207,0.05); border: 1px solid var(--lavender-border);
+  color: rgba(212,184,232,0.9);
 }
 .alert-success {
-  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(177,143,207,0.06); border: 1px solid var(--lavender-border-hover);
   color: rgba(200,255,220,0.9);
 }
 
@@ -480,38 +550,57 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
 }
 .input-group input::placeholder { color: var(--text-muted); }
 .input-group input:focus {
-  background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.22);
-  box-shadow: 0 0 0 3px rgba(255,255,255,0.04);
+  background: rgba(177,143,207,0.05);
+  border-color: var(--lavender-border-hover);
+  box-shadow: 0 0 0 3px rgba(177,143,207,0.08);
 }
 
 /* SUBMIT */
 .submit-btn {
   width: 100%; height: 54px; border: none; border-radius: 16px;
-  background: white; color: #080808;
+  background: linear-gradient(135deg, #ffffff 0%, var(--lavender-light) 100%);
+  color: #080808;
   font-family: var(--font-display); font-size: 15px; font-weight: 700;
   cursor: pointer; letter-spacing: -0.2px; margin-top: 8px;
   transition: all 0.25s ease;
 }
 .submit-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 36px rgba(255,255,255,0.22);
+  box-shadow: 0 14px 36px rgba(177,143,207,0.35);
 }
 
 .register-link {
   text-align: center; font-size: 13.5px; color: var(--text-secondary); margin-top: 20px;
 }
 .register-link a {
-  color: var(--text-primary); text-decoration: none; font-weight: 600;
-  border-bottom: 1px solid rgba(255,255,255,0.18); padding-bottom: 1px;
+  color: var(--lavender-light); text-decoration: none; font-weight: 600;
+  border-bottom: 1px solid var(--lavender-border); padding-bottom: 1px;
   transition: border-color 0.2s;
 }
-.register-link a:hover { border-color: rgba(255,255,255,0.5); }
+.register-link a:hover { border-color: var(--lavender-border-hover); }
 
 .trust-badges {
   display: flex; align-items: center; justify-content: center;
   gap: 18px; margin-top: 22px; flex-wrap: wrap;
 }
 .badge { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--text-muted); }
+.badge span { color: var(--lavender); }
+
+/* ---- NAVBAR LOGO ---- */
+.nav-logo {
+  width: 140px;
+  height: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* ---- MODAL LOGO ---- */
+.modal-logo {
+  width: 160px;
+  height: auto;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
 
 /* =============================================
    RESPONSIVE
@@ -556,11 +645,8 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
     <button class="modal-close" onclick="closeLogin()" aria-label="Close">&#x2715;</button>
 
     <div class="modal-brand">
-      <div class="modal-orb-row">
-        <div class="modal-orb"></div>
-        <span class="modal-brand-name">Nexora AI</span>
-      </div>
-      <p class="modal-tagline">Your AI Knowledge Workspace</p>
+      <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora.AI" class="modal-logo">
+      <p class="modal-tagline">Transforming Documents Into Intelligent Conversations</p>
     </div>
 
     <h2 class="modal-heading">Welcome back</h2>
@@ -588,9 +674,9 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
     </div>
 
     <div class="trust-badges">
-      <div class="badge"><span>🔒</span> Encrypted</div>
-      <div class="badge"><span>⚡</span> Instant Access</div>
-      <div class="badge"><span>◎</span> Multi-user Safe</div>
+      <div class="badge"><span>&#128274;</span> Encrypted</div>
+      <div class="badge"><span>&#9889;</span> Instant Access</div>
+      <div class="badge"><span>&#9678;</span> Multi-user Safe</div>
     </div>
 
   </div>
@@ -601,8 +687,7 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
 =========================================== -->
 <nav class="navbar">
   <a class="nav-brand" href="#">
-    <div class="brand-orb"></div>
-    <span class="brand-name">Nexora.AI</span>
+    <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora.AI" class="nav-logo">
   </a>
 
   <ul class="nav-links">
@@ -644,29 +729,29 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
 
     <div class="hero-feature-grid">
       <div class="hero-feat-card">
-        <div class="feat-icon">⟁</div>
+        <div class="feat-icon">&#x27C1;</div>
         <h3>Hybrid Search</h3>
         <p>BM25 + Vector semantic retrieval for enterprise-grade accuracy.</p>
       </div>
       <div class="hero-feat-card">
-        <div class="feat-icon">◈</div>
+        <div class="feat-icon">&#x25C8;</div>
         <h3>Multiuser RAG</h3>
         <p>Secure isolated vector databases with user-level document filtering.</p>
       </div>
       <div class="hero-feat-card">
-        <div class="feat-icon">⬡</div>
+        <div class="feat-icon">&#x2B21;</div>
         <h3>AI Guardrails</h3>
         <p>Prompt injection protection, hallucination reduction, and PII safety.</p>
       </div>
       <div class="hero-feat-card">
-        <div class="feat-icon">⊞</div>
+        <div class="feat-icon">&#x229E;</div>
         <h3>Enterprise PDFs</h3>
         <p>AI-powered summaries, contextual insights, and document analytics.</p>
       </div>
     </div>
 
     <div class="tech-strip">
-      Flask &ensp;·&ensp; LangChain &ensp;·&ensp; ChromaDB &ensp;·&ensp; BM25 &ensp;·&ensp; Hybrid Search &ensp;·&ensp; RAG &ensp;·&ensp; Semantic AI &ensp;·&ensp; Python
+      Flask &ensp;&#183;&ensp; LangChain &ensp;&#183;&ensp; ChromaDB &ensp;&#183;&ensp; BM25 &ensp;&#183;&ensp; Hybrid Search &ensp;&#183;&ensp; RAG &ensp;&#183;&ensp; Semantic AI &ensp;&#183;&ensp; Python
     </div>
 
     <div class="stats-row">
@@ -684,14 +769,14 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
 
     <div class="features-big-grid">
       <div class="big-feature-card featured">
-        <div class="feat-num">01 — Core</div>
+        <div class="feat-num">01 &#8212; Core</div>
         <h3>Hybrid Retrieval Architecture</h3>
-        <p>Nexora.AI combines dense vector retrieval with BM25 sparse search for unparalleled document recall. The fusion engine merges semantic similarity with keyword precision, ensuring no relevant passage is missed — even across large enterprise corpora with thousands of document chunks.</p>
+        <p>Nexora.AI combines dense vector retrieval with BM25 sparse search for unparalleled document recall. The fusion engine merges semantic similarity with keyword precision, ensuring no relevant passage is missed &#8212; even across large enterprise corpora with thousands of document chunks.</p>
       </div>
       <div class="big-feature-card">
         <div class="feat-num">02</div>
         <h3>Multiuser RAG Workspace</h3>
-        <p>Each user operates within a securely isolated vector namespace. Documents, embeddings, and conversation history are fully separated at the database level — no cross-user data leakage, ever.</p>
+        <p>Each user operates within a securely isolated vector namespace. Documents, embeddings, and conversation history are fully separated at the database level &#8212; no cross-user data leakage, ever.</p>
       </div>
       <div class="big-feature-card">
         <div class="feat-num">03</div>
@@ -701,7 +786,7 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
       <div class="big-feature-card">
         <div class="feat-num">04</div>
         <h3>Semantic PDF Intelligence</h3>
-        <p>Upload PDFs and instantly query them in natural language. Get contextual summaries, extract key insights, and discover knowledge hidden across hundreds of pages — in seconds.</p>
+        <p>Upload PDFs and instantly query them in natural language. Get contextual summaries, extract key insights, and discover knowledge hidden across hundreds of pages &#8212; in seconds.</p>
       </div>
       <div class="big-feature-card">
         <div class="feat-num">05</div>
@@ -769,7 +854,7 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
         <div class="section-label">Use Cases</div>
         <h2 class="section-title">Built for every<br><span class="dimmed">knowledge workflow</span></h2>
         <p style="color:var(--text-secondary);font-size:15px;line-height:1.8;max-width:380px;margin-top:16px;">
-          From legal research to financial analysis, Nexora.AI adapts to any enterprise knowledge workflow — with secure, grounded AI responses every time.
+          From legal research to financial analysis, Nexora.AI adapts to any enterprise knowledge workflow &#8212; with secure, grounded AI responses every time.
         </p>
       </div>
       <div class="usecases-list">
@@ -799,7 +884,7 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
         <a href="#" id="security">Security</a>
         <a href="#">Documentation</a>
       </div>
-      <p class="footer-copy">© 2026 Nexora.AI. All rights reserved.</p>
+      <p class="footer-copy">&#169; 2026 Nexora.AI. All rights reserved.</p>
     </div>
   </footer>
 

@@ -19,6 +19,17 @@
   --text-muted: rgba(240,240,240,0.30);
   --font-display: 'Sora', sans-serif;
   --font-body: 'DM Sans', sans-serif;
+
+  /* ── LAVENDER ACCENTS ── */
+  --lavender: #B18FCF;
+  --lavender-light: #C9A8E0;
+  --lavender-deep: #8B5FBF;
+  --lavender-glow: rgba(177, 143, 207, 0.35);
+  --lavender-glow-soft: rgba(177, 143, 207, 0.12);
+  --lavender-border: rgba(177, 143, 207, 0.25);
+  --lavender-border-hover: rgba(177, 143, 207, 0.45);
+  --lavender-text: #D4B8E8;
+  --lavender-bg: rgba(177, 143, 207, 0.06);
 }
 
 body {
@@ -41,17 +52,17 @@ body::before {
   opacity: 0.32; z-index: 1; pointer-events: none;
 }
 
-/* ambient glows */
+/* ambient glows — lavender hint */
 .ambient { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 .ambient::before {
   content: '';
   position: absolute; top: -20%; left: -10%; width: 60%; height: 70%;
-  background: radial-gradient(ellipse, rgba(255,255,255,0.022) 0%, transparent 65%);
+  background: radial-gradient(ellipse, rgba(177,143,207,0.035) 0%, transparent 65%);
 }
 .ambient::after {
   content: '';
   position: absolute; bottom: -10%; right: -10%; width: 55%; height: 60%;
-  background: radial-gradient(ellipse, rgba(255,255,255,0.016) 0%, transparent 65%);
+  background: radial-gradient(ellipse, rgba(177,143,207,0.022) 0%, transparent 65%);
 }
 
 /* navbar */
@@ -66,13 +77,14 @@ body::before {
 }
 .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
 .brand-orb {
-  width: 26px; height: 26px; border-radius: 50%; background: white;
-  box-shadow: 0 0 22px rgba(255,255,255,0.3), 0 0 7px rgba(255,255,255,0.5);
+  width: 26px; height: 26px; border-radius: 50%;
+  background: linear-gradient(135deg, #ffffff 0%, var(--lavender) 100%);
+  box-shadow: 0 0 22px rgba(177,143,207,0.35), 0 0 7px rgba(177,143,207,0.5);
   animation: breathe 3s ease-in-out infinite; flex-shrink: 0;
 }
 @keyframes breathe {
-  0%,100% { box-shadow: 0 0 22px rgba(255,255,255,0.28), 0 0 7px rgba(255,255,255,0.5); transform: scale(1); }
-  50%      { box-shadow: 0 0 34px rgba(255,255,255,0.44), 0 0 12px rgba(255,255,255,0.6); transform: scale(1.05); }
+  0%,100% { box-shadow: 0 0 22px rgba(177,143,207,0.32), 0 0 7px rgba(177,143,207,0.45); transform: scale(1); }
+  50%      { box-shadow: 0 0 34px rgba(177,143,207,0.50), 0 0 12px rgba(177,143,207,0.6); transform: scale(1.05); }
 }
 .brand-name {
   font-family: var(--font-display); font-size: 20px; font-weight: 700;
@@ -95,30 +107,31 @@ body::before {
 .logout-card {
   position: relative;
   background: rgba(11,11,11,0.96);
-  border: 1px solid var(--border);
+  border: 1px solid var(--lavender-border);
   border-radius: 28px;
   padding: 48px 40px 40px;
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
-  box-shadow: 0 40px 100px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.07);
+  box-shadow: 0 40px 100px rgba(0,0,0,0.7), 0 0 60px rgba(177,143,207,0.06), inset 0 1px 0 rgba(255,255,255,0.07);
   overflow: hidden;
   text-align: center;
 }
 
-/* shimmer */
+/* shimmer — lavender */
 .logout-card::before {
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.13) 40%, rgba(255,255,255,0.13) 60%, transparent);
+  background: linear-gradient(90deg, transparent, rgba(177,143,207,0.25) 40%, rgba(177,143,207,0.25) 60%, transparent);
 }
 
 /* check icon */
 .check-ring {
   width: 72px; height: 72px; border-radius: 50%;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--lavender-bg);
+  border: 1px solid var(--lavender-border);
   display: flex; align-items: center; justify-content: center;
   margin: 0 auto 28px;
   animation: popIn 0.5s 0.2s cubic-bezier(0.22,1,0.36,1) both;
+  box-shadow: 0 0 30px rgba(177,143,207,0.15);
 }
 
 @keyframes popIn {
@@ -129,6 +142,9 @@ body::before {
 .check-svg {
   width: 30px; height: 30px;
 }
+.check-svg path {
+  stroke: var(--lavender);
+}
 
 /* brand */
 .card-brand {
@@ -138,18 +154,24 @@ body::before {
   display: flex; align-items: center; gap: 10px; margin-bottom: 6px;
 }
 .card-orb {
-  width: 16px; height: 16px; border-radius: 50%; background: white;
-  box-shadow: 0 0 14px rgba(255,255,255,0.35);
+  width: 16px; height: 16px; border-radius: 50%;
+  background: linear-gradient(135deg, #ffffff 0%, var(--lavender) 100%);
+  box-shadow: 0 0 14px rgba(177,143,207,0.4);
   animation: breathe 3s ease-in-out infinite;
 }
 .card-brand-name {
   font-family: var(--font-display); font-size: 17px; font-weight: 800; letter-spacing: -0.4px;
+  color: var(--text-primary);
 }
 
 /* heading */
 .logout-heading {
   font-family: var(--font-display); font-size: 28px; font-weight: 800;
   letter-spacing: -1px; margin-bottom: 12px;
+  background: linear-gradient(135deg, #ffffff 0%, var(--lavender-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .logout-sub {
@@ -159,14 +181,15 @@ body::before {
 
 /* divider */
 .divider {
-  width: 40px; height: 1px; background: var(--border); margin: 0 auto 28px;
+  width: 40px; height: 1px; background: var(--lavender-border); margin: 0 auto 28px;
 }
 
 /* button */
 .signin-btn {
   display: inline-flex; align-items: center; gap: 10px;
   height: 54px; padding: 0 32px;
-  background: white; color: #080808;
+  background: linear-gradient(135deg, #ffffff 0%, var(--lavender-light) 100%);
+  color: #080808;
   border: none; border-radius: 16px;
   font-family: var(--font-display); font-size: 15px; font-weight: 700;
   text-decoration: none; letter-spacing: -0.2px;
@@ -174,23 +197,50 @@ body::before {
 }
 .signin-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 36px rgba(255,255,255,0.22);
+  box-shadow: 0 14px 36px rgba(177,143,207,0.35);
 }
 
 .arrow {
   font-size: 16px; line-height: 1; transition: transform 0.2s ease;
+  color: var(--lavender-deep);
 }
 .signin-btn:hover .arrow { transform: translateX(3px); }
 
 /* footer note */
 .secure-note {
-  margin-top: 24px; font-size: 12px; color: var(--text-muted);
+  margin-top: 24px; font-size: 12px; color: var(--lavender-text);
   letter-spacing: 0.2px;
+}
+
+/* ---- NAVBAR LOGO ---- */
+.nav-logo {
+  width: 140px;
+  height: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* ---- CARD LOGO ---- */
+.card-logo {
+  width: 160px;
+  height: auto;
+  object-fit: contain;
+  margin-bottom: 8px;
+}
+
+/* ---- CARD SLOGAN ---- */
+.card-slogan {
+  font-size: 12px;
+  color: var(--lavender-text);
+  letter-spacing: 0.3px;
+  margin-top: 4px;
 }
 
 @media (max-width: 520px) {
   .navbar { padding: 0 20px; }
   .logout-card { padding: 40px 24px 32px; }
+  .nav-logo { width: 120px; }
+  .card-logo { width: 140px; }
 }
 
 </style>
@@ -201,8 +251,7 @@ body::before {
 
 <nav class="navbar">
   <a class="nav-brand" href="/login">
-    <div class="brand-orb"></div>
-    <span class="brand-name">Nexora.AI</span>
+    <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora.AI" class="nav-logo">
   </a>
 </nav>
 
@@ -212,16 +261,14 @@ body::before {
     <!-- animated check -->
     <div class="check-ring">
       <svg class="check-svg" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M6 15.5L12 21.5L24 9.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
+        <path d="M6 15.5L12 21.5L24 9.5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
           style="stroke-dasharray:28;stroke-dashoffset:28;animation:drawCheck 0.4s 0.45s ease forwards"/>
       </svg>
     </div>
 
     <div class="card-brand">
-      <div class="card-orb-row">
-        <div class="card-orb"></div>
-        <span class="card-brand-name">Nexora AI</span>
-      </div>
+      <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora.AI" class="card-logo">
+      <p class="card-slogan">Transforming Documents Into Intelligent Conversations</p>
     </div>
 
     <h2 class="logout-heading">Signed out</h2>
@@ -234,7 +281,7 @@ body::before {
 
     <a class="signin-btn" href="/login">
       Sign back in
-      <span class="arrow">→</span>
+      <span class="arrow">&#8594;</span>
     </a>
 
     <p class="secure-note">Your session data has been cleared.</p>

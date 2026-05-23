@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexora.AI — RAG Knowledge Workspace</title>
+    <title>Nexora.AI — Transforming Documents Into Intelligent Conversations</title>
 
     <!-- Unified CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
@@ -17,6 +17,35 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .logo-full {
+            width: 140px;
+            height: auto;
+            object-fit: contain;
+            flex-shrink: 0;
+            display: block;
+        }
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            flex-shrink: 0;
+            display: none;
+        }
+        /* When sidebar is collapsed, show icon only */
+        .sidebar.collapsed .logo-full {
+            display: none;
+        }
+        .sidebar.collapsed .logo-icon {
+            display: block;
+        }
+        .sidebar.collapsed .logo {
+            justify-content: center;
+            padding: 0;
+        }
+    </style>
     <!-- Sora + DM Sans — same as login/register/logout -->
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 </head>
@@ -45,8 +74,8 @@
         <!-- Logo -->
         <div class="sidebar-top">
             <div class="logo">
-                <i class="fa-solid fa-circle" style="font-size:12px;opacity:.7;"></i>
-                <span class="sidebar-text">Nexora.AI</span>
+                <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora.AI" class="logo-full sidebar-text">
+                <img src="{{ url_for('static', filename='images/logo_nexora_icon.png') }}" alt="Nexora.AI" class="logo-icon">
             </div>
         </div>
 
@@ -114,7 +143,7 @@
 
             <div class="header-title-section">
                 <i class="fa-solid fa-compass-drafting header-icon"></i>
-                <h1>RAG Knowledge Workspace</h1>
+                <h1>Transforming Documents Into Intelligent Conversations</h1>
             </div>
 
             <div class="top-controls">
@@ -343,7 +372,25 @@
     }
 
     async function deleteDocument(filename){
-        if(!confirm(`Delete ${filename} permanently?`)) return;
+        const result = await Swal.fire({
+                title: 'Delete Document?',
+                text: `Delete ${filename} permanently?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#B18FCF',
+                cancelButtonColor: '#444',
+                confirmButtonText: 'Yes, delete it',
+                cancelButtonText: 'Cancel',
+                background: '#0e0e0e',
+                color: '#f0f0f0',
+                customClass: {
+                    popup: 'nexora-swal-popup',
+                    title: 'nexora-swal-title',
+                    confirmButton: 'nexora-swal-btn',
+                    cancelButton: 'nexora-swal-cancel-btn'
+                }
+            });
+            if(!result.isConfirmed) return;
         try{
             const response = await fetch("/delete_file",{
                 method:"POST",
@@ -354,8 +401,36 @@
             if(data.status === "success"){
                 loadUserDocuments();
                 if(session_id) loadSessionFiles(session_id);
-            } else { alert(data.message); }
-        }catch(e){ console.error("Delete error:",e); alert("Error deleting document"); }
+            } else { 
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Delete Failed',
+                    text: data.message,
+                    confirmButtonColor: '#B18FCF',
+                    background: '#0e0e0e',
+                    color: '#f0f0f0',
+                    confirmButtonText: 'Okay',
+                    customClass: {
+                        popup: 'nexora-swal-popup',
+                        title: 'nexora-swal-title',
+                        confirmButton: 'nexora-swal-btn'
+                    }
+                }); 
+            }
+        }catch(e){ console.error("Delete error:",e); Swal.fire({
+                icon: 'error',
+                title: 'Delete Failed',
+                text: 'Error deleting document',
+                confirmButtonColor: '#B18FCF',
+                background: '#0e0e0e',
+                color: '#f0f0f0',
+                confirmButtonText: 'Okay',
+                customClass: {
+                    popup: 'nexora-swal-popup',
+                    title: 'nexora-swal-title',
+                    confirmButton: 'nexora-swal-btn'
+                }
+            }); }
     }
 
     /* ---- New Chat ---- */
@@ -381,7 +456,23 @@
     /* ---- Upload & Index ---- */
     async function uploadFiles(){
         const files = document.getElementById("pdfFiles").files;
-        if(files.length === 0){ alert("Please select files first"); return; }
+        if(files.length === 0){ 
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No Files Selected',
+                    text: 'Please select files first',
+                    confirmButtonColor: '#B18FCF',
+                    background: '#0e0e0e',
+                    color: '#f0f0f0',
+                    confirmButtonText: 'Got it',
+                    customClass: {
+                        popup: 'nexora-swal-popup',
+                        title: 'nexora-swal-title',
+                        confirmButton: 'nexora-swal-btn'
+                    }
+                });
+                return; 
+            }
         const formData = new FormData();
         for(let file of files) formData.append("files", file);
         if(session_id) formData.append("session_id", session_id);
@@ -414,8 +505,37 @@
                             </div>
                         </div>`; }
                 }
-            } else { alert(data.message); document.getElementById("uploadStatus").innerText = "Error indexing files."; }
-        }catch(e){ console.error(e); alert("Network error during file processing."); document.getElementById("uploadStatus").innerText = "Error indexing files."; }
+            } else { 
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Upload Failed',
+                    text: data.message,
+                    confirmButtonColor: '#B18FCF',
+                    background: '#0e0e0e',
+                    color: '#f0f0f0',
+                    confirmButtonText: 'Okay',
+                    customClass: {
+                        popup: 'nexora-swal-popup',
+                        title: 'nexora-swal-title',
+                        confirmButton: 'nexora-swal-btn'
+                    }
+                });
+                document.getElementById("uploadStatus").innerText = "Error indexing files."; 
+            }
+        }catch(e){ console.error(e); Swal.fire({
+                icon: 'error',
+                title: 'Network Error',
+                text: 'Network error during file processing.',
+                confirmButtonColor: '#B18FCF',
+                background: '#0e0e0e',
+                color: '#f0f0f0',
+                confirmButtonText: 'Okay',
+                customClass: {
+                    popup: 'nexora-swal-popup',
+                    title: 'nexora-swal-title',
+                    confirmButton: 'nexora-swal-btn'
+                }
+            }); document.getElementById("uploadStatus").innerText = "Error indexing files."; }
         finally { submitBtn.innerHTML = originalHTML; submitBtn.disabled = false; }
     }
 
@@ -448,14 +568,51 @@
 
     async function deleteSessionFile(filename){
         if(!session_id) return;
-        if(!confirm(`Remove ${filename} from this workspace?`)) return;
+        const result = await Swal.fire({
+                title: 'Remove File?',
+                text: `Remove ${filename} from this workspace?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#B18FCF',
+                cancelButtonColor: '#444',
+                confirmButtonText: 'Yes, remove it',
+                cancelButtonText: 'Cancel',
+                background: '#0e0e0e',
+                color: '#f0f0f0',
+                customClass: {
+                    popup: 'nexora-swal-popup',
+                    title: 'nexora-swal-title',
+                    confirmButton: 'nexora-swal-btn',
+                    cancelButton: 'nexora-swal-cancel-btn'
+                }
+            });
+            if(!result.isConfirmed) return;
         try{
             const response = await fetch("/delete_file",{
                 method:"POST", headers:{"Content-Type":"application/json"},
                 body: JSON.stringify({ session_id, filename })
             });
             const res = await response.json();
-            if(res.status === "success"){ loadSessionFiles(session_id); loadUserDocuments(); alert(res.message); }
+            if(res.status === "success"){ 
+                loadSessionFiles(session_id); 
+                loadUserDocuments(); 
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Removed',
+                    text: res.message,
+                    confirmButtonColor: '#B18FCF',
+                    background: '#0e0e0e',
+                    color: '#f0f0f0',
+                    confirmButtonText: 'Okay',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    customClass: {
+                        popup: 'nexora-swal-popup',
+                        title: 'nexora-swal-title',
+                        confirmButton: 'nexora-swal-btn'
+                    }
+                });
+            }
         }catch(e){ console.error("Error deleting session file:",e); }
     }
 
@@ -486,7 +643,25 @@
                 body: JSON.stringify({ model_name, temperature, system_prompt })
             });
             const data = await response.json();
-            if(data.status === "success"){ alert("Session settings saved!"); toggleSettingsDrawer(); }
+            if(data.status === "success"){ 
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Settings Saved',
+                    text: 'Session settings saved successfully!',
+                    confirmButtonColor: '#B18FCF',
+                    background: '#0e0e0e',
+                    color: '#f0f0f0',
+                    confirmButtonText: 'Great',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    customClass: {
+                        popup: 'nexora-swal-popup',
+                        title: 'nexora-swal-title',
+                        confirmButton: 'nexora-swal-btn'
+                    }
+                });
+                toggleSettingsDrawer(); 
+            }
         }catch(e){ console.error("Error saving settings:",e); }
     }
 
@@ -521,7 +696,23 @@
 
     /* ---- Download PDF ---- */
     async function downloadConversationPDF(){
-        if(messagesData.length === 0){ alert("No conversation available to download."); return; }
+        if(messagesData.length === 0){ 
+                Swal.fire({
+                    icon: 'info',
+                    title: 'No Conversation',
+                    text: 'No conversation available to download.',
+                    confirmButtonColor: '#B18FCF',
+                    background: '#0e0e0e',
+                    color: '#f0f0f0',
+                    confirmButtonText: 'Got it',
+                    customClass: {
+                        popup: 'nexora-swal-popup',
+                        title: 'nexora-swal-title',
+                        confirmButton: 'nexora-swal-btn'
+                    }
+                });
+                return; 
+            }
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ orientation:"portrait", unit:"pt", format:"a4" });
         const pageWidth  = doc.internal.pageSize.getWidth();
@@ -786,7 +977,25 @@
     }
 
     async function deleteChatPrompt(chatId){
-        if(!confirm("Delete this conversation?")) return;
+        const result = await Swal.fire({
+                title: 'Delete Conversation?',
+                text: 'Delete this conversation?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#B18FCF',
+                cancelButtonColor: '#444',
+                confirmButtonText: 'Yes, delete it',
+                cancelButtonText: 'Cancel',
+                background: '#0e0e0e',
+                color: '#f0f0f0',
+                customClass: {
+                    popup: 'nexora-swal-popup',
+                    title: 'nexora-swal-title',
+                    confirmButton: 'nexora-swal-btn',
+                    cancelButton: 'nexora-swal-cancel-btn'
+                }
+            });
+            if(!result.isConfirmed) return;
         try{
             const response = await fetch(`/delete_chat/${chatId}`,{ method:"POST" });
             const data = await response.json();
@@ -809,7 +1018,23 @@
     function startSpeechRecognition(){
         const micBtn = document.getElementById("micBtn");
         const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if(!SR){ alert("Voice dictation not supported in this browser. Try Chrome."); return; }
+        if(!SR){ 
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Not Supported',
+                    text: 'Voice dictation not supported in this browser. Try Chrome.',
+                    confirmButtonColor: '#B18FCF',
+                    background: '#0e0e0e',
+                    color: '#f0f0f0',
+                    confirmButtonText: 'Got it',
+                    customClass: {
+                        popup: 'nexora-swal-popup',
+                        title: 'nexora-swal-title',
+                        confirmButton: 'nexora-swal-btn'
+                    }
+                });
+                return; 
+            }
         const recognition = new SR();
         recognition.lang = "en-US"; recognition.interimResults = false; recognition.start();
         micBtn.classList.add("recording");

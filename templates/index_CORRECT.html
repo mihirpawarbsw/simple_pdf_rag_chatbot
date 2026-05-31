@@ -19,6 +19,204 @@
 
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .logo-full {
+            width: 140px;
+            height: auto;
+            object-fit: contain;
+            flex-shrink: 0;
+            display: block;
+        }
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            flex-shrink: 0;
+            display: none;
+        }
+        /* When sidebar is collapsed, show icon only */
+        .sidebar.collapsed .logo-full {
+            display: none;
+        }
+        .sidebar.collapsed .logo-icon {
+            display: block;
+        }
+        .sidebar.collapsed .logo {
+            justify-content: center;
+            padding: 0;
+        }
+
+        /* ---- LAVENDER THEME OVERRIDE (locked) ---- */
+        :root {
+            --lavender: #B18FCF;
+            --lavender-light: #C9A8E0;
+            --lavender-deep: #8B5FBF;
+            --lavender-glow: rgba(177, 143, 207, 0.35);
+            --lavender-glow-soft: rgba(177, 143, 207, 0.12);
+            --lavender-border: rgba(177, 143, 207, 0.25);
+            --lavender-border-hover: rgba(177, 143, 207, 0.45);
+            --lavender-text: #D4B8E8;
+            --lavender-bg: rgba(177, 143, 207, 0.06);
+        }
+
+        /* ---- GREETING SPLASH (Claude-style) ---- */
+        .greeting-splash {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 60vh;
+            padding: 40px 24px;
+            animation: fadeInUp 0.6s cubic-bezier(0.22,1,0.36,1) both;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .greeting-emoji {
+            font-size: 32px;
+            margin-bottom: 16px;
+            animation: gentleBounce 2s ease-in-out infinite;
+        }
+
+        @keyframes gentleBounce {
+            0%, 100% { transform: translateY(0); }
+            50%      { transform: translateY(-6px); }
+        }
+
+        .greeting-title {
+            font-family: 'Sora', sans-serif;
+            font-size: clamp(32px, 5vw, 56px);
+            font-weight: 300;
+            letter-spacing: -1.5px;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            line-height: 1.15;
+        }
+
+        .greeting-title .user-name {
+            font-weight: 600;
+            background: linear-gradient(135deg, #ffffff 0%, var(--lavender-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .greeting-sub {
+            font-family: 'DM Sans', sans-serif;
+            font-size: clamp(14px, 2vw, 18px);
+            font-weight: 400;
+            color: var(--text-secondary);
+            max-width: 520px;
+            line-height: 1.7;
+            margin-bottom: 8px;
+        }
+
+        .greeting-tagline {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            color: var(--lavender-text);
+            letter-spacing: 0.3px;
+            max-width: 480px;
+            line-height: 1.6;
+        }
+
+        /* Lavender accent on header elements */
+        .header-icon-btn:hover,
+        .logout-btn:hover {
+            border-color: var(--lavender-border-hover) !important;
+            color: var(--lavender-light) !important;
+            box-shadow: 0 0 20px rgba(177,143,207,0.15) !important;
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, #ffffff 0%, var(--lavender-light) 100%) !important;
+            color: #080808 !important;
+        }
+        .send-btn:hover {
+            box-shadow: 0 8px 28px rgba(177,143,207,0.35) !important;
+        }
+
+        .mic-btn.recording {
+            color: var(--lavender) !important;
+            box-shadow: 0 0 20px rgba(177,143,207,0.3) !important;
+        }
+
+        .suggestion-chip:hover {
+            border-color: var(--lavender-border-hover) !important;
+            background: var(--lavender-bg) !important;
+        }
+
+        .new-chat-btn {
+            background: linear-gradient(135deg, #ffffff 0%, var(--lavender-light) 100%) !important;
+            color: #080808 !important;
+        }
+
+        .upload-trigger-btn:hover {
+            border-color: var(--lavender-border-hover) !important;
+            color: var(--lavender-light) !important;
+        }
+
+        .upload-real-btn {
+            background: linear-gradient(135deg, #ffffff 0%, var(--lavender-light) 100%) !important;
+            color: #080808 !important;
+        }
+
+        .save-settings-btn {
+            background: linear-gradient(135deg, #ffffff 0%, var(--lavender-light) 100%) !important;
+            color: #080808 !important;
+        }
+
+        .download-chat-btn:hover {
+            border-color: var(--lavender-border-hover) !important;
+            color: var(--lavender-light) !important;
+        }
+
+        .chat-history-item.active {
+            border-left: 3px solid var(--lavender) !important;
+            background: var(--lavender-bg) !important;
+        }
+
+        .citation-pill:hover {
+            border-color: var(--lavender-border-hover) !important;
+            background: var(--lavender-bg) !important;
+        }
+
+        .sources-panel h4 {
+            color: var(--lavender-text) !important;
+        }
+
+        .typing-loading {
+            color: var(--lavender-text) !important;
+        }
+
+        /* Input focus lavender glow */
+        .chat-input:focus {
+            border-color: var(--lavender-border-hover) !important;
+            box-shadow: 0 0 0 3px rgba(177,143,207,0.08) !important;
+        }
+
+        /* Settings drawer lavender accents */
+        .settings-drawer {
+            border-left: 1px solid var(--lavender-border) !important;
+        }
+
+        .setting-group input[type="range"] {
+            accent-color: var(--lavender) !important;
+        }
+
+        /* Modal lavender */
+        .citation-modal .modal-content {
+            border: 1px solid var(--lavender-border) !important;
+        }
+
+        .citation-meta strong {
+            color: var(--lavender-light) !important;
+        }
+    </style>
     <!-- Sora + DM Sans — same as login/register/logout -->
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 </head>
@@ -134,15 +332,6 @@
                 <select id="responseTypeSelector" title="Response Style">
                     <option value="detailed">Detailed</option>
                     <option value="short">Short</option>
-                </select>
-
-                <select id="themeSelector" onchange="handleThemeChange(this.value)" title="Choose Color Theme">
-                    <option value="lavender">Lavender Theme</option>
-                    <option value="cyan">Cyan Theme</option>
-                    <option value="sunset">Sunset Theme</option>
-                    <option value="sherbet">Sherbet Theme</option>
-                    <option value="obsidian">Obsidian Theme</option>
-                    <option value="tropical">Tropical Oasis Theme</option>
                 </select>
 
                 <button id="settingsBtn" class="header-icon-btn" onclick="toggleSettingsDrawer()" title="Session Settings">
@@ -271,143 +460,22 @@
 <script>
     marked.setOptions({ breaks: true });
 
-    /* ---- Typing Effect System ---- */
-    let typeQueue = [];
-    let isTyping = false;
-    let typeTargetDiv = null;
-    let typeAnswerText = "";
-    let typeCursor = null;
-    let typeSpeed = 100; // ms per character (adjustable)
-    let typeChunkSize = 1; // characters per frame for smoothness
-    let typeRafId = null;
-    let typeLastTime = 0;
-
-    function createTypingCursor() {
-        const cursor = document.createElement('span');
-        cursor.className = 'typing-cursor';
-        cursor.innerHTML = '▋';
-        return cursor;
-    }
-
-    function startTypingEffect(targetDiv) {
-        typeTargetDiv = targetDiv;
-        typeAnswerText = "";
-        typeQueue = [];
-        isTyping = true;
-        typeLastTime = 0;
-        if (!typeCursor) {
-            typeCursor = createTypingCursor();
-        }
-        typeTargetDiv.innerHTML = '';
-        typeTargetDiv.appendChild(typeCursor);
-        requestAnimationFrame(typeLoop);
-    }
-
-    function typeLoop(timestamp) {
-        if (!isTyping || !typeTargetDiv) return;
-
-        const elapsed = timestamp - typeLastTime;
-        const charsToType = Math.max(1, Math.floor(elapsed / typeSpeed));
-        typeLastTime = timestamp;
-
-        let typed = 0;
-        while (typeQueue.length > 0 && typed < typeChunkSize) {
-            const token = typeQueue.shift();
-            typeAnswerText += token;
-            typed += token.length;
-        }
-
-        if (typeAnswerText.length > 0) {
-            // Render markdown and re-insert cursor
-            const rendered = marked.parse(typeAnswerText);
-            typeTargetDiv.innerHTML = rendered;
-            typeTargetDiv.appendChild(typeCursor);
-
-            // Auto-scroll
-            const messages = document.getElementById("messages");
-            messages.scrollTop = messages.scrollHeight;
-        }
-
-        if (typeQueue.length > 0) {
-            typeRafId = requestAnimationFrame(typeLoop);
-        }
-    }
-
-    function stopTypingEffect() {
-        isTyping = false;
-        if (typeRafId) {
-            cancelAnimationFrame(typeRafId);
-            typeRafId = null;
-        }
-        if (typeCursor && typeCursor.parentNode) {
-            typeCursor.remove();
-        }
-        typeCursor = null;
-        typeTargetDiv = null;
-        typeQueue = [];
-    }
-
-    function flushTypingEffect() {
-        // Type all remaining tokens instantly
-        while (typeQueue.length > 0) {
-            typeAnswerText += typeQueue.shift();
-        }
-        if (typeTargetDiv) {
-            const rendered = marked.parse(typeAnswerText);
-            typeTargetDiv.innerHTML = rendered;
-        }
-        stopTypingEffect();
-    }
-
-
     let session_id   = null;
     let messagesData = [];
     let isGenerating = false;
 
     /* ---- Theme / Mode ---- */
     function changeTheme(theme){
-        document.body.classList.remove('theme-lavender', 'theme-cyan', 'theme-sunset', 'theme-sherbet', 'theme-obsidian', 'theme-tropical');
+        document.body.className = document.body.className.replace(/\btheme-\S+/g,'');
         document.body.classList.add(`theme-${theme}`);
         localStorage.setItem("theme", theme);
-        
-        const themeSelector = document.getElementById("themeSelector");
-        if (themeSelector) {
-            themeSelector.value = theme;
-        }
-        
-        updateGreetingEmoji(theme);
-    }
-
-    function handleThemeChange(theme){
-        changeTheme(theme);
-    }
-
-    function updateGreetingEmoji(theme) {
-        const emojiEl = document.getElementById("greetingEmoji");
-        if (emojiEl) {
-            if (theme === "lavender") {
-                emojiEl.innerText = "☀️";
-            } else if (theme === "cyan") {
-                emojiEl.innerText = "🌊";
-            } else if (theme === "sunset") {
-                emojiEl.innerText = "🔥";
-            } else if (theme === "sherbet") {
-                emojiEl.innerText = "🌅";
-            } else if (theme === "obsidian") {
-                emojiEl.innerText = "👑";
-            } else if (theme === "tropical") {
-                emojiEl.innerText = "🌴";
-            }
-        }
     }
 
     function toggleMode(){
         document.body.classList.toggle("light-mode");
         const icon = document.querySelector("#modeToggle i");
         const isLight = document.body.classList.contains("light-mode");
-        if (icon) {
-            icon.className = isLight ? "fa-solid fa-sun" : "fa-solid fa-moon";
-        }
+        icon.className = isLight ? "fa-solid fa-sun" : "fa-solid fa-moon";
         localStorage.setItem("mode", isLight ? "light" : "dark");
     }
 
@@ -529,7 +597,7 @@
 
     /* ---- New Chat ---- */
     function createNewChat(){
-        session_id = null; messagesData = []; isGenerating = false; stopTypingEffect();
+        session_id = null; messagesData = []; isGenerating = false;
         document.getElementById("messages").innerHTML = `
             <div class="greeting-splash" id="greetingSplash">
                 <div class="greeting-emoji" id="greetingEmoji">☀️</div>
@@ -537,7 +605,6 @@
                 <p class="greeting-sub">Welcome to Nexora.AI</p>
                 <p class="greeting-tagline">Upload enterprise documentation or dataset files to query them semantically in real-time. Check session settings to customise models and instructions.</p>
             </div>`;
-        updateGreetingEmoji(localStorage.getItem("theme") || "lavender");
         document.getElementById("starterSuggestions").style.display = "flex";
         document.getElementById("uploadStatus").innerText = "";
         document.getElementById("pdfFiles").value = "";
@@ -937,14 +1004,14 @@
 
             if(!response.ok){
                 const err = await response.json();
-                stopTypingEffect(); botContentDiv.innerHTML = `<span style="color:#ff5252"><i class="fa-solid fa-circle-exclamation"></i> Error: ${err.message || 'Server error'}</span>`;
+                botContentDiv.innerHTML = `<span style="color:#ff5252"><i class="fa-solid fa-circle-exclamation"></i> Error: ${err.message || 'Server error'}</span>`;
                 isGenerating = false; return;
             }
 
             const reader  = response.body.getReader();
             const decoder = new TextDecoder("utf-8");
             let buffer = "", answerText = "";
-            botContentDiv.innerHTML = ""; startTypingEffect(botContentDiv);
+            botContentDiv.innerHTML = "";
 
             while(true){
                 const { value, done } = await reader.read();
@@ -957,15 +1024,14 @@
                         const dataStr = line.slice(6);
                         try{
                             const data = JSON.parse(dataStr);
-                            if(data.token){ typeQueue.push(data.token); }
-                            if(data.error){ stopTypingEffect(); botContentDiv.innerHTML = `<span style="color:#ff5252"><i class="fa-solid fa-circle-exclamation"></i> Error: ${data.error}</span>`; }
+                            if(data.token){ answerText += data.token; botContentDiv.innerHTML = marked.parse(answerText); }
+                            if(data.error){ botContentDiv.innerHTML = `<span style="color:#ff5252"><i class="fa-solid fa-circle-exclamation"></i> Error: ${data.error}</span>`; }
                             if(data.done){
-                                flushTypingEffect();
                                 let sourceHTML = "";
                                 if(data.sources && data.sources.length > 0){
                                     sourceHTML += `<div class="sources-panel"><h4>Verified Sources:</h4><div class="sources-list">`;
                                     data.sources.forEach(src => {
-                                        const cleanContent = src.content.replace(/'/g,"\'").replace(/"/g,'\"').replace(/\n/g,' ');
+                                        const cleanContent = src.content.replace(/'/g,"\\'").replace(/"/g,'\\"').replace(/\n/g,' ');
                                         sourceHTML += `<div class="citation-pill" onclick="openCitationInspector('${src.source}','${src.page}','${cleanContent}')">
                                             <i class="fa-solid fa-circle-nodes"></i> ${src.source} | Page ${src.page}
                                         </div>`;
@@ -973,7 +1039,7 @@
                                     sourceHTML += `</div></div>`;
                                     botContentDiv.innerHTML += sourceHTML;
                                 }
-                                messagesData.push({ question, answer: typeAnswerText });
+                                messagesData.push({ question, answer: answerText });
                                 loadChats();
                             }
                         }catch(err){ console.error("SSE parse error",err,line); }
@@ -982,7 +1048,7 @@
             }
         }catch(e){
             console.error("SSE request error",e);
-            stopTypingEffect(); botContentDiv.innerHTML = `<span style="color:#ff5252"><i class="fa-solid fa-triangle-exclamation"></i> Generation failed. Please try again.</span>`;
+            botContentDiv.innerHTML = `<span style="color:#ff5252"><i class="fa-solid fa-triangle-exclamation"></i> Generation failed. Please try again.</span>`;
         } finally {
             isGenerating = false;
             document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
@@ -1052,7 +1118,6 @@
                         <p class="greeting-sub">Welcome to Nexora.AI</p>
                         <p class="greeting-tagline">Upload enterprise documentation or dataset files to query them semantically in real-time. Check session settings to customise models and instructions.</p>
                     </div>`;
-                updateGreetingEmoji(localStorage.getItem("theme") || "lavender");
                 document.getElementById("starterSuggestions").style.display = "flex";
             }
             loadChats();
@@ -1146,25 +1211,11 @@
     window.onload = function(){
         loadChats();
         loadUserDocuments();
-        
-        // Initialize Theme Selection
-        const savedTheme = localStorage.getItem("theme") || "lavender";
-        changeTheme(savedTheme);
-        
-        // Initialize Light/Dark Mode
+        // Lavender theme is locked, no theme selector
         const savedMode = localStorage.getItem("mode");
         if(savedMode === "light"){
             document.body.classList.add("light-mode");
-            const modeIcon = document.querySelector("#modeToggle i");
-            if (modeIcon) {
-                modeIcon.className = "fa-solid fa-sun";
-            }
-        } else {
-            document.body.classList.remove("light-mode");
-            const modeIcon = document.querySelector("#modeToggle i");
-            if (modeIcon) {
-                modeIcon.className = "fa-solid fa-moon";
-            }
+            document.querySelector("#modeToggle i").className = "fa-solid fa-sun";
         }
     };
 </script>

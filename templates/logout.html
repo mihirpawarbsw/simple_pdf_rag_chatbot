@@ -4,234 +4,165 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nexora.AI — Signed Out</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@300;400;500;700;800;900&family=Geist+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-
-/* =============================================
-   RESET + DESIGN SYSTEM TOKENS
-   ============================================= */
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 :root {
-  --bg-base: #0c080f; /* Deep Sherbet warm-black base background */
-  --bg-glass: rgba(255, 255, 255, 0.03);
-  --border: rgba(255, 255, 255, 0.07);
-  --border-hover: rgba(255, 255, 255, 0.14);
-  --text-primary: #fff1f2; /* Rose-tinted white */
-  --text-secondary: rgba(255, 241, 242, 0.65);
-  --text-muted: rgba(255, 241, 242, 0.35);
-  --font-display: 'Sora', sans-serif;
-  --font-body: 'DM Sans', sans-serif;
-
-  /* ── SHERBET ACCENTS ── */
-  --accent: #f43f5e;
-  --accent-light: #fcd34d;
-  --accent-deep: #e11d48;
-  --accent-glow: rgba(244, 63, 94, 0.35);
-  --accent-glow-soft: rgba(244, 63, 94, 0.12);
-  --accent-border: rgba(244, 63, 94, 0.25);
-  --accent-border-hover: rgba(244, 63, 94, 0.55);
-  --accent-text: #fba518;
-  --accent-bg: rgba(244, 63, 94, 0.08);
+  --ink: #06050a; --ink-2: #0d0b14; --ink-3: #13101e;
+  --surface: rgba(255,255,255,0.025); --surface-2: rgba(255,255,255,0.045);
+  --border: rgba(255,255,255,0.055); --border-2: rgba(255,255,255,0.10);
+  --t1: #f2f0fa; --t2: rgba(242,240,250,0.60); --t3: rgba(242,240,250,0.32);
+  --a1: #7c5cfc; --a2: #b08aff; --a3: #ff6b6b;
+  --a-glow: rgba(124,92,252,0.28); --a-glow-soft: rgba(124,92,252,0.10);
+  --a-border: rgba(124,92,252,0.22); --a-border-2: rgba(124,92,252,0.50);
+  --a-bg: rgba(124,92,252,0.07);
+  --grad: linear-gradient(135deg, #7c5cfc 0%, #b08aff 50%, #ff6b6b 100%);
+  --ff-display: 'Cabinet Grotesk', sans-serif;
+  --ff-mono: 'Geist Mono', monospace;
 }
-
+html { scroll-behavior: smooth; }
 body {
-  font-family: var(--font-body);
-  background: var(--bg-base);
-  color: var(--text-primary);
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  position: relative;
+  font-family: var(--ff-display); background: var(--ink); color: var(--t1);
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  overflow: hidden; position: relative; -webkit-font-smoothing: antialiased;
 }
-
-/* grain texture */
-body::before {
-  content: '';
-  position: fixed; inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-  opacity: 0.28; z-index: 1; pointer-events: none;
+body::after {
+  content: ''; position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+  opacity: 0.5;
 }
-
-/* =============================================
-   DYNAMIC AMBIENT MESH GRADIENTS
-   ============================================= */
-.mesh-gradient {
-  position: fixed; inset: 0; overflow: hidden; z-index: 0; pointer-events: none;
+.bg-orbs { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.orb { position: absolute; border-radius: 50%; filter: blur(130px); }
+.orb-1 { width:600px;height:600px;background:radial-gradient(circle,rgba(124,92,252,0.18) 0%,transparent 70%);top:-200px;left:-200px;animation:orbFloat 20s ease-in-out infinite alternate; }
+.orb-2 { width:500px;height:500px;background:radial-gradient(circle,rgba(255,107,107,0.12) 0%,transparent 70%);bottom:-150px;right:-150px;animation:orbFloat 20s ease-in-out infinite alternate;animation-delay:5s; }
+.orb-3 { width:350px;height:350px;background:radial-gradient(circle,rgba(176,138,255,0.10) 0%,transparent 70%);top:35%;left:50%;animation:orbFloat 20s ease-in-out infinite alternate;animation-delay:10s; }
+@keyframes orbFloat {
+  0%{transform:translate(0,0) scale(1)} 33%{transform:translate(60px,-80px) scale(1.12)} 66%{transform:translate(-40px,50px) scale(0.92)} 100%{transform:translate(30px,-20px) scale(1.05)}
 }
-.blob {
-  position: absolute; border-radius: 50%;
-  filter: blur(140px); opacity: 0.16;
-  animation: blobMove 18s infinite alternate ease-in-out;
-}
-.blob1 { width: 500px; height: 500px; background: rgba(244, 63, 94, 0.22); top:-150px; left:-100px; }
-.blob2 { width: 420px; height: 420px; background: rgba(251, 140, 0, 0.15); bottom:-150px; right:-100px; animation-delay: 3s; }
-.blob3 { width: 300px; height: 300px; background: rgba(253, 216, 53, 0.1); top:40%; left:45%; animation-delay: 6s; }
-
-@keyframes blobMove {
-  0%   { transform: translate(0,0) scale(1); }
-  50%  { transform: translate(40px,-50px) scale(1.1); }
-  100% { transform: translate(-20px,20px) scale(0.9); }
-}
-
-/* =============================================
-   NAVBAR
-   ============================================= */
 .navbar {
-  position: fixed; top: 0; left: 0; width: 100%; height: 72px;
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 0 56px;
-  border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  background: rgba(12,8,15,0.65);
-  z-index: 200;
+  position:fixed;top:0;left:0;width:100%;height:68px;z-index:500;
+  display:flex;align-items:center;justify-content:space-between;padding:0 60px;
+  border-bottom:1px solid var(--border);background:rgba(6,5,10,0.72);
+  backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);
 }
+.nav-brand { display:flex;align-items:center;gap:10px;text-decoration:none; }
+.nav-logo { width:140px;height:auto;object-fit:contain;flex-shrink:0; }
+.nav-wordmark {
+  font-family:var(--ff-display);font-size:20px;font-weight:900;letter-spacing:-0.5px;
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.nav-wordmark sup { font-size:9px;font-weight:600;-webkit-text-fill-color:var(--t3);color:var(--t3);letter-spacing:1px;text-transform:uppercase;vertical-align:super;margin-left:2px; }
 
-.nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-.nav-logo { width: 140px; height: auto; object-fit: contain; flex-shrink: 0; }
-
-/* =============================================
-   PAGE CARD WRAPPER
-   ============================================= */
+/* CARD */
 .card-wrapper {
-  position: relative; z-index: 10;
-  width: 100%; max-width: 420px;
-  padding: 24px;
-  animation: slideUp 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) both;
+  position:relative;z-index:10;width:100%;max-width:420px;padding:24px;
+  animation:slideUp 0.65s cubic-bezier(0.25,0.8,0.25,1) both;
 }
-
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(28px) scale(0.96); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+  from{opacity:0;transform:translateY(32px) scale(0.96)}
+  to{opacity:1;transform:translateY(0) scale(1)}
 }
-
 .logout-card {
-  position: relative;
-  background: rgba(20, 12, 22, 0.75); /* Highly customized dark Sherbet glass */
-  border: 1px solid var(--accent-border);
-  border-radius: 28px;
-  padding: 48px 40px 40px;
-  backdrop-filter: blur(40px) saturate(180%);
-  -webkit-backdrop-filter: blur(40px) saturate(180%);
-  box-shadow: 0 40px 100px rgba(0,0,0,0.65), 0 0 60px var(--accent-glow-soft), inset 0 1px 0 rgba(255,255,255,0.07);
-  overflow: hidden;
-  text-align: center;
+  position:relative;background:rgba(14,10,22,0.82);border:1px solid var(--a-border);
+  border-radius:40px;padding:52px 40px 44px;text-align:center;
+  backdrop-filter:blur(48px) saturate(180%);-webkit-backdrop-filter:blur(48px) saturate(180%);
+  box-shadow:0 50px 120px rgba(0,0,0,0.75),0 0 80px var(--a-glow-soft),inset 0 1px 0 rgba(255,255,255,0.08);
+  overflow:hidden;
 }
-
-/* animated top border shimmer */
 .logout-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1.5px;
-  background: linear-gradient(90deg, transparent, var(--accent) 30%, var(--accent-light) 70%, transparent);
-  background-size: 200% auto;
-  animation: shimmerFlow 4s linear infinite;
+  content:'';position:absolute;top:0;left:0;right:0;height:1.5px;
+  background:var(--grad);border-radius:40px 40px 0 0;background-size:200% auto;
+  animation:shimmer 3s linear infinite;
 }
+@keyframes shimmer { from{background-position:-200% center} to{background-position:200% center} }
 
-@keyframes shimmerFlow {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 200% 50%; }
-}
-
-/* =============================================
-   ANIMATED VERIFICATION RING
-   ============================================= */
+/* CHECK RING */
 .check-ring {
-  width: 76px; height: 76px; border-radius: 50%;
-  background: var(--accent-bg);
-  border: 1px solid var(--accent-border);
-  display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 28px;
-  animation: popIn 0.55s 0.15s cubic-bezier(0.25, 0.8, 0.25, 1) both;
-  box-shadow: 0 0 30px var(--accent-glow-soft);
+  width:80px;height:80px;border-radius:50%;
+  background:rgba(61,220,132,0.06);border:1.5px solid rgba(61,220,132,0.25);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 32px;
+  box-shadow:0 0 40px rgba(61,220,132,0.12);
+  animation:popIn 0.55s 0.15s cubic-bezier(0.25,0.8,0.25,1) both;
 }
-
 @keyframes popIn {
-  from { opacity: 0; transform: scale(0.6); }
-  to   { opacity: 1; transform: scale(1); }
+  from{opacity:0;transform:scale(0.5)}
+  to{opacity:1;transform:scale(1)}
 }
-
-.check-svg { width: 30px; height: 30px; }
-.check-svg path { stroke: var(--accent); }
-
-/* brand */
-.card-brand {
-  display: flex; flex-direction: column; align-items: center; margin-bottom: 22px;
+.check-ring svg { width:32px;height:32px; }
+.check-ring svg path {
+  stroke:#3ddc84;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;fill:none;
+  stroke-dasharray:32;stroke-dashoffset:32;
+  animation:drawCheck 0.45s 0.5s ease forwards;
 }
-.card-logo { width: 160px; height: auto; object-fit: contain; margin-bottom: 8px; }
-.card-slogan {
-  font-size: 12px; color: var(--accent-text); letter-spacing: 0.3px; margin-top: 4px;
-  font-weight: 500;
-}
+@keyframes drawCheck { to{stroke-dashoffset:0} }
 
-/* heading */
+/* BRAND */
+.card-brand { display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:24px; }
+.card-logo { width:160px;height:auto;object-fit:contain;display:block;margin:0 auto 8px; }
+.card-wordmark {
+  font-family:var(--ff-display);font-size:26px;font-weight:900;letter-spacing:-0.8px;
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  display:block;margin-bottom:6px;
+}
+.card-slogan { font-family:var(--ff-mono);font-size:11.5px;color:var(--t3);letter-spacing:0.2px;display:block; }
+
+/* HEADING */
 .logout-heading {
-  font-family: var(--font-display); font-size: 28px; font-weight: 800;
-  letter-spacing: -1px; margin-bottom: 12px;
-  background: linear-gradient(135deg, #ffffff 0%, var(--accent-light) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-family:var(--ff-display);font-size:28px;font-weight:900;
+  letter-spacing:-1px;margin-bottom:12px;
+  background:linear-gradient(135deg,#fff 0%,var(--a2) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
+.logout-sub { font-size:14.5px;line-height:1.75;color:var(--t2);max-width:280px;margin:0 auto 32px; }
 
-.logout-sub {
-  font-size: 15px; line-height: 1.7; color: var(--text-secondary);
-  max-width: 280px; margin: 0 auto 32px;
+/* DIVIDER */
+.divider { width:40px;height:1px;background:var(--a-border);margin:0 auto 28px; }
+
+/* STATUS CHIP */
+.status-chip {
+  display:inline-flex;align-items:center;gap:7px;
+  padding:6px 14px;border-radius:999px;
+  background:rgba(61,220,132,0.07);border:1px solid rgba(61,220,132,0.20);
+  font-family:var(--ff-mono);font-size:10.5px;font-weight:600;color:#3ddc84;
+  letter-spacing:0.3px;margin-bottom:28px;
 }
+.status-dot { width:6px;height:6px;border-radius:50%;background:#3ddc84;box-shadow:0 0 6px #3ddc84; }
 
-/* divider */
-.divider {
-  width: 40px; height: 1px; background: var(--accent-border); margin: 0 auto 28px;
-}
-
-/* =============================================
-   CREATIVE CTA BUTTON (Sign Back In)
-   ============================================= */
+/* CTA BUTTON */
 .signin-btn {
-  display: inline-flex; align-items: center; gap: 10px;
-  height: 54px; padding: 0 32px;
-  background: linear-gradient(135deg, #f43f5e 0%, #fb8c00 50%, #fcd34d 100%);
-  color: #ffffff;
-  border: none; border-radius: 16px;
-  font-family: var(--font-display); font-size: 15px; font-weight: 700;
-  text-decoration: none; letter-spacing: -0.2px;
-  transition: all 0.28s cubic-bezier(0.25, 0.8, 0.25, 1);
-  cursor: pointer;
-  box-shadow: 0 8px 24px var(--accent-glow-soft);
-  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  display:inline-flex;align-items:center;gap:10px;
+  height:52px;padding:0 32px;background:var(--grad);color:#fff;
+  border:none;border-radius:18px;font-family:var(--ff-display);font-size:15px;font-weight:700;
+  text-decoration:none;letter-spacing:-0.2px;cursor:pointer;
+  box-shadow:0 8px 28px var(--a-glow);transition:all 0.28s cubic-bezier(0.25,0.8,0.25,1);
 }
-.signin-btn:hover {
-  transform: scale(1.02) translateY(-2px);
-  box-shadow: 0 14px 36px var(--accent-glow);
-}
+.signin-btn:hover { transform:scale(1.02) translateY(-2px);box-shadow:0 14px 40px var(--a-glow);filter:brightness(1.08); }
+.signin-btn svg { transition:transform 0.25s; }
+.signin-btn:hover svg { transform:translateX(4px); }
 
-.arrow {
-  font-size: 16px; line-height: 1; transition: transform 0.2s ease;
-  color: #fff;
-}
-.signin-btn:hover .arrow { transform: translateX(4px); }
+/* SECURE NOTE */
+.secure-note { margin-top:22px;font-family:var(--ff-mono);font-size:10.5px;color:var(--t3);letter-spacing:0.2px; }
 
-/* secure footer notes */
-.secure-note {
-  margin-top: 24px; font-size: 12px; color: var(--accent-text);
-  letter-spacing: 0.2px; font-weight: 500;
-}
+/* TRUST ROW */
+.trust-row { display:flex;justify-content:center;gap:18px;margin-top:20px;flex-wrap:wrap; }
+.trust-badge { display:flex;align-items:center;gap:5px;font-family:var(--ff-mono);font-size:10px;color:var(--t3);letter-spacing:0.2px; }
 
-@media (max-width: 520px) {
-  .navbar { padding: 0 20px; }
-  .logout-card { padding: 40px 24px 32px; }
-  .nav-logo { width: 120px; }
-  .card-logo { width: 140px; }
+@media(max-width:520px){
+  .navbar{padding:0 24px;}
+  .logout-card{padding:40px 24px 32px;border-radius:28px;}
+  .nav-logo{width:120px;}
+  .card-logo{width:140px;}
 }
-
 </style>
 </head>
 <body>
 
-<div class="mesh-gradient">
-  <div class="blob blob1"></div>
-  <div class="blob blob2"></div>
-  <div class="blob blob3"></div>
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
 </div>
 
 <nav class="navbar">
@@ -243,42 +174,45 @@ body::before {
 <div class="card-wrapper">
   <div class="logout-card">
 
-    <!-- animated check -->
+    <!-- Animated check ring -->
     <div class="check-ring">
-      <svg class="check-svg" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M6 15.5L12 21.5L24 9.5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
-          style="stroke-dasharray:28;stroke-dashoffset:28;animation:drawCheck 0.4s 0.45s ease forwards"/>
+      <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 17L13 23.5L26 9"/>
       </svg>
     </div>
 
     <div class="card-brand">
       <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora.AI" class="card-logo">
-      <p class="card-slogan">Transforming Documents Into Intelligent Conversations</p>
+      <span class="card-slogan">Enterprise Knowledge Intelligence Platform</span>
     </div>
 
-    <h2 class="logout-heading">Signed out</h2>
+    <div class="status-chip">
+      <span class="status-dot"></span>
+      Session cleared successfully
+    </div>
+
+    <h2 class="logout-heading">You're signed out</h2>
 
     <p class="logout-sub">
-      You've been securely signed out of your Nexora AI workspace.
+      You've been securely signed out of your Nexora.AI workspace. Your session data has been cleared.
     </p>
 
     <div class="divider"></div>
 
     <a class="signin-btn" href="/login">
       Sign back in
-      <span class="arrow">&#8594;</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
     </a>
 
-    <p class="secure-note">Your session data has been cleared.</p>
+    <div class="trust-row">
+      <span class="trust-badge">🔐 End-to-end encrypted</span>
+      <span class="trust-badge">🛡 Isolated workspace</span>
+    </div>
+
+    <p class="secure-note">All local session tokens have been revoked.</p>
 
   </div>
 </div>
-
-<style>
-@keyframes drawCheck {
-  to { stroke-dashoffset: 0; }
-}
-</style>
 
 </body>
 </html>

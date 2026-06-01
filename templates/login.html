@@ -3,641 +3,1331 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nexora.AI — Transforming Documents Into Intelligent Conversations</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
-<style>
+<title>Nexora.AI — Enterprise Knowledge Intelligence Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@300;400;500;700;800;900&family=Geist+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 
-/* =============================================
-   RESET + DESIGN TOKENS (Sherbet Sunset Edition)
-   ============================================= */
-*, *::before, *::after {
-  margin: 0; padding: 0; box-sizing: border-box;
-}
+<style>
+/* ============================================================
+   DESIGN TOKENS — Nexora 2026 Dark Intelligence Theme
+   ============================================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --bg-base: #0c080f; /* Deep Sherbet warm-black base background */
-  --bg-glass: rgba(255, 255, 255, 0.03);
-  --border: rgba(255, 255, 255, 0.07);
-  --border-hover: rgba(255, 255, 255, 0.14);
-  --text-primary: #fff1f2; /* Rose-tinted white */
-  --text-secondary: rgba(255, 241, 242, 0.65);
-  --text-muted: rgba(255, 241, 242, 0.35);
-  --font-display: 'Sora', sans-serif;
-  --font-body: 'DM Sans', sans-serif;
+  /* Core palette */
+  --ink:        #06050a;
+  --ink-2:      #0d0b14;
+  --ink-3:      #13101e;
+  --surface:    rgba(255,255,255,0.025);
+  --surface-2:  rgba(255,255,255,0.045);
+  --border:     rgba(255,255,255,0.055);
+  --border-2:   rgba(255,255,255,0.10);
 
-  /* ── SHERBET ACCENTS ── */
-  --accent: #f43f5e;
-  --accent-light: #fcd34d;
-  --accent-deep: #e11d48;
-  --accent-glow: rgba(244, 63, 94, 0.35);
-  --accent-glow-soft: rgba(244, 63, 94, 0.12);
-  --accent-border: rgba(244, 63, 94, 0.25);
-  --accent-border-hover: rgba(244, 63, 94, 0.55);
-  --accent-text: #fba518;
-  --accent-bg: rgba(244, 63, 94, 0.08);
+  /* Text */
+  --t1: #f2f0fa;
+  --t2: rgba(242,240,250,0.60);
+  --t3: rgba(242,240,250,0.32);
+
+  /* Brand accent — electric violet + coral */
+  --a1: #7c5cfc;   /* primary violet */
+  --a2: #b08aff;   /* light violet */
+  --a3: #ff6b6b;   /* coral */
+  --a4: #ffd46b;   /* amber */
+  --a-glow: rgba(124,92,252,0.28);
+  --a-glow-soft: rgba(124,92,252,0.10);
+  --a-border: rgba(124,92,252,0.22);
+  --a-border-2: rgba(124,92,252,0.50);
+  --a-bg: rgba(124,92,252,0.07);
+
+  --grad: linear-gradient(135deg, #7c5cfc 0%, #b08aff 50%, #ff6b6b 100%);
+  --grad-text: linear-gradient(135deg, #fff 0%, #b08aff 60%, #ff6b6b 100%);
+
+  --ff-display: 'Cabinet Grotesk', sans-serif;
+  --ff-body: 'Cabinet Grotesk', sans-serif;
+  --ff-mono: 'Geist Mono', monospace;
+  --ff-serif: 'Instrument Serif', serif;
+
+  --radius-sm: 10px;
+  --radius-md: 18px;
+  --radius-lg: 28px;
+  --radius-xl: 40px;
 }
 
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: var(--font-body);
-  background: var(--bg-base);
-  color: var(--text-primary);
+  font-family: var(--ff-body);
+  background: var(--ink);
+  color: var(--t1);
   min-height: 100vh;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* grain texture overlay */
-body::before {
+/* Grain */
+body::after {
   content: '';
-  position: fixed; inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-  opacity: 0.28; z-index: 1; pointer-events: none;
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+  opacity: 0.5;
 }
 
-/* =============================================
-   DYNAMIC AMBIENT MESH GRADIENTS
-   ============================================= */
-.mesh-gradient {
-  position: fixed; inset: 0; overflow: hidden; z-index: 0; pointer-events: none;
+.nav-logo {
+  width: 140px; height: auto; object-fit: contain;
 }
-.blob {
+
+.modal-logo {
+  width: 160px; height: auto; object-fit: contain; margin-bottom: 8px;
+}
+
+/* ============================================================
+   ANIMATED BACKGROUND ORBS
+   ============================================================ */
+.bg-orbs {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+}
+.orb {
   position: absolute; border-radius: 50%;
-  filter: blur(140px); opacity: 0.15;
-  animation: blobMove 18s infinite alternate ease-in-out;
+  filter: blur(130px); opacity: 0;
+  animation: orbFloat 20s ease-in-out infinite alternate;
 }
-.blob1 { width: 500px; height: 500px; background: rgba(244, 63, 94, 0.20); top:-150px; left:-100px; }
-.blob2 { width: 420px; height: 420px; background: rgba(251, 140, 0, 0.12); bottom:-150px; right:-100px; animation-delay: 3s; }
-.blob3 { width: 300px; height: 300px; background: rgba(253, 216, 53, 0.08); top:40%; left:45%; animation-delay: 6s; }
-
-@keyframes blobMove {
+.orb-1 {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(124,92,252,0.18) 0%, transparent 70%);
+  top: -200px; left: -200px;
+  animation-delay: 0s; opacity: 1;
+}
+.orb-2 {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(255,107,107,0.12) 0%, transparent 70%);
+  bottom: -150px; right: -150px;
+  animation-delay: 5s; opacity: 1;
+}
+.orb-3 {
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, rgba(176,138,255,0.10) 0%, transparent 70%);
+  top: 35%; left: 50%;
+  animation-delay: 10s; opacity: 1;
+}
+@keyframes orbFloat {
   0%   { transform: translate(0,0) scale(1); }
-  50%  { transform: translate(40px,-50px) scale(1.1); }
-  100% { transform: translate(-20px,20px) scale(0.9); }
+  33%  { transform: translate(60px,-80px) scale(1.12); }
+  66%  { transform: translate(-40px,50px) scale(0.92); }
+  100% { transform: translate(30px,-20px) scale(1.05); }
 }
 
-/* =============================================
+/* ============================================================
    NAVBAR
-   ============================================= */
+   ============================================================ */
 .navbar {
-  position: fixed; top: 0; left: 0; width: 100%; height: 72px;
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 0 56px;
+  position: fixed; top: 0; left: 0; width: 100%;
+  height: 68px; z-index: 500;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 60px;
   border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  background: rgba(12,8,15,0.65);
-  z-index: 200;
+  background: rgba(6,5,10,0.72);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
 }
 
 .nav-brand {
   display: flex; align-items: center; gap: 10px;
   text-decoration: none;
 }
-.nav-logo {
-  width: 140px; height: auto; object-fit: contain; flex-shrink: 0;
+.nav-wordmark {
+  font-family: var(--ff-display);
+  font-size: 20px; font-weight: 900;
+  letter-spacing: -0.5px;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.nav-wordmark sup {
+  font-size: 9px; font-weight: 600;
+  -webkit-text-fill-color: var(--t3);
+  color: var(--t3);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  vertical-align: super;
+  margin-left: 2px;
 }
 
 .nav-links {
-  display: flex; align-items: center; gap: 36px; list-style: none;
+  display: flex; align-items: center; gap: 32px; list-style: none;
 }
 .nav-links a {
-  font-size: 13.5px; color: var(--text-secondary);
-  text-decoration: none; transition: color 0.2s; letter-spacing: 0.2px;
-  position: relative;
+  font-size: 13px; font-weight: 500; color: var(--t2);
+  text-decoration: none; transition: color 0.2s;
+  letter-spacing: 0.1px;
 }
-.nav-links a::after {
-  content: '';
-  position: absolute; bottom: -4px; left: 0; width: 0; height: 1.5px;
-  background: var(--accent);
-  transition: width 0.3s ease;
-  border-radius: 1px;
+.nav-links a:hover { color: var(--t1); }
+
+.nav-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 10px 3px 5px; border-radius: 999px;
+  background: var(--a-bg); border: 1px solid var(--a-border);
+  font-size: 10.5px; font-weight: 600; letter-spacing: 0.4px;
+  color: var(--a2); text-transform: uppercase;
+  font-family: var(--ff-mono);
 }
-.nav-links a:hover { color: var(--accent-light); }
-.nav-links a:hover::after { width: 100%; }
+.nav-pulse {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #3ddc84; box-shadow: 0 0 6px #3ddc84;
+  animation: pulse 2s ease infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.75); }
+}
 
 .nav-cta {
-  height: 42px; padding: 0 22px;
-  background: linear-gradient(135deg, #f43f5e 0%, #fb8c00 50%, #fcd34d 100%);
-  color: #ffffff;
-  border: none; border-radius: 12px;
-  font-family: var(--font-display); font-size: 13.5px; font-weight: 600;
-  cursor: pointer; transition: all 0.28s cubic-bezier(0.25, 0.8, 0.25, 1);
-  letter-spacing: -0.2px;
-  box-shadow: 0 8px 24px var(--accent-glow-soft);
-  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  height: 38px; padding: 0 20px;
+  background: var(--grad);
+  color: #fff; border: none; border-radius: var(--radius-sm);
+  font-family: var(--ff-display); font-size: 13px; font-weight: 700;
+  cursor: pointer; letter-spacing: -0.2px;
+  box-shadow: 0 4px 20px var(--a-glow);
+  transition: all 0.25s cubic-bezier(.25,.8,.25,1);
 }
 .nav-cta:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 32px var(--accent-glow);
+  box-shadow: 0 8px 32px var(--a-glow);
+  filter: brightness(1.1);
 }
 
-/* =============================================
+/* ============================================================
    PAGE WRAPPER
-   ============================================= */
-.page-wrapper { position: relative; z-index: 2; }
+   ============================================================ */
+.page { position: relative; z-index: 2; }
 
-/* =============================================
-   HERO SECTION
-   ============================================= */
-.hero-section {
+/* ============================================================
+   HERO — Full reimagined split layout
+   ============================================================ */
+.hero {
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
-  text-align: center;
-  padding: 120px 56px 80px;
-  max-width: 1100px;
+  padding: 100px 60px 80px;
+  max-width: 1380px;
   margin: 0 auto;
-  animation: fadeUp 0.7s ease both;
+  gap: 80px;
 }
 
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(28px); }
-  to   { opacity: 1; transform: translateY(0); }
+.hero-left { animation: slideLeft 0.8s ease both; }
+.hero-right { animation: slideRight 0.8s ease both; animation-delay: 0.15s; }
+
+@keyframes slideLeft {
+  from { opacity: 0; transform: translateX(-30px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 
 .hero-eyebrow {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 8px 18px; border-radius: 999px;
-  border: 1px solid var(--accent-border); background: var(--accent-bg);
-  font-size: 12px; font-weight: 500; color: var(--text-primary);
-  letter-spacing: 0.7px; text-transform: uppercase;
-  margin-bottom: 36px;
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 6px 14px 6px 8px; border-radius: 999px;
+  background: var(--a-bg); border: 1px solid var(--a-border);
+  margin-bottom: 28px;
 }
-.eyebrow-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--accent); opacity: 0.85;
-  box-shadow: 0 0 8px var(--accent-glow);
+.eyebrow-icon {
+  width: 22px; height: 22px; border-radius: 6px;
+  background: var(--grad);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+}
+.eyebrow-text {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.8px;
+  text-transform: uppercase; color: var(--a2);
+  font-family: var(--ff-mono);
 }
 
-.hero-headline {
-  font-family: var(--font-display);
-  font-size: clamp(52px, 7vw, 88px);
-  font-weight: 800;
-  line-height: 1.04;
-  letter-spacing: -3px;
-  margin-bottom: 30px;
-  color: var(--text-primary);
+.hero-h1 {
+  font-family: var(--ff-display);
+  font-size: clamp(44px, 4.8vw, 74px);
+  font-weight: 900;
+  line-height: 1.00;
+  letter-spacing: -2.5px;
+  margin-bottom: 24px;
+  color: var(--t1);
 }
-.hero-headline .dimmed {
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+.hero-h1 em {
+  font-style: normal;
+  background: var(--grad);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-
-.hero-desc {
-  font-size: 17px; line-height: 1.85;
-  color: var(--text-secondary);
-  max-width: 680px;
-  margin: 0 auto 44px;
+.hero-h1 .serif-accent {
+  font-family: var(--ff-serif);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--a2);
+  -webkit-text-fill-color: var(--a2);
 }
 
-/* HERO ACTIONS */
+.hero-sub {
+  font-size: 16px; line-height: 1.8;
+  color: var(--t2); max-width: 520px;
+  margin-bottom: 40px;
+}
+
 .hero-actions {
-  display: flex; gap: 14px; justify-content: center;
-  flex-wrap: wrap; margin-bottom: 72px;
+  display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 52px;
 }
 
 .btn-primary {
-  height: 56px; padding: 0 32px;
-  background: linear-gradient(135deg, #f43f5e 0%, #fb8c00 50%, #fcd34d 100%);
-  color: #ffffff;
-  border: none; border-radius: 16px;
-  font-family: var(--font-display); font-size: 15px; font-weight: 700;
-  cursor: pointer; transition: all 0.28s cubic-bezier(0.25, 0.8, 0.25, 1);
-  letter-spacing: -0.2px;
-  box-shadow: 0 8px 24px var(--accent-glow-soft);
-  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  height: 52px; padding: 0 28px;
+  background: var(--grad);
+  color: #fff; border: none; border-radius: var(--radius-md);
+  font-family: var(--ff-display); font-size: 14.5px; font-weight: 700;
+  cursor: pointer; letter-spacing: -0.2px;
+  box-shadow: 0 8px 28px var(--a-glow);
+  transition: all 0.28s cubic-bezier(.25,.8,.25,1);
+  display: flex; align-items: center; gap: 8px;
 }
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 36px var(--accent-glow);
+  transform: translateY(-3px);
+  box-shadow: 0 14px 40px var(--a-glow);
+  filter: brightness(1.08);
 }
+.btn-primary svg { transition: transform 0.25s; }
+.btn-primary:hover svg { transform: translateX(3px); }
 
-.btn-ghost {
-  height: 56px; padding: 0 28px;
-  background: var(--bg-glass); color: var(--text-primary);
-  border: 1px solid var(--accent-border); border-radius: 16px;
-  font-family: var(--font-body); font-size: 15px; font-weight: 400;
+.btn-outline {
+  height: 52px; padding: 0 24px;
+  background: transparent; color: var(--t1);
+  border: 1px solid var(--border-2); border-radius: var(--radius-md);
+  font-family: var(--ff-display); font-size: 14.5px; font-weight: 500;
   cursor: pointer; transition: all 0.25s ease;
+  display: flex; align-items: center; gap: 8px;
 }
-.btn-ghost:hover {
-  border-color: var(--accent-border-hover); color: var(--accent-light);
-  background: var(--accent-bg);
+.btn-outline:hover {
+  border-color: var(--a-border-2);
+  background: var(--a-bg);
+  color: var(--a2);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px var(--accent-glow-soft);
 }
 
-/* HERO FEATURE GRID — 4 cols */
-.hero-feature-grid {
+/* Hero trust strip */
+.hero-trust {
+  display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+}
+.trust-item {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 12.5px; color: var(--t3);
+  font-family: var(--ff-mono);
+}
+.trust-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--a2); opacity: 0.7;
+}
+.trust-sep { color: var(--border-2); font-size: 16px; }
+
+/* ============================================================
+   HERO RIGHT — Live UI Preview
+   ============================================================ */
+.hero-ui-frame {
+  background: var(--ink-2);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow:
+    0 40px 80px rgba(0,0,0,0.6),
+    0 0 0 1px rgba(255,255,255,0.04),
+    inset 0 1px 0 rgba(255,255,255,0.07);
+  position: relative;
+}
+.hero-ui-frame::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1.5px;
+  background: var(--grad);
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+}
+@keyframes shimmer {
+  from { background-position: -200% center; }
+  to   { background-position: 200% center; }
+}
+
+.ui-titlebar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 14px 18px;
+  background: rgba(255,255,255,0.02);
+  border-bottom: 1px solid var(--border);
+}
+.ui-dot { width: 10px; height: 10px; border-radius: 50%; }
+.ui-dot-r { background: #ff5f56; }
+.ui-dot-y { background: #ffbd2e; }
+.ui-dot-g { background: #27c93f; }
+.ui-titlebar-text {
+  margin-left: 8px; font-family: var(--ff-mono);
+  font-size: 11px; color: var(--t3); letter-spacing: 0.3px;
+}
+
+.ui-body { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+
+/* File upload area */
+.ui-upload-zone {
+  border: 1.5px dashed var(--a-border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  text-align: center;
+  background: var(--a-bg);
+  position: relative; overflow: hidden;
+}
+.ui-upload-zone::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(124,92,252,0.07) 0%, transparent 70%);
+}
+.upload-icon-wrap {
+  width: 44px; height: 44px; border-radius: 14px;
+  background: var(--grad);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 12px; font-size: 20px;
+  box-shadow: 0 8px 20px var(--a-glow);
+}
+.ui-upload-zone h4 {
+  font-size: 13px; font-weight: 700; margin-bottom: 4px; color: var(--t1);
+}
+.ui-upload-zone p { font-size: 11px; color: var(--t3); }
+
+/* Indexed docs */
+.ui-doc-list { display: flex; flex-direction: column; gap: 6px; }
+.ui-doc-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border-radius: var(--radius-sm);
+  background: var(--surface); border: 1px solid var(--border);
+  transition: border-color 0.2s;
+}
+.ui-doc-item:hover { border-color: var(--a-border); }
+.doc-type-badge {
+  font-family: var(--ff-mono); font-size: 9px; font-weight: 600;
+  padding: 2px 6px; border-radius: 5px;
+  letter-spacing: 0.4px; text-transform: uppercase;
+  flex-shrink: 0;
+}
+.badge-pdf  { background: rgba(255,107,107,0.12); color: #ff6b6b; }
+.badge-docx { background: rgba(100,149,237,0.12); color: #6495ed; }
+.badge-csv  { background: rgba(61,220,132,0.12);  color: #3ddc84; }
+.doc-name { font-size: 12px; color: var(--t2); flex: 1; }
+.doc-status {
+  font-family: var(--ff-mono); font-size: 10px; color: #3ddc84;
+  display: flex; align-items: center; gap: 4px;
+}
+.doc-status::before {
+  content: '';
+  width: 5px; height: 5px; border-radius: 50%;
+  background: #3ddc84; display: block;
+}
+
+/* Chat interface */
+.ui-chat { display: flex; flex-direction: column; gap: 10px; }
+.chat-bubble {
+  max-width: 85%;
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-size: 12px; line-height: 1.5;
+}
+.bubble-user {
+  background: var(--grad);
+  color: #fff; align-self: flex-end;
+  border-radius: 16px 4px 16px 16px;
+  box-shadow: 0 4px 16px var(--a-glow);
+}
+.bubble-ai {
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+  color: var(--t1); align-self: flex-start;
+  border-radius: 4px 16px 16px 16px;
+}
+.bubble-ai-header {
+  display: flex; align-items: center; gap: 6px;
+  margin-bottom: 6px;
+  font-size: 10px; font-weight: 600; color: var(--a2);
+  font-family: var(--ff-mono); letter-spacing: 0.4px;
+}
+.bubble-ai-header::before {
+  content: '◆';
+  font-size: 8px; color: var(--a1);
+}
+.citation-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 999px;
+  background: rgba(124,92,252,0.12); border: 1px solid var(--a-border);
+  font-size: 9.5px; font-family: var(--ff-mono); color: var(--a2);
+  margin-top: 6px;
+}
+.citation-pill::before { content: '📄'; font-size: 9px; }
+
+/* Typing animation */
+.ui-typing {
+  display: flex; align-items: center; gap: 5px;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px 16px 16px 16px;
+  align-self: flex-start; width: fit-content;
+}
+.typing-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--a2);
+  animation: typingBounce 1.2s ease infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.15s; }
+.typing-dot:nth-child(3) { animation-delay: 0.30s; }
+@keyframes typingBounce {
+  0%,60%,100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-5px); opacity: 1; }
+}
+
+.ui-input-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px; background: var(--surface);
+  border: 1px solid var(--border-2); border-radius: var(--radius-sm);
+  margin-top: 4px;
+}
+.ui-input-row input {
+  flex: 1; background: none; border: none; outline: none;
+  font-size: 12px; color: var(--t2); font-family: var(--ff-body);
+}
+.ui-input-row input::placeholder { color: var(--t3); }
+.ui-send-btn {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: var(--grad); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; box-shadow: 0 2px 10px var(--a-glow);
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   WORKFLOW SECTION
+   ============================================================ */
+.section-divider { border: none; border-top: 1px solid var(--border); }
+
+.workflow-section {
+  padding: 100px 60px;
+  max-width: 1380px; margin: 0 auto;
+}
+
+.section-tag {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: var(--ff-mono); font-size: 10.5px; font-weight: 500;
+  letter-spacing: 0.8px; text-transform: uppercase;
+  color: var(--a2); margin-bottom: 20px;
+}
+.section-tag::before {
+  content: '';
+  width: 18px; height: 1.5px;
+  background: var(--a2);
+  display: block;
+}
+
+.section-h2 {
+  font-family: var(--ff-display);
+  font-size: clamp(32px, 3.5vw, 52px);
+  font-weight: 900; letter-spacing: -2px; line-height: 1.05;
+  margin-bottom: 16px;
+}
+.section-h2 .grad { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.section-desc { font-size: 15px; line-height: 1.8; color: var(--t2); max-width: 560px; margin-bottom: 64px; }
+
+/* Workflow comparison */
+.workflow-compare {
+  display: grid; grid-template-columns: 1fr 80px 1fr; gap: 0; align-items: start;
+}
+.workflow-col {
+  background: var(--ink-2); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 32px; overflow: hidden;
+  position: relative;
+}
+.workflow-col.old { opacity: 0.65; }
+.workflow-col.new {
+  border-color: var(--a-border);
+  background: linear-gradient(180deg, rgba(124,92,252,0.06) 0%, var(--ink-2) 100%);
+  box-shadow: 0 20px 60px var(--a-glow-soft), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+.workflow-col.new::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1.5px;
+  background: var(--grad);
+  animation: shimmer 3s linear infinite;
+}
+
+.wf-header {
+  font-family: var(--ff-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 6px;
+  display: inline-block; margin-bottom: 24px;
+}
+.wf-old .wf-header { background: rgba(255,255,255,0.04); color: var(--t3); }
+.wf-new .wf-header { background: var(--a-bg); color: var(--a2); border: 1px solid var(--a-border); }
+
+.wf-steps { display: flex; flex-direction: column; gap: 0; }
+.wf-step {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 14px 0; position: relative;
+}
+.wf-step:not(:last-child)::after {
+  content: '';
+  position: absolute; left: 15px; top: 46px;
+  width: 1px; bottom: 0;
+  background: linear-gradient(180deg, var(--border-2), transparent);
+}
+.step-num {
+  width: 30px; height: 30px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; font-family: var(--ff-mono);
+  flex-shrink: 0; position: relative; z-index: 1;
+}
+.wf-old .step-num { background: rgba(255,255,255,0.05); color: var(--t3); }
+.wf-new .step-num { background: var(--grad); color: #fff; box-shadow: 0 4px 14px var(--a-glow); }
+.wf-step-text h4 { font-size: 13.5px; font-weight: 700; margin-bottom: 2px; }
+.wf-step-text p { font-size: 12px; color: var(--t3); line-height: 1.5; }
+.wf-old .wf-step-text h4 { color: var(--t2); }
+.wf-new .wf-step-text h4 { color: var(--t1); }
+
+.wf-vs {
+  display: flex; align-items: center; justify-content: center; padding-top: 48px;
+}
+.vs-badge {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--ink-3); border: 1px solid var(--border-2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; color: var(--t3);
+  font-family: var(--ff-display);
+}
+
+/* ============================================================
+   KNOWLEDGE SOURCES SECTION
+   ============================================================ */
+.sources-section {
+  padding: 100px 60px;
+  border-top: 1px solid var(--border);
+  max-width: 1380px; margin: 0 auto;
+}
+
+.sources-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-  width: 100%;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px; margin-top: 52px;
 }
 
-.hero-feat-card {
-  padding: 22px 20px; border-radius: 20px;
-  background: var(--bg-glass); border: 1px solid var(--border);
-  text-align: left;
-  backdrop-filter: blur(10px);
-  transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+.source-card {
+  padding: 22px 18px; border-radius: var(--radius-md);
+  background: var(--surface); border: 1px solid var(--border);
+  text-align: center; cursor: default;
+  transition: all 0.28s cubic-bezier(.25,.8,.25,1);
+  position: relative; overflow: hidden;
 }
-.hero-feat-card:hover {
-  border-color: var(--accent-border-hover);
-  transform: translateY(-3px);
-  box-shadow: 0 12px 32px var(--accent-glow-soft);
+.source-card::after {
+  content: attr(data-tip);
+  position: absolute; inset: 0;
+  background: var(--ink-3);
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: var(--a2); padding: 12px;
+  line-height: 1.5; text-align: center;
+  opacity: 0; transform: translateY(8px);
+  transition: all 0.25s ease;
 }
-.feat-icon {
-  font-size: 18px; margin-bottom: 12px;
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.hero-feat-card h3 {
-  font-family: var(--font-display); font-size: 14px; font-weight: 600;
-  margin-bottom: 7px; letter-spacing: -0.2px;
-  color: var(--text-primary);
-}
-.hero-feat-card p { font-size: 12.5px; line-height: 1.65; color: var(--text-secondary); }
+.source-card:hover { border-color: var(--a-border-2); transform: translateY(-4px); box-shadow: 0 12px 30px var(--a-glow-soft); }
+.source-card:hover::after { opacity: 1; transform: translateY(0); }
 
-/* TECH STRIP */
-.tech-strip {
-  margin-top: 48px; padding: 16px 0;
-  border-top: 1px solid var(--border);
-  font-size: 11.5px; letter-spacing: 0.9px;
-  text-transform: uppercase; color: var(--accent-text);
-  width: 100%; text-align: center;
-  font-weight: 600;
-}
+.source-icon { font-size: 26px; margin-bottom: 10px; display: block; }
+.source-label { font-size: 11.5px; font-weight: 700; letter-spacing: 0.2px; color: var(--t2); }
 
-/* STATS */
-.stats-row {
-  display: flex; gap: 48px; justify-content: center;
-  margin-top: 32px; flex-wrap: wrap;
-}
-.stat-box { text-align: center; }
-.stat-box h2 {
-  font-family: var(--font-display); font-size: 15px; font-weight: 700;
-  background: linear-gradient(135deg, #ffffff 0%, var(--accent-light) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 4px;
-}
-.stat-box p { font-size: 12px; color: var(--text-muted); }
-
-/* =============================================
+/* ============================================================
    FEATURES SECTION
-   ============================================= */
+   ============================================================ */
 .features-section {
-  padding: 100px 56px;
-  max-width: 1340px; margin: 0 auto;
+  padding: 100px 60px;
   border-top: 1px solid var(--border);
+  max-width: 1380px; margin: 0 auto;
 }
 
-.section-label {
-  font-size: 11.5px; font-weight: 500; letter-spacing: 1.2px;
-  text-transform: uppercase; color: var(--accent); margin-bottom: 18px;
-}
-.section-title {
-  font-family: var(--font-display);
-  font-size: clamp(32px, 3.5vw, 48px); font-weight: 800;
-  letter-spacing: -1.5px; line-height: 1.1;
-  max-width: 580px; margin-bottom: 60px;
-}
-.section-title .dimmed {
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 12px; margin-top: 60px;
 }
 
-.features-big-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+.feat-card {
+  padding: 28px; border-radius: var(--radius-lg);
+  background: var(--surface); border: 1px solid var(--border);
+  transition: all 0.3s ease; position: relative; overflow: hidden;
 }
+.feat-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: var(--grad); opacity: 0;
+  transition: opacity 0.3s;
+}
+.feat-card:hover {
+  border-color: var(--a-border-2);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 50px var(--a-glow-soft);
+  background: var(--surface-2);
+}
+.feat-card:hover::before { opacity: 1; }
 
-.big-feature-card {
-  padding: 30px; border-radius: 24px;
-  background: var(--bg-glass); border: 1px solid var(--border);
-  backdrop-filter: blur(10px);
-  transition: all 0.28s ease; position: relative; overflow: hidden;
-}
-.big-feature-card::after {
-  content: ''; position: absolute; inset: 0; border-radius: 24px;
-  opacity: 0;
-  background: radial-gradient(ellipse at 50% 0%, var(--accent-bg) 0%, transparent 70%);
-  transition: opacity 0.3s; pointer-events: none;
-}
-.big-feature-card:hover {
-  border-color: var(--accent-border-hover);
-  transform: translateY(-3px);
-  box-shadow: 0 16px 40px var(--accent-glow-soft);
-}
-.big-feature-card:hover::after { opacity: 1; }
+.feat-card.span-2 { grid-column: span 2; }
 
-.big-feature-card.featured {
-  grid-column: span 2;
-  background: linear-gradient(180deg, var(--accent-bg) 0%, var(--bg-glass) 100%);
-  border-color: var(--accent-border);
+.feat-icon-wrap {
+  width: 48px; height: 48px; border-radius: 14px;
+  background: var(--a-bg); border: 1px solid var(--a-border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; margin-bottom: 20px;
+  transition: all 0.25s;
+}
+.feat-card:hover .feat-icon-wrap {
+  background: var(--a1); border-color: var(--a1);
+  box-shadow: 0 6px 20px var(--a-glow);
+  transform: scale(1.08);
 }
 
 .feat-num {
-  font-family: var(--font-display); font-size: 11px; font-weight: 600;
-  letter-spacing: 1px; color: var(--accent); margin-bottom: 20px; text-transform: uppercase;
+  font-family: var(--ff-mono); font-size: 10px; font-weight: 500;
+  color: var(--a2); letter-spacing: 0.5px; margin-bottom: 10px;
+  display: block;
 }
-.big-feature-card h3 {
-  font-family: var(--font-display); font-size: 18px; font-weight: 700;
-  letter-spacing: -0.3px; margin-bottom: 12px;
-  color: var(--text-primary);
+.feat-card h3 {
+  font-family: var(--ff-display); font-size: 17px; font-weight: 800;
+  letter-spacing: -0.3px; margin-bottom: 10px; color: var(--t1);
 }
-.big-feature-card p { font-size: 14px; line-height: 1.7; color: var(--text-secondary); }
+.feat-card p { font-size: 13.5px; line-height: 1.7; color: var(--t2); }
 
-/* =============================================
-   STACK SECTION
-   ============================================= */
-.stack-section { padding: 80px 56px; border-top: 1px solid var(--border); }
-.stack-inner { max-width: 1340px; margin: 0 auto; }
+.feat-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+.feat-tag {
+  font-family: var(--ff-mono); font-size: 10px; font-weight: 500;
+  padding: 3px 9px; border-radius: 6px;
+  background: var(--a-bg); border: 1px solid var(--a-border);
+  color: var(--a2); letter-spacing: 0.3px;
+}
 
-.stack-grid {
-  display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-top: 48px;
+/* ============================================================
+   PROCESS FLOW SECTION
+   ============================================================ */
+.flow-section {
+  padding: 100px 60px;
+  border-top: 1px solid var(--border);
+  background: radial-gradient(ellipse at 50% 0%, rgba(124,92,252,0.06) 0%, transparent 65%);
 }
-.stack-col {
-  padding: 26px; border-radius: 20px;
-  background: var(--bg-glass); border: 1px solid var(--border);
-  transition: border-color 0.25s, box-shadow 0.25s;
+.flow-inner { max-width: 1380px; margin: 0 auto; }
+
+.flow-track {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  align-items: center;
+  gap: 0; margin-top: 64px;
+  position: relative;
 }
-.stack-col:hover {
-  border-color: var(--accent-border-hover);
-  box-shadow: 0 12px 32px var(--accent-glow-soft);
+
+.flow-step {
+  display: flex; flex-direction: column;
+  align-items: center; text-align: center;
+  gap: 14px; position: relative; z-index: 1;
+  animation: flowIn 0.6s ease both;
 }
-.stack-col-title {
-  font-family: var(--font-display); font-size: 12px; font-weight: 600;
-  letter-spacing: 0.8px; text-transform: uppercase; color: var(--accent-light); margin-bottom: 18px;
+.flow-step:nth-child(1) { animation-delay: 0s; }
+.flow-step:nth-child(3) { animation-delay: 0.1s; }
+.flow-step:nth-child(5) { animation-delay: 0.2s; }
+.flow-step:nth-child(7) { animation-delay: 0.3s; }
+@keyframes flowIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-.stack-items { display: flex; flex-direction: column; gap: 10px; }
-.stack-item {
-  font-size: 13.5px; color: var(--text-secondary);
-  padding: 8px 12px; border-radius: 10px;
-  background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.03);
+
+.flow-node {
+  width: 64px; height: 64px; border-radius: 20px;
+  background: var(--ink-2); border: 1.5px solid var(--a-border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; position: relative;
+  box-shadow: 0 8px 24px var(--a-glow-soft);
+  transition: all 0.3s;
+}
+.flow-node:hover {
+  border-color: var(--a1);
+  box-shadow: 0 12px 36px var(--a-glow);
+  transform: scale(1.08);
+}
+.flow-node::after {
+  content: attr(data-step);
+  position: absolute; top: -8px; right: -8px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--grad); color: #fff;
+  font-size: 9px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--ff-mono);
+}
+
+.flow-step h4 { font-size: 12px; font-weight: 700; color: var(--t1); letter-spacing: -0.2px; }
+.flow-step p { font-size: 10.5px; color: var(--t3); line-height: 1.4; max-width: 90px; }
+
+.flow-arrow {
+  display: flex; align-items: center; justify-content: center;
+  color: var(--a2); opacity: 0.5; font-size: 14px;
+}
+
+/* ============================================================
+   USE CASES SECTION
+   ============================================================ */
+.usecases-section {
+  padding: 100px 60px;
+  border-top: 1px solid var(--border);
+  max-width: 1380px; margin: 0 auto;
+}
+
+.usecases-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px; margin-top: 56px;
+}
+
+.usecase-card {
+  padding: 32px; border-radius: var(--radius-lg);
+  background: var(--surface); border: 1px solid var(--border);
+  transition: all 0.3s ease; position: relative; overflow: hidden;
+}
+.usecase-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; bottom: 0; width: 3px;
+  background: var(--grad); opacity: 0;
+  transition: opacity 0.3s;
+}
+.usecase-card:hover {
+  border-color: var(--a-border); transform: translateX(4px);
+  background: var(--surface-2);
+}
+.usecase-card:hover::before { opacity: 1; }
+
+.usecase-label {
+  font-family: var(--ff-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.8px; text-transform: uppercase;
+  color: var(--a2); margin-bottom: 12px; display: block;
+}
+.usecase-card h3 {
+  font-family: var(--ff-display); font-size: 18px; font-weight: 800;
+  letter-spacing: -0.4px; margin-bottom: 10px;
+}
+.usecase-card p { font-size: 13.5px; color: var(--t2); line-height: 1.7; margin-bottom: 18px; }
+.usecase-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.usecase-tag {
+  font-size: 11px; padding: 4px 10px; border-radius: 999px;
+  background: var(--surface-2); border: 1px solid var(--border-2);
+  color: var(--t3);
+}
+
+/* ============================================================
+   DEMO INTERACTION SECTION
+   ============================================================ */
+.demo-section {
+  padding: 100px 60px;
+  border-top: 1px solid var(--border);
+  background: radial-gradient(ellipse at 50% 100%, rgba(124,92,252,0.05) 0%, transparent 70%);
+}
+.demo-inner {
+  max-width: 900px; margin: 0 auto; text-align: center;
+}
+.demo-inner .section-tag { justify-content: center; }
+.demo-inner .section-tag::before { display: none; }
+.demo-inner::after { content: ''; display: none; }
+
+.demo-window {
+  margin-top: 52px;
+  background: var(--ink-2); border: 1px solid var(--border-2);
+  border-radius: var(--radius-lg); overflow: hidden;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 60px var(--a-glow-soft);
+  text-align: left;
+}
+
+.demo-sidebar {
+  display: grid; grid-template-columns: 220px 1fr; height: 420px;
+}
+.sidebar-panel {
+  background: rgba(255,255,255,0.015); border-right: 1px solid var(--border);
+  padding: 18px; display: flex; flex-direction: column; gap: 12px;
+}
+.sidebar-title {
+  font-family: var(--ff-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.8px; text-transform: uppercase; color: var(--t3);
+  padding-bottom: 10px; border-bottom: 1px solid var(--border);
+}
+.kb-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px; border-radius: 10px;
+  cursor: pointer; transition: all 0.2s;
+  border: 1px solid transparent;
+}
+.kb-item.active {
+  background: var(--a-bg); border-color: var(--a-border);
+}
+.kb-item:hover:not(.active) { background: var(--surface); }
+.kb-icon {
+  width: 28px; height: 28px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; background: var(--surface-2);
+}
+.kb-info { flex: 1; min-width: 0; }
+.kb-name { font-size: 11.5px; font-weight: 600; color: var(--t1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kb-count { font-family: var(--ff-mono); font-size: 9.5px; color: var(--t3); }
+
+.chat-panel {
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.chat-header {
+  padding: 14px 20px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.chat-title { font-size: 13px; font-weight: 700; color: var(--t1); }
+.chat-sub { font-size: 11px; color: var(--t3); font-family: var(--ff-mono); }
+.model-badge {
+  margin-left: auto; font-family: var(--ff-mono); font-size: 9px; font-weight: 600;
+  padding: 2px 8px; border-radius: 6px;
+  background: var(--a-bg); border: 1px solid var(--a-border); color: var(--a2);
+  letter-spacing: 0.3px;
+}
+
+.chat-messages {
+  flex: 1; padding: 20px; display: flex; flex-direction: column;
+  gap: 14px; overflow-y: auto;
+}
+
+.demo-chat-user {
+  align-self: flex-end;
+  background: var(--grad); color: #fff;
+  padding: 11px 16px; border-radius: 16px 4px 16px 16px;
+  font-size: 13px; max-width: 65%;
+  box-shadow: 0 4px 16px var(--a-glow);
+}
+.demo-chat-ai {
+  align-self: flex-start; max-width: 80%;
+}
+.demo-chat-ai-header {
+  display: flex; align-items: center; gap: 6px; margin-bottom: 6px;
+}
+.ai-avatar {
+  width: 22px; height: 22px; border-radius: 6px;
+  background: var(--grad); display: flex; align-items: center;
+  justify-content: center; font-size: 11px;
+}
+.ai-name { font-size: 10.5px; font-weight: 700; color: var(--a2); font-family: var(--ff-mono); }
+.demo-chat-ai-body {
+  background: var(--surface-2); border: 1px solid var(--border-2);
+  padding: 12px 16px; border-radius: 4px 16px 16px 16px;
+  font-size: 12.5px; color: var(--t1); line-height: 1.65;
+}
+.demo-citations {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px;
+}
+.demo-cite {
+  font-family: var(--ff-mono); font-size: 9.5px;
+  padding: 2px 8px; border-radius: 6px;
+  background: rgba(124,92,252,0.10); border: 1px solid var(--a-border);
+  color: var(--a2); cursor: pointer;
   transition: all 0.2s;
 }
-.stack-item:hover {
-  color: #fff;
-  background: var(--accent-bg);
-  border-color: var(--accent-border);
-}
+.demo-cite:hover { background: rgba(124,92,252,0.22); }
 
-/* =============================================
-   USE CASES
-   ============================================= */
-.usecases-section { padding: 80px 56px; border-top: 1px solid var(--border); }
-.usecases-inner {
-  max-width: 1340px; margin: 0 auto;
-  display: flex; gap: 80px; align-items: flex-start;
+.chat-input-bar {
+  padding: 14px 18px; border-top: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
 }
-.usecases-left { flex: 1; }
-.usecases-list {
-  flex: 1; display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; padding-top: 8px;
+.chat-input-bar input {
+  flex: 1; background: var(--surface); border: 1px solid var(--border-2);
+  border-radius: 10px; padding: 9px 14px;
+  font-size: 12.5px; color: var(--t1); outline: none;
+  font-family: var(--ff-body); transition: border-color 0.2s;
 }
-.use-pill {
-  padding: 13px 18px; border-radius: 14px;
-  background: var(--bg-glass); border: 1px solid var(--border);
-  font-size: 13.5px; color: var(--text-secondary); transition: all 0.22s;
-}
-.use-pill:hover {
-  border-color: var(--accent-border-hover);
-  color: #fff;
-  background: var(--accent-bg);
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px var(--accent-glow-soft);
-}
-
-/* =============================================
-   FOOTER
-   ============================================= */
-footer { border-top: 1px solid var(--border); padding: 40px 56px; }
-.footer-inner {
-  max-width: 1340px; margin: 0 auto;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.footer-brand {
-  display: flex; align-items: center; gap: 8px;
-  font-family: var(--font-display); font-size: 15px; font-weight: 700;
-}
-.footer-orb {
-  width: 14px; height: 14px; border-radius: 50%;
-  background: var(--grad-button);
-  box-shadow: 0 0 10px var(--accent-glow);
-}
-.footer-links { display: flex; gap: 28px; }
-.footer-links a { font-size: 13px; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
-.footer-links a:hover { color: var(--accent-light); }
-.footer-copy { font-size: 12.5px; color: var(--text-muted); }
-
-/* =============================================
-   LOGIN MODAL WRAPPER AND INTERACTIVE FORMS
-   ============================================= */
-.modal-backdrop {
-  position: fixed; inset: 0; z-index: 999;
-  background: rgba(4,4,4,0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+.chat-input-bar input:focus { border-color: var(--a-border-2); }
+.chat-input-bar input::placeholder { color: var(--t3); }
+.send-btn {
+  width: 34px; height: 34px; border-radius: 10px;
+  background: var(--grad); border: none; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  padding: 24px;
+  box-shadow: 0 4px 14px var(--a-glow); flex-shrink: 0;
+  font-size: 14px; transition: all 0.2s;
+}
+.send-btn:hover { transform: scale(1.06); filter: brightness(1.1); }
+
+/* ============================================================
+   SOURCE VERIFICATION
+   ============================================================ */
+.verify-section {
+  padding: 100px 60px;
+  border-top: 1px solid var(--border);
+  max-width: 1380px; margin: 0 auto;
+}
+.verify-layout {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 60px; align-items: center; margin-top: 56px;
+}
+.verify-text p { font-size: 15px; line-height: 1.8; color: var(--t2); margin-bottom: 28px; }
+.verify-points { display: flex; flex-direction: column; gap: 14px; }
+.verify-point {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px; border-radius: var(--radius-sm);
+  background: var(--surface); border: 1px solid var(--border);
+  transition: border-color 0.2s;
+}
+.verify-point:hover { border-color: var(--a-border); }
+.vp-icon {
+  width: 32px; height: 32px; border-radius: 10px;
+  background: var(--a-bg); border: 1px solid var(--a-border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+}
+.vp-text h4 { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+.vp-text p { font-size: 12px; color: var(--t3); line-height: 1.5; }
+
+.verify-ui {
+  background: var(--ink-2); border: 1px solid var(--border-2);
+  border-radius: var(--radius-lg); overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+.verify-ui-header {
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.02);
+}
+.verify-header-title {
+  font-size: 12px; font-weight: 700; color: var(--t1);
+  font-family: var(--ff-mono);
+}
+.verify-ui-body { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+
+.source-result {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 14px; cursor: pointer;
+  transition: all 0.2s; position: relative; overflow: hidden;
+}
+.source-result::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0; width: 2.5px;
+  background: var(--grad);
+}
+.source-result:hover { border-color: var(--a-border); background: var(--surface-2); }
+.sr-doc {
+  font-family: var(--ff-mono); font-size: 10px; color: var(--a2);
+  margin-bottom: 6px; display: flex; align-items: center; gap: 6px;
+}
+.sr-doc::before { content: '📄'; font-size: 10px; }
+.sr-page { color: var(--t3); }
+.sr-excerpt { font-size: 12px; color: var(--t2); line-height: 1.6; }
+.sr-relevance {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 8px;
+}
+.relevance-label { font-family: var(--ff-mono); font-size: 9.5px; color: var(--t3); }
+.relevance-bar { flex: 1; height: 3px; border-radius: 999px; background: var(--border); }
+.relevance-fill { height: 100%; border-radius: 999px; background: var(--grad); }
+.relevance-pct { font-family: var(--ff-mono); font-size: 9.5px; color: var(--a2); }
+
+/* ============================================================
+   FAQ SECTION
+   ============================================================ */
+.faq-section {
+  padding: 100px 60px;
+  border-top: 1px solid var(--border);
+  max-width: 860px; margin: 0 auto;
+}
+.faq-section .section-tag { justify-content: center; }
+.faq-section .section-tag::before { display: none; }
+.faq-section .section-h2 { text-align: center; }
+.faq-section .section-desc { text-align: center; margin: 0 auto 56px; }
+
+.faq-list { display: flex; flex-direction: column; gap: 8px; }
+.faq-item {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-md); overflow: hidden;
+  transition: border-color 0.2s;
+}
+.faq-item:hover { border-color: var(--a-border); }
+.faq-q {
+  width: 100%; background: none; border: none;
+  padding: 20px 24px; text-align: left; cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px;
+  font-family: var(--ff-display); font-size: 14.5px; font-weight: 700;
+  color: var(--t1); transition: color 0.2s;
+}
+.faq-q:hover { color: var(--a2); }
+.faq-caret {
+  width: 24px; height: 24px; border-radius: 6px;
+  background: var(--surface-2); border: 1px solid var(--border-2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: var(--t3); flex-shrink: 0;
+  transition: all 0.3s;
+}
+.faq-item.open .faq-caret { background: var(--a-bg); border-color: var(--a-border); color: var(--a2); transform: rotate(180deg); }
+.faq-a {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(.4,0,.2,1), padding 0.3s;
+  padding: 0 24px;
+}
+.faq-item.open .faq-a {
+  max-height: 200px; padding: 0 24px 20px;
+}
+.faq-a p { font-size: 13.5px; color: var(--t2); line-height: 1.75; }
+
+/* ============================================================
+   FINAL CTA SECTION
+   ============================================================ */
+.cta-section {
+  padding: 120px 60px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+.cta-section::before {
+  content: '';
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  width: 700px; height: 700px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(124,92,252,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cta-inner { max-width: 640px; margin: 0 auto; position: relative; z-index: 1; }
+.cta-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--ff-mono); font-size: 10.5px; font-weight: 600;
+  letter-spacing: 0.8px; text-transform: uppercase; color: var(--a2);
+  margin-bottom: 24px;
+}
+.cta-h2 {
+  font-family: var(--ff-display); font-size: clamp(36px,4vw,56px);
+  font-weight: 900; letter-spacing: -2px; line-height: 1.05; margin-bottom: 18px;
+}
+.cta-h2 .grad { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.cta-sub { font-size: 15px; color: var(--t2); line-height: 1.75; margin-bottom: 40px; }
+.cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+/* ============================================================
+   LOGIN MODAL
+   ============================================================ */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 900;
+  background: rgba(4,3,10,0.88);
+  backdrop-filter: blur(18px) saturate(140%);
+  display: flex; align-items: center; justify-content: center; padding: 24px;
   opacity: 0; pointer-events: none;
-  transition: opacity 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: opacity 0.35s ease;
 }
-.modal-backdrop.open {
-  opacity: 1; pointer-events: auto;
-}
+.modal-backdrop.open { opacity: 1; pointer-events: auto; }
 
 .modal-card {
-  position: relative;
-  width: 100%; max-width: 440px;
-  background: rgba(20, 12, 22, 0.75); /* Deep dark Sherbet glass */
-  border: 1px solid var(--accent-border);
-  border-radius: 28px;
+  position: relative; width: 100%; max-width: 420px;
+  background: rgba(14,10,22,0.82);
+  border: 1px solid var(--a-border);
+  border-radius: var(--radius-xl);
   padding: 44px 40px 36px;
-  backdrop-filter: blur(40px) saturate(180%);
-  -webkit-backdrop-filter: blur(40px) saturate(180%);
-  box-shadow: 0 40px 100px rgba(0,0,0,0.7), 0 0 60px var(--accent-glow-soft), inset 0 1px 0 rgba(255,255,255,0.07);
-  overflow: hidden;
-
-  /* hidden scale animation state */
-  transform: translateY(28px) scale(0.96);
-  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  backdrop-filter: blur(48px) saturate(180%);
+  -webkit-backdrop-filter: blur(48px) saturate(180%);
+  box-shadow:
+    0 50px 120px rgba(0,0,0,0.75),
+    0 0 80px var(--a-glow-soft),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+  transform: translateY(32px) scale(0.96);
+  transition: transform 0.4s cubic-bezier(.25,.8,.25,1);
 }
-.modal-backdrop.open .modal-card {
-  transform: translateY(0) scale(1);
-}
+.modal-backdrop.open .modal-card { transform: translateY(0) scale(1); }
 
-/* animated top border shimmer */
 .modal-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1.5px;
-  background: linear-gradient(90deg, transparent, var(--accent) 30%, var(--accent-light) 70%, transparent);
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1.5px;
+  background: var(--grad); border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   background-size: 200% auto;
-  animation: shimmerFlow 4s linear infinite;
+  animation: shimmer 3s linear infinite;
 }
 
-/* close button */
 .modal-close {
-  position: absolute; top: 18px; right: 18px;
-  width: 34px; height: 34px; border-radius: 50%;
-  background: var(--accent-bg); border: 1px solid var(--accent-border);
-  color: var(--text-primary); font-size: 15px; line-height: 1;
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-  transition: all 0.25s ease;
+  position: absolute; top: 16px; right: 16px;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--surface); border: 1px solid var(--border-2);
+  color: var(--t2); font-size: 14px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.25s;
 }
-.modal-close:hover {
-  background: var(--accent-deep);
-  color: #fff;
-  border-color: var(--accent-border-hover);
-  transform: scale(1.05) rotate(90deg);
-}
+.modal-close:hover { background: rgba(255,107,107,0.12); color: #ff6b6b; border-color: rgba(255,107,107,0.3); transform: rotate(90deg); }
 
-/* modal brand */
 .modal-brand {
-  display: flex; flex-direction: column; align-items: center; margin-bottom: 28px;
-}
-.modal-logo {
-  width: 160px; height: auto; object-fit: contain; margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 30px;
 }
 .modal-tagline {
-  font-family: var(--font-body); font-size: 12px;
-  color: var(--accent-text); letter-spacing: 0.3px;
-  text-align: center; font-weight: 500;
+  font-size: 11.5px;
+  color: var(--t3);
+  font-family: var(--ff-mono);
+  letter-spacing: 0.2px;
+  text-align: center;
+  display: block;
+}
+
+.modal-logo {
+  width: 160px;
+  height: auto;
+  object-fit: contain;
+  margin-bottom: 8px;
+  display: block;        /* ← this is the key fix */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .modal-heading {
-  font-family: var(--font-display); font-size: 22px; font-weight: 700;
-  text-align: center; letter-spacing: -0.5px;
-  margin-bottom: 26px;
-  background: linear-gradient(135deg, #ffffff 0%, var(--accent-light) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-family: var(--ff-display); font-size: 20px; font-weight: 800;
+  text-align: center; letter-spacing: -0.5px; margin-bottom: 24px;
+  background: linear-gradient(135deg, #fff 0%, var(--a2) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
 
-/* ALERTS */
 .alert {
-  width: 100%; padding: 13px 16px;
-  border-radius: 14px; margin-bottom: 18px;
-  font-size: 13px; text-align: center;
+  width: 100%; padding: 12px 16px; border-radius: var(--radius-md);
+  margin-bottom: 16px; font-size: 12.5px; text-align: center;
 }
-.alert-error {
-  background: rgba(244, 63, 94, 0.05); border: 1px solid var(--accent-border);
-  color: #ffa4b2;
-}
-.alert-success {
-  background: rgba(244, 63, 94, 0.06); border: 1px solid var(--accent-border-hover);
-  color: rgba(200,255,220,0.9);
-}
+.alert-error { background: rgba(255,107,107,0.06); border: 1px solid rgba(255,107,107,0.25); color: #ff9a9a; }
+.alert-success { background: rgba(61,220,132,0.06); border: 1px solid rgba(61,220,132,0.25); color: #6fefb0; }
 
-/* INPUTS */
-.input-group { margin-bottom: 13px; }
+.input-group { margin-bottom: 10px; position: relative; }
+.input-icon {
+  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+  font-size: 14px; color: var(--t3); pointer-events: none;
+}
 .input-group input {
-  width: 100%; height: 54px; padding: 0 18px;
-  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
-  border-radius: 16px; color: var(--text-primary);
-  font-family: var(--font-body); font-size: 14px;
-  outline: none; transition: all 0.25s ease;
+  width: 100%; height: 52px;
+  padding: 0 18px 0 42px;
+  background: rgba(255,255,255,0.035); border: 1px solid var(--border-2);
+  border-radius: var(--radius-md); color: var(--t1);
+  font-family: var(--ff-body); font-size: 14px;
+  outline: none; transition: all 0.25s;
 }
-.input-group input::placeholder { color: var(--text-muted); }
+.input-group input::placeholder { color: var(--t3); }
 .input-group input:focus {
-  background: var(--accent-bg);
-  border-color: var(--accent-border-hover);
-  box-shadow: 0 0 0 3px var(--accent-glow-soft), 0 0 15px rgba(244, 63, 94, 0.2);
+  background: var(--a-bg);
+  border-color: var(--a-border-2);
+  box-shadow: 0 0 0 3px var(--a-glow-soft);
 }
 
-/* SUBMIT */
 .submit-btn {
-  width: 100%; height: 54px; border: none; border-radius: 16px;
-  background: linear-gradient(135deg, #f43f5e 0%, #fb8c00 50%, #fcd34d 100%);
-  color: #ffffff;
-  font-family: var(--font-display); font-size: 15px; font-weight: 700;
+  width: 100%; height: 52px; border: none; border-radius: var(--radius-md);
+  background: var(--grad); color: #fff;
+  font-family: var(--ff-display); font-size: 15px; font-weight: 700;
   cursor: pointer; letter-spacing: -0.2px; margin-top: 8px;
-  transition: all 0.28s cubic-bezier(0.25, 0.8, 0.25, 1);
-  box-shadow: 0 8px 24px var(--accent-glow-soft);
-  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 28px var(--a-glow);
+  transition: all 0.28s cubic-bezier(.25,.8,.25,1);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
 }
-.submit-btn:hover {
-  transform: scale(1.02) translateY(-2px);
-  box-shadow: 0 14px 36px var(--accent-glow);
-}
+.submit-btn:hover { transform: translateY(-2px) scale(1.01); box-shadow: 0 14px 40px var(--a-glow); filter: brightness(1.08); }
 
-.register-link {
-  text-align: center; font-size: 13.5px; color: var(--text-secondary); margin-top: 20px;
-}
-.register-link a {
-  color: var(--accent-light); text-decoration: none; font-weight: 600;
-  border-bottom: 1px solid var(--accent-border); padding-bottom: 1px;
-  transition: all 0.2s;
-}
-.register-link a:hover { border-color: var(--accent-border-hover); color: #fff; }
+.register-link { text-align: center; font-size: 13px; color: var(--t3); margin-top: 18px; }
+.register-link a { color: var(--a2); text-decoration: none; font-weight: 600; transition: color 0.2s; }
+.register-link a:hover { color: #fff; }
 
-.trust-badges {
-  display: flex; align-items: center; justify-content: center;
-  gap: 18px; margin-top: 22px; flex-wrap: wrap;
+.trust-row {
+  display: flex; justify-content: center; gap: 18px;
+  margin-top: 20px; flex-wrap: wrap;
 }
-.badge { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--text-muted); }
-.badge span { color: var(--accent); }
+.trust-badge {
+  display: flex; align-items: center; gap: 5px;
+  font-family: var(--ff-mono); font-size: 10px; color: var(--t3); letter-spacing: 0.2px;
+}
+.trust-badge-icon { font-size: 12px; }
 
-/* =============================================
-   RESPONSIVE DESIGN RULES
-   ============================================= */
+/* ============================================================
+   FOOTER
+   ============================================================ */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 44px 60px;
+  background: rgba(255,255,255,0.01);
+}
+.footer-inner {
+  max-width: 1380px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+}
+.footer-brand {
+  font-family: var(--ff-display); font-size: 16px; font-weight: 900;
+  letter-spacing: -0.4px;
+  background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.footer-links { display: flex; gap: 28px; }
+.footer-links a { font-size: 12.5px; color: var(--t3); text-decoration: none; transition: color 0.2s; }
+.footer-links a:hover { color: var(--a2); }
+.footer-copy { font-size: 12px; color: var(--t3); font-family: var(--ff-mono); }
+
+/* ============================================================
+   EMBED MEDIA — Lottie / GIF style animations
+   ============================================================ */
+.media-embed {
+  border-radius: var(--radius-md); overflow: hidden;
+  border: 1px solid var(--border-2);
+  background: var(--ink-3);
+}
+.media-embed img { width: 100%; height: auto; display: block; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
 @media (max-width: 1100px) {
-  .hero-feature-grid { grid-template-columns: repeat(2,1fr); }
-  .features-big-grid { grid-template-columns: repeat(2,1fr); }
-  .big-feature-card.featured { grid-column: span 1; }
-  .stack-grid { grid-template-columns: repeat(2,1fr); }
-  .usecases-inner { flex-direction: column; gap: 40px; }
+  .hero { grid-template-columns: 1fr; gap: 48px; }
+  .hero-right { max-width: 600px; margin: 0 auto; width: 100%; }
+  .features-grid { grid-template-columns: repeat(2,1fr); }
+  .feat-card.span-2 { grid-column: span 1; }
+  .flow-track { grid-template-columns: repeat(4,1fr); }
+  .flow-step:nth-child(even) { display: none; }
+  .workflow-compare { grid-template-columns: 1fr 60px 1fr; }
+  .verify-layout { grid-template-columns: 1fr; }
+  .usecases-grid { grid-template-columns: 1fr; }
+  .demo-sidebar { grid-template-columns: 1fr; }
+  .sidebar-panel { display: none; }
 }
-
 @media (max-width: 720px) {
   .navbar { padding: 0 24px; }
   .nav-links { display: none; }
-  .hero-section { padding: 100px 24px 60px; }
-  .hero-headline { font-size: 44px; letter-spacing: -2px; }
-  .hero-feature-grid { grid-template-columns: 1fr; }
-  .features-section, .stack-section, .usecases-section { padding: 60px 24px; }
-  .features-big-grid { grid-template-columns: 1fr; }
-  .stack-grid { grid-template-columns: 1fr; }
-  .usecases-list { grid-template-columns: 1fr; }
+  .hero { padding: 90px 24px 60px; }
+  .hero-h1 { letter-spacing: -1.5px; }
+  .workflow-section, .sources-section, .features-section, .flow-section,
+  .usecases-section, .demo-section, .verify-section, .faq-section, .cta-section { padding: 64px 24px; }
+  .features-grid { grid-template-columns: 1fr; }
+  .workflow-compare { grid-template-columns: 1fr; gap: 16px; }
+  .wf-vs { display: none; }
+  .sources-grid { grid-template-columns: repeat(3,1fr); }
+  .flow-track { grid-template-columns: repeat(2,1fr); }
+  .flow-arrow { display: none; }
   footer { padding: 32px 24px; }
-  .footer-inner { flex-direction: column; gap: 20px; text-align: center; }
-  .footer-links { flex-wrap: wrap; justify-content: center; gap: 18px; }
-  .modal-card { padding: 36px 26px 28px; }
+  .footer-inner { flex-direction: column; text-align: center; gap: 16px; }
+  .footer-links { flex-wrap: wrap; justify-content: center; }
+  .modal-card { padding: 36px 24px 28px; border-radius: var(--radius-lg); }
 }
-
 </style>
 </head>
 <body>
 
-<div class="mesh-gradient">
-  <div class="blob blob1"></div>
-  <div class="blob blob2"></div>
-  <div class="blob blob3"></div>
+<!-- BACKGROUND -->
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
 </div>
 
-<!-- ==========================================
-     LOGIN MODAL (hidden by default)
- =========================================== -->
-<div class="modal-backdrop" id="loginModal" role="dialog" aria-modal="true" aria-label="Sign in">
-
+<!-- ================================================
+     LOGIN MODAL
+     ================================================ -->
+<div class="modal-backdrop" id="loginModal" role="dialog" aria-modal="true" aria-label="Sign in to Nexora.AI">
   <div class="modal-card" id="modalCard">
 
-    <button class="modal-close" onclick="closeLogin()" aria-label="Close">&#x2715;</button>
+    <button class="modal-close" onclick="closeLogin()" aria-label="Close">✕</button>
 
-    <div class="modal-brand">
-      <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora.AI" class="modal-logo">
-      <p class="modal-tagline">Transforming Documents Into Intelligent Conversations</p>
-    </div>
-
-    <h2 class="modal-heading">Welcome</h2>
+<div class="modal-brand">
+  <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora.AI" class="modal-logo">
+  <span class="modal-tagline">Enterprise Knowledge Intelligence Platform</span>
+</div>
+    <h2 class="modal-heading">Welcome back</h2>
 
     {% if error %}
     <div class="alert alert-error">{{ error }}</div>
@@ -649,263 +1339,967 @@ footer { border-top: 1px solid var(--border); padding: 40px 56px; }
 
     <form method="POST">
       <div class="input-group">
+        <span class="input-icon">👤</span>
         <input type="text" name="username" placeholder="Username" required autocomplete="username">
       </div>
       <div class="input-group">
+        <span class="input-icon">🔒</span>
         <input type="password" name="password" placeholder="Password" required autocomplete="current-password">
       </div>
-      <button type="submit" class="submit-btn">Sign In</button>
+      <button type="submit" class="submit-btn">
+        Sign In
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
     </form>
 
     <div class="register-link">
-      Don't have an account? <a href="/register">Create one</a>
+      New to Nexora.AI? <a href="/register">Create an account</a>
     </div>
 
-    <div class="trust-badges">
-      <div class="badge"><span>&#128274;</span> Encrypted</div>
-      <div class="badge"><span>&#9889;</span> Instant Access</div>
-      <div class="badge"><span>&#9678;</span> Multi-user Safe</div>
+    <div class="trust-row">
+      <span class="trust-badge"><span class="trust-badge-icon">🔐</span> End-to-end encrypted</span>
+      <span class="trust-badge"><span class="trust-badge-icon">🛡</span> Isolated workspace</span>
+      <span class="trust-badge"><span class="trust-badge-icon">⚡</span> Instant access</span>
     </div>
 
   </div>
 </div>
 
-<!-- ==========================================
+<!-- ================================================
      NAVBAR
- =========================================== -->
+     ================================================ -->
 <nav class="navbar">
-  <a class="nav-brand" href="#">
-    <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora.AI" class="nav-logo">
-  </a>
+<a class="nav-brand" href="/login">
+  <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora.AI" class="nav-logo">
+  <span class="nav-pill">
+    <span class="nav-pulse"></span>
+    Live
+  </span>
+</a>
 
   <ul class="nav-links">
     <li><a href="#features">Features</a></li>
-    <li><a href="#stack">Technology</a></li>
     <li><a href="#usecases">Use Cases</a></li>
-    <li><a href="#security">Security</a></li>
+    <li><a href="#demo">Demo</a></li>
+    <li><a href="#faq">FAQ</a></li>
   </ul>
 
-  <button class="nav-cta" onclick="openLogin()">Get Started</button>
+  <button class="nav-cta" onclick="openLogin()">Sign In →</button>
 </nav>
 
-<!-- ==========================================
-     PAGE CONTENT
- =========================================== -->
-<div class="page-wrapper">
+<!-- ================================================
+     PAGE WRAPPER
+     ================================================ -->
+<div class="page">
 
-  <!-- HERO -->
-  <section class="hero-section">
+  <!-- ============ HERO ============ -->
+  <section style="border-bottom: 1px solid var(--border);">
+    <div class="hero">
 
-    <h1 class="hero-headline">
-      Transform Documents Into<br>
-      <span class="dimmed">Intelligent Conversations</span>
-    </h1>
-
-    <p class="hero-desc">
-      Nexora.AI is a next-generation enterprise AI assistant built on advanced Retrieval-Augmented Generation (RAG) architecture. Upload, manage, search, and interact with enterprise knowledge bases through natural language. Combines semantic vector retrieval, BM25 hybrid search, contextual reasoning, and intelligent response generation to deliver accurate, grounded, and explainable answers from your documents.
-    </p>
-
-    <div class="hero-actions">
-      <button class="btn-primary" onclick="openLogin()">Get Started</button>
-      <button class="btn-ghost" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">Explore Features</button>
-    </div>
-
-    <div class="hero-feature-grid">
-      <div class="hero-feat-card">
-        <div class="feat-icon">&#x27C1;</div>
-        <h3>Hybrid AI Search</h3>
-        <p>Combines dense vector retrieval and BM25 sparse retrieval for highly accurate semantic and keyword-aware document search.</p>
-      </div>
-      <div class="hero-feat-card">
-        <div class="feat-icon">&#x25C8;</div>
-        <h3>Multiuser RAG Workspace</h3>
-        <p>Secure isolated vector databases and personalized AI workspaces for each user and organization.</p>
-      </div>
-      <div class="hero-feat-card">
-        <div class="feat-icon">&#x2B21;</div>
-        <h3>AI Guardrails & Security</h3>
-        <p>Built-in prompt injection protection, hallucination reduction, PII detection, and enterprise-grade AI safety.</p>
-      </div>
-      <div class="hero-feat-card">
-        <div class="feat-icon">&#x229E;</div>
-        <h3>Semantic PDF Intelligence</h3>
-        <p>Upload PDFs and instantly ask contextual questions, generate summaries, and discover hidden knowledge.</p>
-      </div>
-    </div>
-
-    <div class="tech-strip">
-      Flask &ensp;&#183;&ensp; Python &ensp;&#183;&ensp; LangChain &ensp;&#183;&ensp; ChromaDB &ensp;&#183;&ensp; BM25 &ensp;&#183;&ensp; Hybrid Search &ensp;&#183;&ensp; RAG &ensp;&#183;&ensp; Semantic AI &ensp;&#183;&ensp; Vector Embeddings
-    </div>
-
-    <div class="stats-row">
-      <div class="stat-box"><h2>Hybrid AI</h2><p>Semantic + Keyword Search</p></div>
-      <div class="stat-box"><h2>Multiuser</h2><p>Isolated Vector Workspaces</p></div>
-      <div class="stat-box"><h2>Enterprise</h2><p>AI Guardrails &amp; Safety</p></div>
-    </div>
-
-  </section>
-
-  <!-- FEATURES -->
-  <section class="features-section" id="features">
-    <div class="section-label">Platform Capabilities</div>
-    <h2 class="section-title">Built for <span class="dimmed">enterprise-grade</span><br>AI Knowledge Intelligence</h2>
-
-    <div class="features-big-grid">
-      <div class="big-feature-card featured">
-        <div class="feat-num">01 &#8212; Core</div>
-        <h3>Hybrid AI Search</h3>
-        <p>Combines dense vector retrieval and BM25 sparse retrieval for highly accurate semantic and keyword-aware document search. The fusion engine merges semantic similarity with keyword precision, ensuring no relevant passage is missed across large enterprise corpora.</p>
-      </div>
-      <div class="big-feature-card">
-        <div class="feat-num">02</div>
-        <h3>Multiuser RAG Workspace</h3>
-        <p>Secure isolated vector databases and personalized AI workspaces for each user and organization. Documents, embeddings, and conversation history are fully separated at the database level with no cross-user data leakage.</p>
-      </div>
-      <div class="big-feature-card">
-        <div class="feat-num">03</div>
-        <h3>AI Guardrails &amp; Security</h3>
-        <p>Built-in prompt injection protection, jailbreak detection, PII identification, and hallucination reduction. Enterprise-safe RAG with grounded, explainable, source-verified answers.</p>
-      </div>
-      <div class="big-feature-card">
-        <div class="feat-num">04</div>
-        <h3>Semantic PDF Intelligence</h3>
-        <p>Upload PDFs and instantly ask contextual questions, generate summaries, extract insights, and discover knowledge hidden across hundreds of pages in seconds.</p>
-      </div>
-      <div class="big-feature-card">
-        <div class="feat-num">05</div>
-        <h3>Streaming AI Conversations</h3>
-        <p>Real-time AI response streaming with contextual multi-turn memory and source-grounded answers. Responsive conversational interactions grounded to your documents.</p>
-      </div>
-      <div class="big-feature-card">
-        <div class="feat-num">06</div>
-        <h3>Source Verification</h3>
-        <p>Every answer is backed by verified document chunks and page-level citations for explainable AI responses. Complete traceability for compliance, auditing, and trust.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- STACK -->
-  <section class="stack-section" id="stack">
-    <div class="stack-inner">
-      <div class="section-label">Technology</div>
-      <h2 class="section-title">Production-grade <span class="dimmed">AI Engineering</span></h2>
-      <div class="stack-grid">
-        <div class="stack-col">
-          <div class="stack-col-title">Backend</div>
-          <div class="stack-items">
-            <div class="stack-item">Flask</div>
-            <div class="stack-item">Python</div>
-            <div class="stack-item">LangChain</div>
-            <div class="stack-item">SQLite</div>
-          </div>
+      <!-- LEFT -->
+      <div class="hero-left">
+        <div class="hero-eyebrow">
+          <span class="eyebrow-icon">◆</span>
+          <span class="eyebrow-text">RAG · Vector Search · AI Knowledge</span>
         </div>
-        <div class="stack-col">
-          <div class="stack-col-title">AI &amp; Retrieval</div>
-          <div class="stack-items">
-            <div class="stack-item">RAG Architecture</div>
-            <div class="stack-item">ChromaDB</div>
-            <div class="stack-item">BM25 Search</div>
-            <div class="stack-item">Vector Embeddings</div>
-          </div>
-        </div>
-        <div class="stack-col">
-          <div class="stack-col-title">Security</div>
-          <div class="stack-items">
-            <div class="stack-item">AI Guardrails</div>
-            <div class="stack-item">PII Detection</div>
-            <div class="stack-item">Jailbreak Filter</div>
-            <div class="stack-item">User Isolation</div>
-          </div>
-        </div>
-        <div class="stack-col">
-          <div class="stack-col-title">Document Intelligence</div>
-          <div class="stack-items">
-            <div class="stack-item">PDF Parsing</div>
-            <div class="stack-item">Chunk Embeddings</div>
-            <div class="stack-item">Context Retrieval</div>
-            <div class="stack-item">AI Summarization</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- USE CASES -->
-  <section class="usecases-section" id="usecases">
-    <div class="usecases-inner">
-      <div class="usecases-left">
-        <div class="section-label">Use Cases</div>
-        <h2 class="section-title">Built for every<br><span class="dimmed">enterprise knowledge workflow</span></h2>
-        <p style="color:var(--text-secondary);font-size:15px;line-height:1.8;max-width:380px;margin-top:16px;">
-          From legal research to financial analysis, Nexora.AI adapts to any enterprise knowledge workflow with secure, grounded AI responses. Faster knowledge discovery, reduced manual document analysis, and AI-powered enterprise productivity.
+        <h1 class="hero-h1">
+          Your Documents,<br>
+          <em>Conversationally</em><br>
+          <span class="serif-accent">Intelligent.</span>
+        </h1>
+
+        <p class="hero-sub">
+          Upload PDFs, reports, policies, and research. Build searchable knowledge repositories. Ask questions naturally — get grounded, source-backed answers in seconds.
         </p>
+
+        <div class="hero-actions">
+          <button class="btn-primary" onclick="openLogin()">
+            Start Exploring
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+          <button class="btn-outline" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+            See it in action
+          </button>
+        </div>
+
+        <div class="hero-trust">
+          <span class="trust-item"><span class="trust-dot"></span>Hybrid AI Search</span>
+          <span class="trust-sep">·</span>
+          <span class="trust-item"><span class="trust-dot"></span>Source Citations</span>
+          <span class="trust-sep">·</span>
+          <span class="trust-item"><span class="trust-dot"></span>Multi-user Isolated</span>
+          <span class="trust-sep">·</span>
+          <span class="trust-item"><span class="trust-dot"></span>AI Guardrails</span>
+        </div>
       </div>
-      <div class="usecases-list">
-        <div class="use-pill">Enterprise Knowledge Management</div>
-        <div class="use-pill">AI-Powered Research Assistant</div>
-        <div class="use-pill">Legal Document Intelligence</div>
-        <div class="use-pill">Financial Report Analysis</div>
-        <div class="use-pill">Research Paper Querying</div>
-        <div class="use-pill">SOP &amp; Policy Assistants</div>
-        <div class="use-pill">Internal AI Copilots</div>
-        <div class="use-pill">Intelligent Business Search</div>
+
+      <!-- RIGHT — Live UI Preview -->
+      <div class="hero-right">
+        <div class="hero-ui-frame">
+          <div class="ui-titlebar">
+            <span class="ui-dot ui-dot-r"></span>
+            <span class="ui-dot ui-dot-y"></span>
+            <span class="ui-dot ui-dot-g"></span>
+            <span class="ui-titlebar-text">nexora.ai — Knowledge Workspace</span>
+          </div>
+
+          <div class="ui-body">
+            <!-- Upload zone -->
+            <div class="ui-upload-zone">
+              <div class="upload-icon-wrap">📂</div>
+              <h4>Drop your documents here</h4>
+              <p>PDF, DOCX, CSV, TXT — all supported</p>
+            </div>
+
+            <!-- Indexed docs -->
+            <div class="ui-doc-list">
+              <div class="ui-doc-item">
+                <span class="doc-type-badge badge-pdf">PDF</span>
+                <span class="doc-name">Q4_Annual_Report_2024.pdf</span>
+                <span class="doc-status">Indexed</span>
+              </div>
+              <div class="ui-doc-item">
+                <span class="doc-type-badge badge-docx">DOCX</span>
+                <span class="doc-name">Employee_Handbook_v3.docx</span>
+                <span class="doc-status">Indexed</span>
+              </div>
+              <div class="ui-doc-item">
+                <span class="doc-type-badge badge-csv">CSV</span>
+                <span class="doc-name">Sales_Data_H1.csv</span>
+                <span class="doc-status">Indexed</span>
+              </div>
+            </div>
+
+            <!-- Chat snippet -->
+            <div class="ui-chat">
+              <div class="chat-bubble bubble-user">
+                What were the top performing segments in Q4?
+              </div>
+              <div class="chat-bubble bubble-ai">
+                <div class="bubble-ai-header">Nexora.AI · Grounded Response</div>
+                Based on the Q4 Annual Report, the top performing segments were Enterprise Software (+34%) and Cloud Services (+28%)…
+                <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
+                  <span class="citation-pill">Q4_Annual_Report · p.12</span>
+                  <span class="citation-pill">Q4_Annual_Report · p.18</span>
+                </div>
+              </div>
+              <div class="ui-typing">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+              </div>
+            </div>
+
+            <div class="ui-input-row">
+              <input type="text" placeholder="Ask anything about your documents…" readonly>
+              <button class="ui-send-btn">↑</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ WORKFLOW ============ -->
+  <section class="workflow-section" id="workflow">
+    <div class="section-tag">How it works</div>
+    <h2 class="section-h2">From <span class="grad">scattered files</span><br>to instant answers</h2>
+    <p class="section-desc">Stop hunting through folders. Nexora.AI transforms your document library into a live, conversational knowledge base you can interrogate in natural language.</p>
+
+    <div class="workflow-compare">
+      <!-- Old way -->
+      <div class="workflow-col old wf-old">
+        <span class="wf-header">Old workflow</span>
+        <div class="wf-steps">
+          <div class="wf-step">
+            <div class="step-num">1</div>
+            <div class="wf-step-text">
+              <h4>Open file explorer</h4>
+              <p>Search across dozens of folders and drives</p>
+            </div>
+          </div>
+          <div class="wf-step">
+            <div class="step-num">2</div>
+            <div class="wf-step-text">
+              <h4>Open multiple files</h4>
+              <p>Juggle PDFs, Word docs, spreadsheets</p>
+            </div>
+          </div>
+          <div class="wf-step">
+            <div class="step-num">3</div>
+            <div class="wf-step-text">
+              <h4>Scan & compare manually</h4>
+              <p>Read page by page, cross-referencing sources</p>
+            </div>
+          </div>
+          <div class="wf-step">
+            <div class="step-num">4</div>
+            <div class="wf-step-text">
+              <h4>Hope you didn't miss anything</h4>
+              <p>No guarantee of completeness or accuracy</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VS -->
+      <div class="wf-vs">
+        <div class="vs-badge">vs</div>
+      </div>
+
+      <!-- New way -->
+      <div class="workflow-col new wf-new">
+        <span class="wf-header">Nexora.AI</span>
+        <div class="wf-steps">
+          <div class="wf-step">
+            <div class="step-num">1</div>
+            <div class="wf-step-text">
+              <h4>Upload your documents</h4>
+              <p>Drag and drop any format — PDFs, DOCX, CSV, TXT</p>
+            </div>
+          </div>
+          <div class="wf-step">
+            <div class="step-num">2</div>
+            <div class="wf-step-text">
+              <h4>Knowledge is indexed</h4>
+              <p>Semantic embeddings + BM25 hybrid indexing runs automatically</p>
+            </div>
+          </div>
+          <div class="wf-step">
+            <div class="step-num">3</div>
+            <div class="wf-step-text">
+              <h4>Ask in natural language</h4>
+              <p>Conversational queries, multi-turn context, follow-ups</p>
+            </div>
+          </div>
+          <div class="wf-step">
+            <div class="step-num">4</div>
+            <div class="wf-step-text">
+              <h4>Get grounded, cited answers</h4>
+              <p>Every response traced back to source documents</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- FOOTER -->
+  <!-- ============ KNOWLEDGE SOURCES ============ -->
+  <section class="sources-section">
+    <div class="section-tag">Supported formats</div>
+    <h2 class="section-h2">Works with every<br><span class="grad">knowledge format</span></h2>
+
+    <div class="sources-grid">
+      <div class="source-card" data-tip="Contracts, research, reports — indexed page by page">
+        <span class="source-icon">📄</span>
+        <span class="source-label">PDF</span>
+      </div>
+      <div class="source-card" data-tip="Policies, handbooks, internal documentation">
+        <span class="source-icon">📝</span>
+        <span class="source-label">DOCX</span>
+      </div>
+      <div class="source-card" data-tip="Sales data, inventory, financial tables">
+        <span class="source-icon">📊</span>
+        <span class="source-label">CSV</span>
+      </div>
+      <div class="source-card" data-tip="Raw knowledge files, logs, and notes">
+        <span class="source-icon">📃</span>
+        <span class="source-label">TXT</span>
+      </div>
+      <div class="source-card" data-tip="Academic papers and literature review support">
+        <span class="source-icon">🔬</span>
+        <span class="source-label">Research</span>
+      </div>
+      <div class="source-card" data-tip="Executive summaries and quarterly reports">
+        <span class="source-icon">📈</span>
+        <span class="source-label">Reports</span>
+      </div>
+      <div class="source-card" data-tip="HR, compliance, legal policy documents">
+        <span class="source-icon">📋</span>
+        <span class="source-label">Policies</span>
+      </div>
+      <div class="source-card" data-tip="Standard operating procedures, step-by-step guides">
+        <span class="source-icon">⚙️</span>
+        <span class="source-label">SOPs</span>
+      </div>
+      <div class="source-card" data-tip="Technical product or equipment manuals">
+        <span class="source-icon">📘</span>
+        <span class="source-label">Manuals</span>
+      </div>
+      <div class="source-card" data-tip="Internal wikis, runbooks, knowledge base articles">
+        <span class="source-icon">🗃️</span>
+        <span class="source-label">Wikis</span>
+      </div>
+      <div class="source-card" data-tip="API docs, system specifications, code references">
+        <span class="source-icon">💻</span>
+        <span class="source-label">Tech Docs</span>
+      </div>
+      <div class="source-card" data-tip="Onboarding materials, eLearning content">
+        <span class="source-icon">🎓</span>
+        <span class="source-label">Training</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FEATURES ============ -->
+  <section class="features-section" id="features">
+    <div class="section-tag">Platform capabilities</div>
+    <h2 class="section-h2">Built for serious<br><span class="grad">knowledge work</span></h2>
+    <p class="section-desc">A production-grade RAG platform with hybrid search, source traceability, and enterprise-grade security built in from the ground up.</p>
+
+    <div class="features-grid">
+
+      <div class="feat-card span-2">
+        <div class="feat-icon-wrap">🔍</div>
+        <span class="feat-num">01 — Core</span>
+        <h3>Hybrid AI Search</h3>
+        <p>Combines dense semantic vector retrieval (ChromaDB embeddings) with BM25 sparse keyword search. The fusion engine weighs semantic similarity against keyword precision — delivering comprehensive results even across large, varied document corpora. No relevant passage gets missed.</p>
+        <div class="feat-tags">
+          <span class="feat-tag">Vector Embeddings</span>
+          <span class="feat-tag">BM25 Fusion</span>
+          <span class="feat-tag">ChromaDB</span>
+          <span class="feat-tag">Semantic Retrieval</span>
+        </div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon-wrap">💬</div>
+        <span class="feat-num">02</span>
+        <h3>Conversational Search</h3>
+        <p>Multi-turn conversations with full context preservation. Ask follow-up questions, refine your query, and explore documents through natural dialogue — not boolean search strings.</p>
+        <div class="feat-tags">
+          <span class="feat-tag">Multi-turn</span>
+          <span class="feat-tag">Context Memory</span>
+        </div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon-wrap">📎</div>
+        <span class="feat-num">03</span>
+        <h3>Source Traceability</h3>
+        <p>Every answer is grounded in verified document passages. Page-level citations, source document names, and inline references for complete explainability and audit readiness.</p>
+        <div class="feat-tags">
+          <span class="feat-tag">Page Citations</span>
+          <span class="feat-tag">Source Inspection</span>
+        </div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon-wrap">🛡️</div>
+        <span class="feat-num">04</span>
+        <h3>AI Guardrails</h3>
+        <p>Prompt injection protection, jailbreak detection, PII identification, and hallucination reduction built into every query. Enterprise-safe AI that stays grounded to your documents.</p>
+        <div class="feat-tags">
+          <span class="feat-tag">Hallucination Guard</span>
+          <span class="feat-tag">PII Detection</span>
+        </div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon-wrap">🧑‍🤝‍🧑</div>
+        <span class="feat-num">05</span>
+        <h3>Multi-user Workspaces</h3>
+        <p>Fully isolated vector databases per user. Documents, embeddings, and conversation history are separated at the database level — no cross-user data leakage.</p>
+        <div class="feat-tags">
+          <span class="feat-tag">User Isolation</span>
+          <span class="feat-tag">Session History</span>
+        </div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon-wrap">⚡</div>
+        <span class="feat-num">06</span>
+        <h3>Streaming Responses</h3>
+        <p>Real-time response streaming with live token generation. Answers appear as they're constructed, creating a fluid, responsive conversational experience.</p>
+        <div class="feat-tags">
+          <span class="feat-tag">Real-time</span>
+          <span class="feat-tag">Token Streaming</span>
+        </div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon-wrap">🌐</div>
+        <span class="feat-num">07</span>
+        <h3>Multilingual Support</h3>
+        <p>Query documents in your language and receive responses in the same. Supports multilingual knowledge bases with consistent retrieval accuracy across languages.</p>
+        <div class="feat-tags">
+          <span class="feat-tag">Cross-lingual</span>
+          <span class="feat-tag">Auto-detect</span>
+        </div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon-wrap">🎛️</div>
+        <span class="feat-num">08</span>
+        <h3>Model Customization</h3>
+        <p>Select AI models, configure response behavior, set custom instructions per knowledge base. Tune the system to match your organization's tone and requirements.</p>
+        <div class="feat-tags">
+          <span class="feat-tag">Model Selection</span>
+          <span class="feat-tag">Custom Instructions</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ PROCESS FLOW ============ -->
+  <section class="flow-section">
+    <div class="flow-inner">
+      <div class="section-tag">Architecture</div>
+      <h2 class="section-h2">How documents become <span class="grad">living knowledge</span></h2>
+
+      <div class="flow-track">
+        <div class="flow-step">
+          <div class="flow-node" data-step="1">📂</div>
+          <h4>Upload</h4>
+          <p>Any document format</p>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-node" data-step="2">⚙️</div>
+          <h4>Parse & Chunk</h4>
+          <p>Text extraction &amp; segmentation</p>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-node" data-step="3">🧠</div>
+          <h4>Embed</h4>
+          <p>Semantic vectors + BM25 index</p>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-node" data-step="4">🔍</div>
+          <h4>Retrieve</h4>
+          <p>Hybrid search on your query</p>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-node" data-step="5">🤖</div>
+          <h4>Generate</h4>
+          <p>Grounded AI response</p>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-node" data-step="6">📎</div>
+          <h4>Cite</h4>
+          <p>Source references attached</p>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-node" data-step="7">✅</div>
+          <h4>Inspect</h4>
+          <p>Verify any passage instantly</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ USE CASES ============ -->
+  <section class="usecases-section" id="usecases">
+    <div class="section-tag">Applications</div>
+    <h2 class="section-h2">Built for every<br><span class="grad">knowledge workflow</span></h2>
+
+    <div class="usecases-grid">
+      <div class="usecase-card">
+        <span class="usecase-label">🏢 Enterprise</span>
+        <h3>Knowledge Management</h3>
+        <p>Centralize internal documentation, policies, and SOPs into a searchable AI layer. New hires onboard faster. Teams find answers without escalating every question.</p>
+        <div class="usecase-tags">
+          <span class="usecase-tag">Policy Discovery</span>
+          <span class="usecase-tag">SOP Assistance</span>
+          <span class="usecase-tag">Onboarding</span>
+          <span class="usecase-tag">HR Documentation</span>
+        </div>
+      </div>
+
+      <div class="usecase-card">
+        <span class="usecase-label">🔬 Research</span>
+        <h3>Academic & Technical Research</h3>
+        <p>Upload literature, academic papers, and technical documentation. Run comparative queries across multiple papers simultaneously. Accelerate literature reviews and synthesis.</p>
+        <div class="usecase-tags">
+          <span class="usecase-tag">Literature Review</span>
+          <span class="usecase-tag">Paper Querying</span>
+          <span class="usecase-tag">Citation Tracing</span>
+        </div>
+      </div>
+
+      <div class="usecase-card">
+        <span class="usecase-label">⚖️ Legal & Compliance</span>
+        <h3>Legal Document Intelligence</h3>
+        <p>Query contracts, regulatory filings, and compliance documents with precise, page-level citations. Reduce review time while maintaining full traceability for audits.</p>
+        <div class="usecase-tags">
+          <span class="usecase-tag">Contract Review</span>
+          <span class="usecase-tag">Compliance Queries</span>
+          <span class="usecase-tag">Audit Trail</span>
+        </div>
+      </div>
+
+      <div class="usecase-card">
+        <span class="usecase-label">📈 Finance & Analytics</span>
+        <h3>Report & Data Exploration</h3>
+        <p>Upload financial reports, quarterly earnings, and spreadsheets. Ask natural language questions about performance, segment data, and trend analysis without writing formulas.</p>
+        <div class="usecase-tags">
+          <span class="usecase-tag">Financial Reports</span>
+          <span class="usecase-tag">CSV Analysis</span>
+          <span class="usecase-tag">Data-driven QA</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DEMO INTERACTION ============ -->
+  <section class="demo-section" id="demo">
+    <div class="demo-inner">
+      <div class="section-tag">Live Experience</div>
+      <h2 class="section-h2">What a<br><span class="grad">conversation looks like</span></h2>
+      <p class="section-desc" style="margin: 0 auto 0;">A real Nexora.AI session — grounded responses, cited sources, and full source inspection.</p>
+
+      <div class="demo-window">
+        <!-- Titlebar -->
+        <div class="ui-titlebar" style="padding:12px 18px;">
+          <span class="ui-dot ui-dot-r"></span>
+          <span class="ui-dot ui-dot-y"></span>
+          <span class="ui-dot ui-dot-g"></span>
+          <span class="ui-titlebar-text">Nexora.AI — Knowledge Workspace · Enterprise KB</span>
+        </div>
+
+        <div class="demo-sidebar">
+          <!-- Sidebar -->
+          <div class="sidebar-panel">
+            <div class="sidebar-title">Knowledge Bases</div>
+            <div class="kb-item active">
+              <div class="kb-icon">🏢</div>
+              <div class="kb-info">
+                <div class="kb-name">Enterprise KB</div>
+                <div class="kb-count">14 documents</div>
+              </div>
+            </div>
+            <div class="kb-item">
+              <div class="kb-icon">🔬</div>
+              <div class="kb-info">
+                <div class="kb-name">Research Papers</div>
+                <div class="kb-count">32 documents</div>
+              </div>
+            </div>
+            <div class="kb-item">
+              <div class="kb-icon">⚖️</div>
+              <div class="kb-info">
+                <div class="kb-name">Legal Library</div>
+                <div class="kb-count">8 documents</div>
+              </div>
+            </div>
+            <div class="kb-item">
+              <div class="kb-icon">📈</div>
+              <div class="kb-info">
+                <div class="kb-name">Finance Reports</div>
+                <div class="kb-count">22 documents</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chat panel -->
+          <div class="chat-panel">
+            <div class="chat-header">
+              <div>
+                <div class="chat-title">Enterprise Knowledge Base</div>
+                <div class="chat-sub">14 documents indexed · Hybrid search enabled</div>
+              </div>
+              <span class="model-badge">GPT-4o / Claude 3.5</span>
+            </div>
+
+            <div class="chat-messages">
+              <div class="demo-chat-user">
+                Summarize the key risk factors mentioned in the annual report.
+              </div>
+
+              <div class="demo-chat-ai">
+                <div class="demo-chat-ai-header">
+                  <div class="ai-avatar">◆</div>
+                  <span class="ai-name">Nexora.AI · Grounded Response</span>
+                </div>
+                <div class="demo-chat-ai-body">
+                  The annual report highlights four primary risk categories: <strong>regulatory compliance</strong> (GDPR amendments in Q3), <strong>supply chain disruption</strong> from single-source vendor dependencies, <strong>cybersecurity exposure</strong> from legacy infrastructure, and <strong>macroeconomic headwinds</strong> affecting the EMEA segment specifically.
+                  <div class="demo-citations">
+                    <span class="demo-cite">📄 Annual_Report_2024 · p.47</span>
+                    <span class="demo-cite">📄 Annual_Report_2024 · p.61</span>
+                    <span class="demo-cite">📄 Risk_Framework_v2 · p.8</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="demo-chat-user">
+                Which one is flagged as highest priority?
+              </div>
+
+              <div class="demo-chat-ai">
+                <div class="demo-chat-ai-header">
+                  <div class="ai-avatar">◆</div>
+                  <span class="ai-name">Nexora.AI · Grounded Response</span>
+                </div>
+                <div class="demo-chat-ai-body">
+                  Cybersecurity exposure is explicitly flagged as the <strong>highest priority risk</strong> with a "Critical" severity rating in the Risk Framework document. The report recommends a zero-trust architecture migration by Q2 2025.
+                  <div class="demo-citations">
+                    <span class="demo-cite">📄 Risk_Framework_v2 · p.12</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="chat-input-bar">
+              <input type="text" placeholder="Ask about your documents…" readonly>
+              <button class="send-btn">↑</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ SOURCE VERIFICATION ============ -->
+  <section class="verify-section">
+    <div class="section-tag">Source Transparency</div>
+
+    <div class="verify-layout">
+      <div class="verify-text">
+        <h2 class="section-h2" style="margin-bottom:18px;">Every answer, <span class="grad">fully traceable</span></h2>
+        <p>Nexora.AI doesn't just answer — it shows you exactly where the answer came from. Every response includes document sources, page numbers, and the verbatim passage used to construct it.</p>
+        <p>This isn't a black box. It's a glass box.</p>
+
+        <div class="verify-points">
+          <div class="verify-point">
+            <div class="vp-icon">📄</div>
+            <div class="vp-text">
+              <h4>Document Source Name</h4>
+              <p>Exactly which file the passage was retrieved from</p>
+            </div>
+          </div>
+          <div class="verify-point">
+            <div class="vp-icon">📍</div>
+            <div class="vp-text">
+              <h4>Page Reference</h4>
+              <p>The specific page number within the document</p>
+            </div>
+          </div>
+          <div class="verify-point">
+            <div class="vp-icon">🔎</div>
+            <div class="vp-text">
+              <h4>Supporting Excerpt</h4>
+              <p>The actual passage used to generate the answer</p>
+            </div>
+          </div>
+          <div class="verify-point">
+            <div class="vp-icon">📊</div>
+            <div class="vp-text">
+              <h4>Relevance Score</h4>
+              <p>Retrieval confidence for each source passage</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="verify-ui">
+        <div class="verify-ui-header">
+          <span style="font-size:14px;">📎</span>
+          <span class="verify-header-title">Source References · 3 passages found</span>
+        </div>
+        <div class="verify-ui-body">
+
+          <div class="source-result">
+            <div class="sr-doc">Risk_Framework_v2.pdf <span class="sr-page">· Page 12</span></div>
+            <div class="sr-excerpt">"Cybersecurity exposure has been elevated to Critical severity, requiring immediate remediation through zero-trust architecture adoption…"</div>
+            <div class="sr-relevance">
+              <span class="relevance-label">Relevance</span>
+              <div class="relevance-bar"><div class="relevance-fill" style="width:94%"></div></div>
+              <span class="relevance-pct">94%</span>
+            </div>
+          </div>
+
+          <div class="source-result">
+            <div class="sr-doc">Annual_Report_2024.pdf <span class="sr-page">· Page 47</span></div>
+            <div class="sr-excerpt">"Four primary risk categories were identified during the Q3 board review, with cybersecurity ranked highest in potential impact…"</div>
+            <div class="sr-relevance">
+              <span class="relevance-label">Relevance</span>
+              <div class="relevance-bar"><div class="relevance-fill" style="width:88%"></div></div>
+              <span class="relevance-pct">88%</span>
+            </div>
+          </div>
+
+          <div class="source-result">
+            <div class="sr-doc">Q3_Executive_Summary.pdf <span class="sr-page">· Page 4</span></div>
+            <div class="sr-excerpt">"The EMEA segment faces compounding macroeconomic headwinds, classified as High severity with ongoing monitoring recommended…"</div>
+            <div class="sr-relevance">
+              <span class="relevance-label">Relevance</span>
+              <div class="relevance-bar"><div class="relevance-fill" style="width:76%"></div></div>
+              <span class="relevance-pct">76%</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section class="faq-section" id="faq">
+    <div class="section-tag">FAQ</div>
+    <h2 class="section-h2">Common <span class="grad">questions</span></h2>
+    <p class="section-desc">Everything you need to know about how Nexora.AI works.</p>
+
+    <div class="faq-list" id="faqList">
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What file formats does Nexora.AI support?
+          <span class="faq-caret">▾</span>
+        </button>
+        <div class="faq-a">
+          <p>Nexora.AI supports PDF, DOCX (Word), TXT, and CSV files. Support covers text-heavy documents, structured reports, data files, and formatted business documents. Each file is parsed, chunked, and embedded automatically upon upload.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          How does the knowledge indexing process work?
+          <span class="faq-caret">▾</span>
+        </button>
+        <div class="faq-a">
+          <p>When you upload a document, Nexora.AI extracts the text, segments it into meaningful chunks, and generates dense semantic embeddings stored in ChromaDB. It also builds a BM25 sparse index for keyword retrieval. Both indexes are queried together using a hybrid fusion strategy to deliver the most relevant results.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Are citations always accurate and verifiable?
+          <span class="faq-caret">▾</span>
+        </button>
+        <div class="faq-a">
+          <p>Yes. Citations reference the exact document filename and page number from which the passage was retrieved. You can inspect the original source passages directly in the interface. Responses are constructed from retrieved document content — not from the model's general training knowledge.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Can I have multiple separate knowledge bases?
+          <span class="faq-caret">▾</span>
+        </button>
+        <div class="faq-a">
+          <p>Yes. You can create and manage multiple named knowledge bases — for example, one for HR documentation, another for legal contracts, and a third for research papers. Each knowledge base maintains its own isolated vector store and can be queried independently or combined in a session.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Is my data private? Can other users access my documents?
+          <span class="faq-caret">▾</span>
+        </button>
+        <div class="faq-a">
+          <p>Absolutely not. Each user's documents, vector embeddings, and conversation history are stored in fully isolated database namespaces. There is no cross-user data access. Your knowledge base is only accessible to your account.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What languages does Nexora.AI support?
+          <span class="faq-caret">▾</span>
+        </button>
+        <div class="faq-a">
+          <p>Nexora.AI supports multilingual documents and queries. You can upload documents in multiple languages, ask questions in your preferred language, and receive responses in that same language. Cross-lingual retrieval is also supported — query in English against a French document, for example.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Can I use custom AI instructions for my knowledge base?
+          <span class="faq-caret">▾</span>
+        </button>
+        <div class="faq-a">
+          <p>Yes. You can set custom system instructions per knowledge base to tune the AI's response style, persona, and focus. You can also select preferred AI models and configure response preferences such as verbosity and citation format.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What AI guardrails are in place?
+          <span class="faq-caret">▾</span>
+        </button>
+        <div class="faq-a">
+          <p>Nexora.AI includes prompt injection protection, jailbreak detection, PII identification in responses, and hallucination reduction through retrieval grounding. The system is designed to stay focused on your document content and refuse attempts to redirect it outside the knowledge scope.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ FINAL CTA ============ -->
+  <section class="cta-section">
+    <div class="cta-inner">
+      <div class="cta-eyebrow">
+        <span>◆</span> Start for free today
+      </div>
+      <h2 class="cta-h2">
+        Turn documents into<br>
+        <span class="grad">accessible knowledge</span>
+      </h2>
+      <p class="cta-sub">
+        Build searchable knowledge repositories and explore any document through natural conversation. No setup complexity. Upload your first file and start asking.
+      </p>
+      <div class="cta-actions">
+        <button class="btn-primary" onclick="openLogin()">
+          Get Started Free
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+        <a href="/register" style="text-decoration:none;">
+          <button class="btn-outline">Create an Account</button>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
   <footer>
     <div class="footer-inner">
-      <div class="footer-brand">
-        <div class="footer-orb"></div>
-        Nexora.AI
-      </div>
+      <span class="footer-brand">Nexora.AI</span>
       <div class="footer-links">
         <a href="#features">Features</a>
-        <a href="#stack">Technology</a>
         <a href="#usecases">Use Cases</a>
-        <a href="#" id="security">Security</a>
-        <a href="#">Documentation</a>
+        <a href="#demo">Demo</a>
+        <a href="#faq">FAQ</a>
+        <a href="/register">Register</a>
       </div>
-      <p class="footer-copy">&#169; 2026 Nexora.AI. All rights reserved.</p>
+      <span class="footer-copy">© 2026 Nexora.AI</span>
     </div>
   </footer>
 
-</div><!-- /page-wrapper -->
+</div><!-- /page -->
 
 <script>
-// Open modal
+/* =============================================
+   MODAL
+   ============================================= */
 function openLogin() {
-  const modal = document.getElementById('loginModal');
-  modal.classList.add('open');
+  const m = document.getElementById('loginModal');
+  m.classList.add('open');
   document.body.style.overflow = 'hidden';
-  // focus username after animation
   setTimeout(() => {
-    const u = modal.querySelector('input[name="username"]');
-    if (u) u.focus();
-  }, 200);
+    const inp = m.querySelector('input[name="username"]');
+    if (inp) inp.focus();
+  }, 250);
 }
 
-// Close modal
 function closeLogin() {
   document.getElementById('loginModal').classList.remove('open');
   document.body.style.overflow = '';
 }
 
-// Click backdrop to close (but not the card itself)
 document.getElementById('loginModal').addEventListener('click', function(e) {
   if (e.target === this) closeLogin();
 });
 
-// ESC key to close
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') closeLogin();
 });
 
-// Auto-open if Flask returned error/success (after POST)
+// Auto-open if Flask returned error/success
 (function() {
   if (document.querySelector('.alert')) openLogin();
 })();
+
+/* =============================================
+   FAQ ACCORDION
+   ============================================= */
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+
+  // Close all
+  document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+
+  // Toggle clicked
+  if (!isOpen) item.classList.add('open');
+}
+
+/* =============================================
+   NAVBAR SCROLL EFFECT
+   ============================================= */
+window.addEventListener('scroll', function() {
+  const nav = document.querySelector('.navbar');
+  if (window.scrollY > 60) {
+    nav.style.borderBottomColor = 'rgba(124,92,252,0.12)';
+  } else {
+    nav.style.borderBottomColor = 'var(--border)';
+  }
+});
+
+/* =============================================
+   FLOW STEP HOVER GLOW
+   ============================================= */
+document.querySelectorAll('.flow-node').forEach(node => {
+  node.addEventListener('mouseenter', function() {
+    this.style.background = 'var(--a-bg)';
+  });
+  node.addEventListener('mouseleave', function() {
+    this.style.background = 'var(--ink-2)';
+  });
+});
+
+/* =============================================
+   STAGGER ANIMATION ON SCROLL
+   ============================================= */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      entry.target.style.animationDelay = (i * 0.08) + 's';
+      entry.target.classList.add('in-view');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.feat-card, .usecase-card, .source-card, .faq-item, .verify-point').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(18px)';
+  el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+  observer.observe(el);
+});
+
+document.querySelectorAll('.in-view, .feat-card, .usecase-card, .source-card, .faq-item, .verify-point').forEach(el => {
+  el.addEventListener('transitionend', function() {}, { once: true });
+});
+
+// Simpler approach: add class to trigger
+const staggerObs = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+      staggerObs.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.feat-card, .usecase-card, .source-card, .faq-item, .verify-point, .stack-item, .use-pill, .wf-step').forEach(el => {
+  staggerObs.observe(el);
+});
+
+/* =============================================
+   TYPING ANIMATION LOOP
+   ============================================= */
+const bubbles = document.querySelectorAll('.bubble-user, .bubble-ai');
+// Already visible; typing dots handle themselves via CSS.
+
+/* =============================================
+   SOURCE CARD TOOLTIP fix for mobile
+   ============================================= */
+document.querySelectorAll('.source-card').forEach(card => {
+  card.addEventListener('touchstart', function() {
+    this.classList.toggle('hovered');
+  }, { passive: true });
+});
 </script>
 
 </body>

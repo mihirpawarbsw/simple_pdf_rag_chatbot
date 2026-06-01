@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexora.AI — Signed Out</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+
+/* =============================================
+   RESET + DESIGN SYSTEM TOKENS
+   ============================================= */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --bg-base: #0c080f; /* Deep Sherbet warm-black base background */
+  --bg-glass: rgba(255, 255, 255, 0.03);
+  --border: rgba(255, 255, 255, 0.07);
+  --border-hover: rgba(255, 255, 255, 0.14);
+  --text-primary: #fff1f2; /* Rose-tinted white */
+  --text-secondary: rgba(255, 241, 242, 0.65);
+  --text-muted: rgba(255, 241, 242, 0.35);
+  --font-display: 'Sora', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+
+  /* ── SHERBET ACCENTS ── */
+  --accent: #f43f5e;
+  --accent-light: #fcd34d;
+  --accent-deep: #e11d48;
+  --accent-glow: rgba(244, 63, 94, 0.35);
+  --accent-glow-soft: rgba(244, 63, 94, 0.12);
+  --accent-border: rgba(244, 63, 94, 0.25);
+  --accent-border-hover: rgba(244, 63, 94, 0.55);
+  --accent-text: #fba518;
+  --accent-bg: rgba(244, 63, 94, 0.08);
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+/* grain texture */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.28; z-index: 1; pointer-events: none;
+}
+
+/* =============================================
+   DYNAMIC AMBIENT MESH GRADIENTS
+   ============================================= */
+.mesh-gradient {
+  position: fixed; inset: 0; overflow: hidden; z-index: 0; pointer-events: none;
+}
+.blob {
+  position: absolute; border-radius: 50%;
+  filter: blur(140px); opacity: 0.16;
+  animation: blobMove 18s infinite alternate ease-in-out;
+}
+.blob1 { width: 500px; height: 500px; background: rgba(244, 63, 94, 0.22); top:-150px; left:-100px; }
+.blob2 { width: 420px; height: 420px; background: rgba(251, 140, 0, 0.15); bottom:-150px; right:-100px; animation-delay: 3s; }
+.blob3 { width: 300px; height: 300px; background: rgba(253, 216, 53, 0.1); top:40%; left:45%; animation-delay: 6s; }
+
+@keyframes blobMove {
+  0%   { transform: translate(0,0) scale(1); }
+  50%  { transform: translate(40px,-50px) scale(1.1); }
+  100% { transform: translate(-20px,20px) scale(0.9); }
+}
+
+/* =============================================
+   NAVBAR
+   ============================================= */
+.navbar {
+  position: fixed; top: 0; left: 0; width: 100%; height: 72px;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 56px;
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  background: rgba(12,8,15,0.65);
+  z-index: 200;
+}
+
+.nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.nav-logo { width: 140px; height: auto; object-fit: contain; flex-shrink: 0; }
+
+/* =============================================
+   PAGE CARD WRAPPER
+   ============================================= */
+.card-wrapper {
+  position: relative; z-index: 10;
+  width: 100%; max-width: 420px;
+  padding: 24px;
+  animation: slideUp 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) both;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(28px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.logout-card {
+  position: relative;
+  background: rgba(20, 12, 22, 0.75); /* Highly customized dark Sherbet glass */
+  border: 1px solid var(--accent-border);
+  border-radius: 28px;
+  padding: 48px 40px 40px;
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  box-shadow: 0 40px 100px rgba(0,0,0,0.65), 0 0 60px var(--accent-glow-soft), inset 0 1px 0 rgba(255,255,255,0.07);
+  overflow: hidden;
+  text-align: center;
+}
+
+/* animated top border shimmer */
+.logout-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1.5px;
+  background: linear-gradient(90deg, transparent, var(--accent) 30%, var(--accent-light) 70%, transparent);
+  background-size: 200% auto;
+  animation: shimmerFlow 4s linear infinite;
+}
+
+@keyframes shimmerFlow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+/* =============================================
+   ANIMATED VERIFICATION RING
+   ============================================= */
+.check-ring {
+  width: 76px; height: 76px; border-radius: 50%;
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 28px;
+  animation: popIn 0.55s 0.15s cubic-bezier(0.25, 0.8, 0.25, 1) both;
+  box-shadow: 0 0 30px var(--accent-glow-soft);
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.6); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.check-svg { width: 30px; height: 30px; }
+.check-svg path { stroke: var(--accent); }
+
+/* brand */
+.card-brand {
+  display: flex; flex-direction: column; align-items: center; margin-bottom: 22px;
+}
+.card-logo { width: 160px; height: auto; object-fit: contain; margin-bottom: 8px; }
+.card-slogan {
+  font-size: 12px; color: var(--accent-text); letter-spacing: 0.3px; margin-top: 4px;
+  font-weight: 500;
+}
+
+/* heading */
+.logout-heading {
+  font-family: var(--font-display); font-size: 28px; font-weight: 800;
+  letter-spacing: -1px; margin-bottom: 12px;
+  background: linear-gradient(135deg, #ffffff 0%, var(--accent-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.logout-sub {
+  font-size: 15px; line-height: 1.7; color: var(--text-secondary);
+  max-width: 280px; margin: 0 auto 32px;
+}
+
+/* divider */
+.divider {
+  width: 40px; height: 1px; background: var(--accent-border); margin: 0 auto 28px;
+}
+
+/* =============================================
+   CREATIVE CTA BUTTON (Sign Back In)
+   ============================================= */
+.signin-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  height: 54px; padding: 0 32px;
+  background: linear-gradient(135deg, #f43f5e 0%, #fb8c00 50%, #fcd34d 100%);
+  color: #ffffff;
+  border: none; border-radius: 16px;
+  font-family: var(--font-display); font-size: 15px; font-weight: 700;
+  text-decoration: none; letter-spacing: -0.2px;
+  transition: all 0.28s cubic-bezier(0.25, 0.8, 0.25, 1);
+  cursor: pointer;
+  box-shadow: 0 8px 24px var(--accent-glow-soft);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+.signin-btn:hover {
+  transform: scale(1.02) translateY(-2px);
+  box-shadow: 0 14px 36px var(--accent-glow);
+}
+
+.arrow {
+  font-size: 16px; line-height: 1; transition: transform 0.2s ease;
+  color: #fff;
+}
+.signin-btn:hover .arrow { transform: translateX(4px); }
+
+/* secure footer notes */
+.secure-note {
+  margin-top: 24px; font-size: 12px; color: var(--accent-text);
+  letter-spacing: 0.2px; font-weight: 500;
+}
+
+@media (max-width: 520px) {
+  .navbar { padding: 0 20px; }
+  .logout-card { padding: 40px 24px 32px; }
+  .nav-logo { width: 120px; }
+  .card-logo { width: 140px; }
+}
+
+</style>
+</head>
+<body>
+
+<div class="mesh-gradient">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+</div>
+
+<nav class="navbar">
+  <a class="nav-brand" href="/login">
+    <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora.AI" class="nav-logo">
+  </a>
+</nav>
+
+<div class="card-wrapper">
+  <div class="logout-card">
+
+    <!-- animated check -->
+    <div class="check-ring">
+      <svg class="check-svg" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 15.5L12 21.5L24 9.5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
+          style="stroke-dasharray:28;stroke-dashoffset:28;animation:drawCheck 0.4s 0.45s ease forwards"/>
+      </svg>
+    </div>
+
+    <div class="card-brand">
+      <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora.AI" class="card-logo">
+      <p class="card-slogan">Transforming Documents Into Intelligent Conversations</p>
+    </div>
+
+    <h2 class="logout-heading">Signed out</h2>
+
+    <p class="logout-sub">
+      You've been securely signed out of your Nexora AI workspace.
+    </p>
+
+    <div class="divider"></div>
+
+    <a class="signin-btn" href="/login">
+      Sign back in
+      <span class="arrow">&#8594;</span>
+    </a>
+
+    <p class="secure-note">Your session data has been cleared.</p>
+
+  </div>
+</div>
+
+<style>
+@keyframes drawCheck {
+  to { stroke-dashoffset: 0; }
+}
+</style>
+
+</body>
+</html>

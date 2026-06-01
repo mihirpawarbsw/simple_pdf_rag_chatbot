@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexora.AI — Transforming Documents Into Intelligent Conversations</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+
+/* =============================================
+   RESET + DESIGN TOKENS (Sherbet Sunset Edition)
+   ============================================= */
+*, *::before, *::after {
+  margin: 0; padding: 0; box-sizing: border-box;
+}
+
+:root {
+  --bg-base: #0c080f; /* Deep Sherbet warm-black base background */
+  --bg-glass: rgba(255, 255, 255, 0.03);
+  --border: rgba(255, 255, 255, 0.07);
+  --border-hover: rgba(255, 255, 255, 0.14);
+  --text-primary: #fff1f2; /* Rose-tinted white */
+  --text-secondary: rgba(255, 241, 242, 0.65);
+  --text-muted: rgba(255, 241, 242, 0.35);
+  --font-display: 'Sora', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+
+  /* ── SHERBET ACCENTS ── */
+  --accent: #f43f5e;
+  --accent-light: #fcd34d;
+  --accent-deep: #e11d48;
+  --accent-glow: rgba(244, 63, 94, 0.35);
+  --accent-glow-soft: rgba(244, 63, 94, 0.12);
+  --accent-border: rgba(244, 63, 94, 0.25);
+  --accent-border-hover: rgba(244, 63, 94, 0.55);
+  --accent-text: #fba518;
+  --accent-bg: rgba(244, 63, 94, 0.08);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* grain texture overlay */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.28; z-index: 1; pointer-events: none;
+}
+
+/* =============================================
+   DYNAMIC AMBIENT MESH GRADIENTS
+   ============================================= */
+.mesh-gradient {
+  position: fixed; inset: 0; overflow: hidden; z-index: 0; pointer-events: none;
+}
+.blob {
+  position: absolute; border-radius: 50%;
+  filter: blur(140px); opacity: 0.15;
+  animation: blobMove 18s infinite alternate ease-in-out;
+}
+.blob1 { width: 500px; height: 500px; background: rgba(244, 63, 94, 0.20); top:-150px; left:-100px; }
+.blob2 { width: 420px; height: 420px; background: rgba(251, 140, 0, 0.12); bottom:-150px; right:-100px; animation-delay: 3s; }
+.blob3 { width: 300px; height: 300px; background: rgba(253, 216, 53, 0.08); top:40%; left:45%; animation-delay: 6s; }
+
+@keyframes blobMove {
+  0%   { transform: translate(0,0) scale(1); }
+  50%  { transform: translate(40px,-50px) scale(1.1); }
+  100% { transform: translate(-20px,20px) scale(0.9); }
+}
+
+/* =============================================
+   NAVBAR
+   ============================================= */
+.navbar {
+  position: fixed; top: 0; left: 0; width: 100%; height: 72px;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 56px;
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  background: rgba(12,8,15,0.65);
+  z-index: 200;
+}
+
+.nav-brand {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none;
+}
+.nav-logo {
+  width: 140px; height: auto; object-fit: contain; flex-shrink: 0;
+}
+
+.nav-links {
+  display: flex; align-items: center; gap: 36px; list-style: none;
+}
+.nav-links a {
+  font-size: 13.5px; color: var(--text-secondary);
+  text-decoration: none; transition: color 0.2s; letter-spacing: 0.2px;
+  position: relative;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute; bottom: -4px; left: 0; width: 0; height: 1.5px;
+  background: var(--accent);
+  transition: width 0.3s ease;
+  border-radius: 1px;
+}
+.nav-links a:hover { color: var(--accent-light); }
+.nav-links a:hover::after { width: 100%; }
+
+.nav-cta {
+  height: 42px; padding: 0 22px;
+  background: linear-gradient(135deg, #f43f5e 0%, #fb8c00 50%, #fcd34d 100%);
+  color: #ffffff;
+  border: none; border-radius: 12px;
+  font-family: var(--font-display); font-size: 13.5px; font-weight: 600;
+  cursor: pointer; transition: all 0.28s cubic-bezier(0.25, 0.8, 0.25, 1);
+  letter-spacing: -0.2px;
+  box-shadow: 0 8px 24px var(--accent-glow-soft);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+.nav-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px var(--accent-glow);
+}
+
+/* =============================================
+   PAGE WRAPPER
+   ============================================= */
+.page-wrapper { position: relative; z-index: 2; }
+
+/* =============================================
+   HERO SECTION
+   ============================================= */
+.hero-section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 120px 56px 80px;
+  max-width: 1100px;
+  margin: 0 auto;
+  animation: fadeUp 0.7s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 18px; border-radius: 999px;
+  border: 1px solid var(--accent-border); background: var(--accent-bg);
+  font-size: 12px; font-weight: 500; color: var(--text-primary);
+  letter-spacing: 0.7px; text-transform: uppercase;
+  margin-bottom: 36px;
+}
+.eyebrow-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent); opacity: 0.85;
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+.hero-headline {
+  font-family: var(--font-display);
+  font-size: clamp(52px, 7vw, 88px);
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -3px;
+  margin-bottom: 30px;
+  color: var(--text-primary);
+}
+.hero-headline .dimmed {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-desc {
+  font-size: 17px; line-height: 1.85;
+  color: var(--text-secondary);
+  max-width: 680px;
+  margin: 0 auto 44px;
+}
+
+/* HERO ACTIONS */
+.hero-actions {
+  display: flex; gap: 14px; justify-content: center;
+  flex-wrap: wrap; margin-bottom: 72px;
+}
+
+.btn-primary {
+  height: 56px; padding: 0 32px;
+  background: linear-gradient(135deg, #f43f5e 0%, #fb8c00 50%, #fcd34d 100%);
+  color: #ffffff;
+  border: none; border-radius: 16px;
+  font-family: var(--font-display); font-size: 15px; font-weight: 700;
+  cursor: pointer; transition: all 0.28s cubic-bezier(0.25, 0.8, 0.25, 1);
+  letter-spacing: -0.2px;
+  box-shadow: 0 8px 24px var(--accent-glow-soft);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px var(--accent-glow);
+}
+
+.btn-ghost {
+  height: 56px; padding: 0 28px;
+  background: var(--bg-glass); color: var(--text-primary);
+  border: 1px solid var(--accent-border); border-radius: 16px;
+  font-family: var(--font-body); font-size: 15px; font-weight: 400;
+  cursor: pointer; transition: all 0.25s ease;
+}
+.btn-ghost:hover {
+  border-color: var(--accent-border-hover); color: var(--accent-light);
+  background: var(--accent-bg);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--accent-glow-soft);
+}
+
+/* HERO FEATURE GRID — 4 cols */
+.hero-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  width: 100%;
+}
+
+.hero-feat-card {
+  padding: 22px 20px; border-radius: 20px;
+  background: var(--bg-glass); border: 1px solid var(--border);
+  text-align: left;
+  backdrop-filter: blur(10px);
+  transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+}
+.hero-feat-card:hover {
+  border-color: var(--accent-border-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px var(--accent-glow-soft);
+}
+.feat-icon {
+  font-size: 18px; margin-bottom: 12px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-feat-card h3 {
+  font-family: var(--font-display); font-size: 14px; font-weight: 600;
+  margin-bottom: 7px; letter-spacing: -0.2px;
+  color: var(--text-primary);
+}
+.hero-feat-card p { font-size: 12.5px; line-height: 1.65; color: var(--text-secondary); }
+
+/* TECH STRIP */
+.tech-strip {
+  margin-top: 48px; padding: 16px 0;
+  border-top: 1px solid var(--border);
+  font-size: 11.5px; letter-spacing: 0.9px;
+  text-transform: uppercase; color: var(--accent-text);
+  width: 100%; text-align: center;
+  font-weight: 600;
+}
+
+/* STATS */
+.stats-row {
+  display: flex; gap: 48px; justify-content: center;
+  margin-top: 32px; flex-wrap: wrap;
+}
+.stat-box { text-align: center; }
+.stat-box h2 {
+  font-family: var(--font-display); font-size: 15px; font-weight: 700;
+  background: linear-gradient(135deg, #ffffff 0%, var(--accent-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 4px;
+}
+.stat-box p { font-size: 12px; color: var(--text-muted); }
+
+/* =============================================
+   FEATURES SECTION
+   ============================================= */
+.features-section {
+  padding: 100px 56px;
+  max-width: 1340px; margin: 0 auto;
+  border-top: 1px solid var(--border);
+}
+
+.section-label {
+  font-size: 11.5px; font-weight: 500; letter-spacing: 1.2px;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 18px;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 3.5vw, 48px); font-weight: 800;
+  letter-spacing: -1.5px; line-height: 1.1;
+  max-width: 580px; margin-bottom: 60px;
+}
+.section-title .dimmed {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.features-big-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+}
+
+.big-feature-card {
+  padding: 30px; border-radius: 24px;
+  background: var(--bg-glass); border: 1px solid var(--border);
+  backdrop-filter: blur(10px);
+  transition: all 0.28s ease; position: relative; overflow: hidden;
+}
+.big-feature-card::after {
+  content: ''; position: absolute; inset: 0; border-radius: 24px;
+  opacity: 0;
+  background: radial-gradient(ellipse at 50% 0%, var(--accent-bg) 0%, transparent 70%);
+  transition: opacity 0.3s; pointer-events: none;
+}
+.big-feature-card:hover {
+  border-color: var(--accent-border-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px var(--accent-glow-soft);
+}
+.big-feature-card:hover::after { opacity: 1; }
+
+.big-feature-card.featured {
+  grid-column: span 2;
+  background: linear-gradient(180deg, var(--accent-bg) 0%, var(--bg-glass) 100%);
+  border-color: var(--accent-border);
+}
+
+.feat-num {
+  font-family: var(--font-display); font-size: 11px; font-weight: 600;
+  letter-spacing: 1px; color: var(--accent); margin-bottom: 20px; text-transform: uppercase;
+}
+.big-feature-card h3 {
+  font-family: var(--font-display); font-size: 18px; font-weight: 700;
+  letter-spacing: -0.3px; margin-bottom: 12px;
+  color: var(--text-primary);
+}
+.big-feature-card p { font-size: 14px; line-height: 1.7; color: var(--text-secondary); }
+
+/* =============================================
+   STACK SECTION
+   ============================================= */
+.stack-section { padding: 80px 56px; border-top: 1px solid var(--border); }
+.stack-inner { max-width: 1340px; margin: 0 auto; }
+
+.stack-grid {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-top: 48px;
+}
+.stack-col {
+  padding: 26px; border-radius: 20px;
+  background: var(--bg-glass); border: 1px solid var(--border);
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+.stack-col:hover {
+  border-color: var(--accent-border-hover);
+  box-shadow: 0 12px 32px var(--accent-glow-soft);
+}
+.stack-col-title {
+  font-family: var(--font-display); font-size: 12px; font-weight: 600;
+  letter-spacing: 0.8px; text-transform: uppercase; color: var(--accent-light); margin-bottom: 18px;
+}
+.stack-items { display: flex; flex-direction: column; gap: 10px; }
+.stack-item {
+  font-size: 13.5px; color: var(--text-secondary);
+  padding: 8px 12px; border-radius: 10px;
+  background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.03);
+  transition: all 0.2s;
+}
+.stack-item:hover {
+  color: #fff;
+  background: var(--accent-bg);
+  border-color: var(--accent-border);
+}
+
+/* =============================================
+   USE CASES
+   ============================================= */
+.usecases-section { padding: 80px 56px; border-top: 1px solid var(--border); }
+.usecases-inner {
+  max-width: 1340px; margin: 0 auto;
+  display: flex; gap: 80px; align-items: flex-start;
+}
+.usecases-left { flex: 1; }
+.usecases-list {
+  flex: 1; display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; padding-top: 8px;
+}
+.use-pill {
+  padding: 13px 18px; border-radius: 14px;
+  background: var(--bg-glass); border: 1px solid var(--border);
+  font-size: 13.5px; color: var(--text-secondary); transition: all 0.22s;
+}
+.use-pill:hover {
+  border-color: var(--accent-border-hover);
+  color: #fff;
+  background: var(--accent-bg);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px var(--accent-glow-soft);
+}
+
+/* =============================================
+   FOOTER
+   ============================================= */
+footer { border-top: 1px solid var(--border); padding: 40px 56px; }
+.footer-inner {
+  max-width: 1340px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.footer-brand {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-display); font-size: 15px; font-weight: 700;
+}
+.footer-orb {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--grad-button);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+.footer-links { display: flex; gap: 28px; }
+.footer-links a { font-size: 13px; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+.footer-links a:hover { color: var(--accent-light); }
+.footer-copy { font-size: 12.5px; color: var(--text-muted); }
+
+/* =============================================
+   LOGIN MODAL WRAPPER AND INTERACTIVE FORMS
+   ============================================= */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 999;
+  background: rgba(4,4,4,0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.modal-backdrop.open {
+  opacity: 1; pointer-events: auto;
+}
+
+.modal-card {
+  position: relative;
+  width: 100%; max-width: 440px;
+  background: rgba(20, 12, 22, 0.75); /* Deep dark Sherbet glass */
+  border: 1px solid var(--accent-border);
+  border-radius: 28px;
+  padding: 44px 40px 36px;
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  box-shadow: 0 40px 100px rgba(0,0,0,0.7), 0 0 60px var(--accent-glow-soft), inset 0 1px 0 rgba(255,255,255,0.07);
+  overflow: hidden;
+
+  /* hidden scale animation state */
+  transform: translateY(28px) scale(0.96);
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.modal-backdrop.open .modal-card {
+  transform: translateY(0) scale(1);
+}
+
+/* animated top border shimmer */
+.modal-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1.5px;
+  background: linear-gradient(90deg, transparent, var(--accent) 30%, var(--accent-light) 70%, transparent);
+  background-size: 200% auto;
+  animation: shimmerFlow 4s linear infinite;
+}
+
+/* close button */
+.modal-close {
+  position: absolute; top: 18px; right: 18px;
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--accent-bg); border: 1px solid var(--accent-border);
+  color: var(--text-primary); font-size: 15px; line-height: 1;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all 0.25s ease;
+}
+.modal-close:hover {
+  background: var(--accent-deep);
+  color: #fff;
+  border-color: var(--accent-border-hover);
+  transform: scale(1.05) rotate(90deg);
+}
+
+/* modal brand */
+.modal-brand {
+  display: flex; flex-direction: column; align-items: center; margin-bottom: 28px;
+}
+.modal-logo {
+  width: 160px; height: auto; object-fit: contain; margin-bottom: 10px;
+}
+.modal-tagline {
+  font-family: var(--font-body); font-size: 12px;
+  color: var(--accent-text); letter-spacing: 0.3px;
+  text-align: center; font-weight: 500;
+}
+
+.modal-heading {
+  font-family: var(--font-display); font-size: 22px; font-weight: 700;
+  text-align: center; letter-spacing: -0.5px;
+  margin-bottom: 26px;
+  background: linear-gradient(135deg, #ffffff 0%, var(--accent-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ALERTS */
+.alert {
+  width: 100%; padding: 13px 16px;
+  border-radius: 14px; margin-bottom: 18px;
+  font-size: 13px; text-align: center;
+}
+.alert-error {
+  background: rgba(244, 63, 94, 0.05); border: 1px solid var(--accent-border);
+  color: #ffa4b2;
+}
+.alert-success {
+  background: rgba(244, 63, 94, 0.06); border: 1px solid var(--accent-border-hover);
+  color: rgba(200,255,220,0.9);
+}
+
+/* INPUTS */
+.input-group { margin-bottom: 13px; }
+.input-group input {
+  width: 100%; height: 54px; padding: 0 18px;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+  border-radius: 16px; color: var(--text-primary);
+  font-family: var(--font-body); font-size: 14px;
+  outline: none; transition: all 0.25s ease;
+}
+.input-group input::placeholder { color: var(--text-muted); }
+.input-group input:focus {
+  background: var(--accent-bg);
+  border-color: var(--accent-border-hover);
+  box-shadow: 0 0 0 3px var(--accent-glow-soft), 0 0 15px rgba(244, 63, 94, 0.2);
+}
+
+/* SUBMIT */
+.submit-btn {
+  width: 100%; height: 54px; border: none; border-radius: 16px;
+  background: linear-gradient(135deg, #f43f5e 0%, #fb8c00 50%, #fcd34d 100%);
+  color: #ffffff;
+  font-family: var(--font-display); font-size: 15px; font-weight: 700;
+  cursor: pointer; letter-spacing: -0.2px; margin-top: 8px;
+  transition: all 0.28s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 8px 24px var(--accent-glow-soft);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+.submit-btn:hover {
+  transform: scale(1.02) translateY(-2px);
+  box-shadow: 0 14px 36px var(--accent-glow);
+}
+
+.register-link {
+  text-align: center; font-size: 13.5px; color: var(--text-secondary); margin-top: 20px;
+}
+.register-link a {
+  color: var(--accent-light); text-decoration: none; font-weight: 600;
+  border-bottom: 1px solid var(--accent-border); padding-bottom: 1px;
+  transition: all 0.2s;
+}
+.register-link a:hover { border-color: var(--accent-border-hover); color: #fff; }
+
+.trust-badges {
+  display: flex; align-items: center; justify-content: center;
+  gap: 18px; margin-top: 22px; flex-wrap: wrap;
+}
+.badge { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--text-muted); }
+.badge span { color: var(--accent); }
+
+/* =============================================
+   RESPONSIVE DESIGN RULES
+   ============================================= */
+@media (max-width: 1100px) {
+  .hero-feature-grid { grid-template-columns: repeat(2,1fr); }
+  .features-big-grid { grid-template-columns: repeat(2,1fr); }
+  .big-feature-card.featured { grid-column: span 1; }
+  .stack-grid { grid-template-columns: repeat(2,1fr); }
+  .usecases-inner { flex-direction: column; gap: 40px; }
+}
+
+@media (max-width: 720px) {
+  .navbar { padding: 0 24px; }
+  .nav-links { display: none; }
+  .hero-section { padding: 100px 24px 60px; }
+  .hero-headline { font-size: 44px; letter-spacing: -2px; }
+  .hero-feature-grid { grid-template-columns: 1fr; }
+  .features-section, .stack-section, .usecases-section { padding: 60px 24px; }
+  .features-big-grid { grid-template-columns: 1fr; }
+  .stack-grid { grid-template-columns: 1fr; }
+  .usecases-list { grid-template-columns: 1fr; }
+  footer { padding: 32px 24px; }
+  .footer-inner { flex-direction: column; gap: 20px; text-align: center; }
+  .footer-links { flex-wrap: wrap; justify-content: center; gap: 18px; }
+  .modal-card { padding: 36px 26px 28px; }
+}
+
+</style>
+</head>
+<body>
+
+<div class="mesh-gradient">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+</div>
+
+<!-- ==========================================
+     LOGIN MODAL (hidden by default)
+ =========================================== -->
+<div class="modal-backdrop" id="loginModal" role="dialog" aria-modal="true" aria-label="Sign in">
+
+  <div class="modal-card" id="modalCard">
+
+    <button class="modal-close" onclick="closeLogin()" aria-label="Close">&#x2715;</button>
+
+    <div class="modal-brand">
+      <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora.AI" class="modal-logo">
+      <p class="modal-tagline">Transforming Documents Into Intelligent Conversations</p>
+    </div>
+
+    <h2 class="modal-heading">Welcome</h2>
+
+    {% if error %}
+    <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
+
+    {% if success %}
+    <div class="alert alert-success">{{ success }}</div>
+    {% endif %}
+
+    <form method="POST">
+      <div class="input-group">
+        <input type="text" name="username" placeholder="Username" required autocomplete="username">
+      </div>
+      <div class="input-group">
+        <input type="password" name="password" placeholder="Password" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="submit-btn">Sign In</button>
+    </form>
+
+    <div class="register-link">
+      Don't have an account? <a href="/register">Create one</a>
+    </div>
+
+    <div class="trust-badges">
+      <div class="badge"><span>&#128274;</span> Encrypted</div>
+      <div class="badge"><span>&#9889;</span> Instant Access</div>
+      <div class="badge"><span>&#9678;</span> Multi-user Safe</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==========================================
+     NAVBAR
+ =========================================== -->
+<nav class="navbar">
+  <a class="nav-brand" href="#">
+    <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora.AI" class="nav-logo">
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#stack">Technology</a></li>
+    <li><a href="#usecases">Use Cases</a></li>
+    <li><a href="#security">Security</a></li>
+  </ul>
+
+  <button class="nav-cta" onclick="openLogin()">Get Started</button>
+</nav>
+
+<!-- ==========================================
+     PAGE CONTENT
+ =========================================== -->
+<div class="page-wrapper">
+
+  <!-- HERO -->
+  <section class="hero-section">
+
+    <h1 class="hero-headline">
+      Transform Documents Into<br>
+      <span class="dimmed">Intelligent Conversations</span>
+    </h1>
+
+    <p class="hero-desc">
+      Nexora.AI is a next-generation enterprise AI assistant built on advanced Retrieval-Augmented Generation (RAG) architecture. Upload, manage, search, and interact with enterprise knowledge bases through natural language. Combines semantic vector retrieval, BM25 hybrid search, contextual reasoning, and intelligent response generation to deliver accurate, grounded, and explainable answers from your documents.
+    </p>
+
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="openLogin()">Get Started</button>
+      <button class="btn-ghost" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">Explore Features</button>
+    </div>
+
+    <div class="hero-feature-grid">
+      <div class="hero-feat-card">
+        <div class="feat-icon">&#x27C1;</div>
+        <h3>Hybrid AI Search</h3>
+        <p>Combines dense vector retrieval and BM25 sparse retrieval for highly accurate semantic and keyword-aware document search.</p>
+      </div>
+      <div class="hero-feat-card">
+        <div class="feat-icon">&#x25C8;</div>
+        <h3>Multiuser RAG Workspace</h3>
+        <p>Secure isolated vector databases and personalized AI workspaces for each user and organization.</p>
+      </div>
+      <div class="hero-feat-card">
+        <div class="feat-icon">&#x2B21;</div>
+        <h3>AI Guardrails & Security</h3>
+        <p>Built-in prompt injection protection, hallucination reduction, PII detection, and enterprise-grade AI safety.</p>
+      </div>
+      <div class="hero-feat-card">
+        <div class="feat-icon">&#x229E;</div>
+        <h3>Semantic PDF Intelligence</h3>
+        <p>Upload PDFs and instantly ask contextual questions, generate summaries, and discover hidden knowledge.</p>
+      </div>
+    </div>
+
+    <div class="tech-strip">
+      Flask &ensp;&#183;&ensp; Python &ensp;&#183;&ensp; LangChain &ensp;&#183;&ensp; ChromaDB &ensp;&#183;&ensp; BM25 &ensp;&#183;&ensp; Hybrid Search &ensp;&#183;&ensp; RAG &ensp;&#183;&ensp; Semantic AI &ensp;&#183;&ensp; Vector Embeddings
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-box"><h2>Hybrid AI</h2><p>Semantic + Keyword Search</p></div>
+      <div class="stat-box"><h2>Multiuser</h2><p>Isolated Vector Workspaces</p></div>
+      <div class="stat-box"><h2>Enterprise</h2><p>AI Guardrails &amp; Safety</p></div>
+    </div>
+
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features-section" id="features">
+    <div class="section-label">Platform Capabilities</div>
+    <h2 class="section-title">Built for <span class="dimmed">enterprise-grade</span><br>AI Knowledge Intelligence</h2>
+
+    <div class="features-big-grid">
+      <div class="big-feature-card featured">
+        <div class="feat-num">01 &#8212; Core</div>
+        <h3>Hybrid AI Search</h3>
+        <p>Combines dense vector retrieval and BM25 sparse retrieval for highly accurate semantic and keyword-aware document search. The fusion engine merges semantic similarity with keyword precision, ensuring no relevant passage is missed across large enterprise corpora.</p>
+      </div>
+      <div class="big-feature-card">
+        <div class="feat-num">02</div>
+        <h3>Multiuser RAG Workspace</h3>
+        <p>Secure isolated vector databases and personalized AI workspaces for each user and organization. Documents, embeddings, and conversation history are fully separated at the database level with no cross-user data leakage.</p>
+      </div>
+      <div class="big-feature-card">
+        <div class="feat-num">03</div>
+        <h3>AI Guardrails &amp; Security</h3>
+        <p>Built-in prompt injection protection, jailbreak detection, PII identification, and hallucination reduction. Enterprise-safe RAG with grounded, explainable, source-verified answers.</p>
+      </div>
+      <div class="big-feature-card">
+        <div class="feat-num">04</div>
+        <h3>Semantic PDF Intelligence</h3>
+        <p>Upload PDFs and instantly ask contextual questions, generate summaries, extract insights, and discover knowledge hidden across hundreds of pages in seconds.</p>
+      </div>
+      <div class="big-feature-card">
+        <div class="feat-num">05</div>
+        <h3>Streaming AI Conversations</h3>
+        <p>Real-time AI response streaming with contextual multi-turn memory and source-grounded answers. Responsive conversational interactions grounded to your documents.</p>
+      </div>
+      <div class="big-feature-card">
+        <div class="feat-num">06</div>
+        <h3>Source Verification</h3>
+        <p>Every answer is backed by verified document chunks and page-level citations for explainable AI responses. Complete traceability for compliance, auditing, and trust.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- STACK -->
+  <section class="stack-section" id="stack">
+    <div class="stack-inner">
+      <div class="section-label">Technology</div>
+      <h2 class="section-title">Production-grade <span class="dimmed">AI Engineering</span></h2>
+      <div class="stack-grid">
+        <div class="stack-col">
+          <div class="stack-col-title">Backend</div>
+          <div class="stack-items">
+            <div class="stack-item">Flask</div>
+            <div class="stack-item">Python</div>
+            <div class="stack-item">LangChain</div>
+            <div class="stack-item">SQLite</div>
+          </div>
+        </div>
+        <div class="stack-col">
+          <div class="stack-col-title">AI &amp; Retrieval</div>
+          <div class="stack-items">
+            <div class="stack-item">RAG Architecture</div>
+            <div class="stack-item">ChromaDB</div>
+            <div class="stack-item">BM25 Search</div>
+            <div class="stack-item">Vector Embeddings</div>
+          </div>
+        </div>
+        <div class="stack-col">
+          <div class="stack-col-title">Security</div>
+          <div class="stack-items">
+            <div class="stack-item">AI Guardrails</div>
+            <div class="stack-item">PII Detection</div>
+            <div class="stack-item">Jailbreak Filter</div>
+            <div class="stack-item">User Isolation</div>
+          </div>
+        </div>
+        <div class="stack-col">
+          <div class="stack-col-title">Document Intelligence</div>
+          <div class="stack-items">
+            <div class="stack-item">PDF Parsing</div>
+            <div class="stack-item">Chunk Embeddings</div>
+            <div class="stack-item">Context Retrieval</div>
+            <div class="stack-item">AI Summarization</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- USE CASES -->
+  <section class="usecases-section" id="usecases">
+    <div class="usecases-inner">
+      <div class="usecases-left">
+        <div class="section-label">Use Cases</div>
+        <h2 class="section-title">Built for every<br><span class="dimmed">enterprise knowledge workflow</span></h2>
+        <p style="color:var(--text-secondary);font-size:15px;line-height:1.8;max-width:380px;margin-top:16px;">
+          From legal research to financial analysis, Nexora.AI adapts to any enterprise knowledge workflow with secure, grounded AI responses. Faster knowledge discovery, reduced manual document analysis, and AI-powered enterprise productivity.
+        </p>
+      </div>
+      <div class="usecases-list">
+        <div class="use-pill">Enterprise Knowledge Management</div>
+        <div class="use-pill">AI-Powered Research Assistant</div>
+        <div class="use-pill">Legal Document Intelligence</div>
+        <div class="use-pill">Financial Report Analysis</div>
+        <div class="use-pill">Research Paper Querying</div>
+        <div class="use-pill">SOP &amp; Policy Assistants</div>
+        <div class="use-pill">Internal AI Copilots</div>
+        <div class="use-pill">Intelligent Business Search</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-orb"></div>
+        Nexora.AI
+      </div>
+      <div class="footer-links">
+        <a href="#features">Features</a>
+        <a href="#stack">Technology</a>
+        <a href="#usecases">Use Cases</a>
+        <a href="#" id="security">Security</a>
+        <a href="#">Documentation</a>
+      </div>
+      <p class="footer-copy">&#169; 2026 Nexora.AI. All rights reserved.</p>
+    </div>
+  </footer>
+
+</div><!-- /page-wrapper -->
+
+<script>
+// Open modal
+function openLogin() {
+  const modal = document.getElementById('loginModal');
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  // focus username after animation
+  setTimeout(() => {
+    const u = modal.querySelector('input[name="username"]');
+    if (u) u.focus();
+  }, 200);
+}
+
+// Close modal
+function closeLogin() {
+  document.getElementById('loginModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Click backdrop to close (but not the card itself)
+document.getElementById('loginModal').addEventListener('click', function(e) {
+  if (e.target === this) closeLogin();
+});
+
+// ESC key to close
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeLogin();
+});
+
+// Auto-open if Flask returned error/success (after POST)
+(function() {
+  if (document.querySelector('.alert')) openLogin();
+})();
+</script>
+
+</body>
+</html>

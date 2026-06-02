@@ -14,6 +14,7 @@ import uuid
 import sqlite3
 import json
 import re
+from flask import stream_with_context
 from datetime import datetime
 from flask import (
     Flask,
@@ -24,6 +25,10 @@ from flask import (
     url_for,
     session,
     Response
+)
+from werkzeug.security import (
+    generate_password_hash,
+    check_password_hash
 )
 from werkzeug.utils import secure_filename
 from rank_bm25 import BM25Okapi
@@ -49,13 +54,14 @@ def init_db():
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS chats (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            session_id TEXT UNIQUE,
-            title TEXT,
-            messages TEXT,
-            created_at TEXT
-        )
+    CREATE TABLE IF NOT EXISTS chats (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT,
+        session_id TEXT UNIQUE,
+        title TEXT,
+        messages TEXT,
+        created_at TEXT
+    )
     """)
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS uploaded_files (
@@ -69,13 +75,15 @@ def init_db():
     )
     """)
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS session_settings (
-            session_id TEXT PRIMARY KEY,
-            model_name TEXT,
-            temperature REAL,
-            system_prompt TEXT
-        )
+    CREATE TABLE IF NOT EXISTS session_settings (
+        session_id TEXT PRIMARY KEY,
+        username TEXT,
+        model_name TEXT,
+        temperature REAL,
+        system_prompt TEXT
+    )
     """)
+
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -102,6 +110,20 @@ def migrate_db():
     except Exception as e:
 
         print("username column may already exist:", e)
+
+    try:
+
+        cursor.execute("""
+            ALTER TABLE session_settings
+            ADD COLUMN username TEXT
+        """)
+
+    except Exception as e:
+
+        print(
+            "session_settings username may already exist:",
+            e
+        )
 
     try:
 
@@ -161,10 +183,12 @@ def register():
             )
 
         # INSERT USER
+        hashed_password = generate_password_hash(password)
+
         cursor.execute("""
             INSERT INTO users (username, password)
             VALUES (?, ?)
-        """, (username, password))
+        """, (username, hashed_password))
 
         conn.commit()
 
@@ -179,10 +203,23 @@ def register():
 # -----------------------------
 # Session Settings Helpers
 # -----------------------------
-def get_session_settings(session_id):
+def get_session_settings(username,session_id):
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-    cursor.execute("SELECT model_name, temperature, system_prompt FROM session_settings WHERE session_id = ?", (session_id,))
+    cursor.execute(
+        """
+        SELECT model_name,
+               temperature,
+               system_prompt
+        FROM session_settings
+        WHERE session_id = ?
+        AND username = ?
+        """,
+        (
+            session_id,
+            username
+        )
+    )
     row = cursor.fetchone()
     conn.close()
     if row:
@@ -197,13 +234,27 @@ def get_session_settings(session_id):
         "system_prompt": "You are a professional enterprise AI assistant. Use the provided context to answer the user's question accurately."
     }
 
-def save_session_settings(session_id, model_name, temperature, system_prompt):
+def save_session_settings(username, session_id, model_name, temperature, system_prompt):
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     cursor.execute("""
-        INSERT OR REPLACE INTO session_settings (session_id, model_name, temperature, system_prompt)
-        VALUES (?, ?, ?, ?)
-    """, (session_id, model_name, float(temperature), system_prompt))
+        INSERT OR REPLACE INTO session_settings
+        (
+            session_id,
+            username,
+            model_name,
+            temperature,
+            system_prompt
+        )
+        VALUES (?, ?, ?, ?, ?)
+    """,
+    (
+        session_id,
+        username,
+        model_name,
+        float(temperature),
+        system_prompt
+    ))
     conn.commit()
     conn.close()
 
@@ -225,11 +276,15 @@ def get_greeting():
 # -----------------------------
 # LLM Loader
 # -----------------------------
-def get_llm(session_id):
+def get_llm(session_id, settings):
+
     api_key = os.getenv("GROQ_API_KEY")
+
     if not api_key or "your_groq_api_key" in api_key:
-        raise ValueError("GROQ_API_KEY is not configured. Please add it to your .env file.")
-    settings = get_session_settings(session_id)
+        raise ValueError(
+            "GROQ_API_KEY is not configured. Please add it to your .env file."
+        )
+
     return ChatGroq(
         groq_api_key=api_key,
         model_name=settings["model_name"],
@@ -507,13 +562,22 @@ def hybrid_search(
 # -----------------------------
 # Database Chat Helpers
 # -----------------------------
-def save_chat(session_id, title, messages):
+def save_chat(username, session_id, title, messages):
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     cursor.execute("""
-        INSERT OR REPLACE INTO chats (session_id, title, messages, created_at)
-        VALUES (?, ?, ?, ?)
-    """, (
+        INSERT OR REPLACE INTO chats
+        (
+            username,
+            session_id,
+            title,
+            messages,
+            created_at
+        )
+        VALUES (?, ?, ?, ?, ?)
+    """,
+    (
+        username,
         session_id,
         title,
         json.dumps(messages),
@@ -522,12 +586,23 @@ def save_chat(session_id, title, messages):
     conn.commit()
     conn.close()
 
-def update_chat(session_id, messages):
+def update_chat(username,session_id, messages,settings):
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
 
     # Generate chat title if it is "New Chat" or currently empty
-    cursor.execute("SELECT title FROM chats WHERE session_id = ?", (session_id,))
+    cursor.execute(
+        """
+        SELECT title
+        FROM chats
+        WHERE session_id = ?
+        AND username = ?
+        """,
+        (
+            session_id,
+            username
+        )
+    )
     row = cursor.fetchone()
     current_title = row[0] if row else "New Chat"
 
@@ -549,7 +624,7 @@ Conversation:
 {conversation_text}
 
 Title:"""
-            llm = get_llm(session_id)
+            llm = get_llm(session_id,settings)
             title_response = llm.invoke(title_prompt)
             generated_title = title_response.content.replace('"', '').replace("\n", "").strip()
             if len(generated_title) < 3:
@@ -559,44 +634,74 @@ Title:"""
             generated_title = "New Chat"
 
     cursor.execute("""
-        UPDATE chats
-        SET messages = ?, title = ?
-        WHERE session_id = ?
-    """, (json.dumps(messages), generated_title, session_id))
+        INSERT INTO chats (username, session_id, title, messages, created_at)
+        VALUES (?, ?, ?, ?, ?)
+        ON CONFLICT(session_id) DO UPDATE SET
+            messages = excluded.messages,
+            title = excluded.title
+    """, (
+        username,
+        session_id,
+        generated_title,
+        json.dumps(messages),
+        datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    ))
     conn.commit()
     conn.close()
 
-def get_all_chats():
+def get_all_chats(username):
+
     conn = sqlite3.connect(DB_NAME)
+
     cursor = conn.cursor()
+
     cursor.execute("""
-        SELECT session_id, title, created_at
+        SELECT
+            session_id,
+            title,
+            created_at
         FROM chats
+        WHERE username = ?
         ORDER BY id DESC
-    """)
+    """, (username,))
+
     rows = cursor.fetchall()
+
     conn.close()
+
     return rows
 
-def get_chat_messages(session_id):
+def get_chat_messages(username, session_id):
+
     conn = sqlite3.connect(DB_NAME)
+
     cursor = conn.cursor()
-    cursor.execute("SELECT messages FROM chats WHERE session_id = ?", (session_id,))
+
+    cursor.execute("""
+        SELECT messages
+        FROM chats
+        WHERE session_id = ?
+        AND username = ?
+    """, (session_id, username))
+
     row = cursor.fetchone()
+
     conn.close()
+
     if row and row[0]:
         return json.loads(row[0])
+
     return []
 
 # -----------------------------
 # Query Condensation Helper
 # -----------------------------
-def condense_question(session_id, question, chat_history):
+def condense_question(session_id, question, chat_history,settings):
     if not chat_history:
         return question
 
     try:
-        llm = get_llm(session_id)
+        llm = get_llm(session_id,settings)
         history_str = ""
         for msg in chat_history[-3:]: # use last 3 turns
             history_str += f"User: {msg.get('question', '')}\nAssistant: {msg.get('answer', '')}\n"
@@ -656,21 +761,27 @@ def login():
         cursor = conn.cursor()
 
         cursor.execute("""
-            SELECT *
+            SELECT id,
+                   username,
+                   password
             FROM users
             WHERE username = ?
-            AND password = ?
-        """, (username, password))
+        """, (username,))
 
         user = cursor.fetchone()
 
         conn.close()
 
-        if user:
+        if user and check_password_hash(
+            user[2],
+            password
+        ):
 
             session["logged_in"] = True
 
-            session["username"] = username
+            session["user_id"] = user[0]
+
+            session["username"] = user[1]
 
             return redirect(url_for("index"))
 
@@ -711,7 +822,12 @@ def upload_files():
 
     if not session_id or session_id in ["null", "undefined"]:
         session_id = str(uuid.uuid4())
-        save_chat(session_id, "New Chat", [])
+        save_chat(
+            session.get("username"),
+            session_id,
+            "New Chat",
+            []
+        )
 
     username = session.get("username")
 
@@ -887,6 +1003,10 @@ def ask_stream():
         }), 400
 
     username = session.get("username")
+    settings = get_session_settings(
+    username,
+    session_id
+    )
     def generate():
 
         # --------------------------------
@@ -913,8 +1033,6 @@ def ask_stream():
 
             return
 
-        settings = get_session_settings(session_id)
-
         # CHECK WHETHER USER HAS DOCUMENTS
         conn = sqlite3.connect(DB_NAME)
 
@@ -935,7 +1053,7 @@ def ask_stream():
 
             try:
 
-                llm = get_llm(session_id)
+                llm = get_llm(session_id,settings)
 
                 prompt = f"""
                 {settings['system_prompt']}
@@ -963,7 +1081,7 @@ def ask_stream():
                     "answer": answer_text
                 })
 
-                update_chat(session_id, messages)
+                update_chat(username,session_id, messages,settings)
 
                 yield f"data: {json.dumps({'done': True, 'sources': []})}\n\n"
 
@@ -987,7 +1105,7 @@ def ask_stream():
         # FULL RAG
         try:
 
-            llm = get_llm(session_id)
+            llm = get_llm(session_id,settings)
 
             is_casual = is_general_question(question)
 
@@ -1020,7 +1138,7 @@ def ask_stream():
                     "answer": answer_text
                 })
 
-                update_chat(session_id, messages)
+                update_chat(username,session_id, messages,settings)
 
                 yield f"data: {json.dumps({'done': True, 'sources': []})}\n\n"
 
@@ -1030,7 +1148,8 @@ def ask_stream():
             condensed_q = condense_question(
                 session_id,
                 question,
-                messages
+                messages,
+                settings
             )
 
             selected_docs = data.get(
@@ -1160,16 +1279,16 @@ def ask_stream():
                 "answer": answer_text
             })
 
-            update_chat(session_id, messages)
+            update_chat(username,session_id, messages,settings)
 
         except Exception as e:
-
+            print(traceback.format_exc())
             yield f"data: {json.dumps({'error': f'Generation error: {str(e)}'})}\n\n"
 
             yield f"data: {json.dumps({'done': True, 'sources': []})}\n\n"
 
     return Response(
-        generate(),
+        stream_with_context(generate()),
         mimetype="text/event-stream"
     )
 # -----------------------------
@@ -1322,24 +1441,36 @@ def delete_file():
 # -----------------------------
 # Settings APIs
 # -----------------------------
+
 @app.route("/get_settings/<session_id>")
 def get_settings(session_id):
+
     if not is_logged_in():
-        return jsonify({"status": "error", "message": "Unauthorized"}), 401
-    settings = get_session_settings(session_id)
+        return jsonify({
+            "status":"error",
+            "message":"Unauthorized"
+        }),401
+
+    username = session.get("username")
+
+    settings = get_session_settings(
+        username,
+        session_id
+    )
+
     return jsonify(settings)
 
 @app.route("/save_settings/<session_id>", methods=["POST"])
 def save_settings_route(session_id):
     if not is_logged_in():
         return jsonify({"status": "error", "message": "Unauthorized"}), 401
-
+    username = session.get("username")
     data = request.json or {}
     model_name = data.get("model_name", "llama-3.3-70b-versatile")
     temperature = data.get("temperature", 0.1)
     system_prompt = data.get("system_prompt", "You are a professional enterprise AI assistant.")
 
-    save_session_settings(session_id, model_name, temperature, system_prompt)
+    save_session_settings(username,session_id, model_name, temperature, system_prompt)
     return jsonify({"status": "success", "message": "Settings updated"})
 
 # -----------------------------
@@ -1347,37 +1478,6 @@ def save_settings_route(session_id):
 # -----------------------------
 @app.route("/get_chats")
 def get_chats():
-    if not is_logged_in():
-        return jsonify({"status": "error", "message": "Unauthorized"}), 401
-    chats = get_all_chats()
-    # returns session_id, title, created_at
-    return jsonify(chats)
-
-@app.route("/load_chat/<session_id>")
-def load_chat(session_id):
-    if not is_logged_in():
-        return jsonify({"status": "error", "message": "Unauthorized"}), 401
-    messages = get_chat_messages(session_id)
-    return jsonify(messages)
-
-@app.route("/rename_chat/<session_id>", methods=["POST"])
-def rename_chat(session_id):
-    if not is_logged_in():
-        return jsonify({"status": "error", "message": "Unauthorized"}), 401
-    data = request.json or {}
-    title = data.get("title")
-    if not title:
-        return jsonify({"status": "error", "message": "Title is required"}), 400
-
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-    cursor.execute("UPDATE chats SET title = ? WHERE session_id = ?", (title, session_id))
-    conn.commit()
-    conn.close()
-    return jsonify({"status": "success", "message": "Chat renamed"})
-
-@app.route("/delete_chat/<session_id>", methods=["POST"])
-def delete_chat(session_id):
 
     if not is_logged_in():
         return jsonify({
@@ -1385,18 +1485,96 @@ def delete_chat(session_id):
             "message": "Unauthorized"
         }), 401
 
+    username = session.get("username")
+
+    chats = get_all_chats(username)
+
+    return jsonify(chats)
+
+@app.route("/load_chat/<session_id>")
+def load_chat(session_id):
+
+    if not is_logged_in():
+        return jsonify({
+            "status": "error",
+            "message": "Unauthorized"
+        }), 401
+
+    username = session.get("username")
+
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT messages
+        FROM chats
+        WHERE session_id = ?
+        AND username = ?
+    """, (session_id, username))
+
+    row = cursor.fetchone()
+
+    conn.close()
+
+    if row is None:
+
+        return jsonify({
+            "status": "error",
+            "message": "Chat not found"
+        }), 404
+
+    return jsonify(
+        json.loads(row[0]) if row[0] else []
+    )
+
+@app.route("/rename_chat/<session_id>", methods=["POST"])
+def rename_chat(session_id):
+    if not is_logged_in():
+        return jsonify({"status": "error", "message": "Unauthorized"}), 401
+    data = request.json or {}
+    title = data.get(
+        "title",
+        ""
+    ).strip()
+    username = session.get("username")
+    if not title:
+        return jsonify({"status": "error", "message": "Title is required"}), 400
+
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE chats SET title = ? WHERE session_id = ? AND username = ?", (title, session_id,username))
+    conn.commit()
+    conn.close()
+    return jsonify({"status": "success", "message": "Chat renamed"})
+
+@app.route("/delete_chat/<session_id>", methods=["POST"])
+def delete_chat(session_id):
+    
+    if not is_logged_in():
+        return jsonify({
+            "status": "error",
+            "message": "Unauthorized"
+        }), 401
+    username = session.get("username")
     conn = sqlite3.connect(DB_NAME)
 
     cursor = conn.cursor()
 
     cursor.execute(
-        "DELETE FROM chats WHERE session_id = ?",
-        (session_id,)
+        "DELETE FROM chats WHERE session_id = ? AND username = ?",
+        (session_id,username)
     )
 
     cursor.execute(
-        "DELETE FROM session_settings WHERE session_id = ?",
-        (session_id,)
+        """
+        DELETE FROM session_settings
+        WHERE session_id = ?
+        AND username = ?
+        """,
+        (
+            session_id,
+            username
+        )
     )
 
     conn.commit()

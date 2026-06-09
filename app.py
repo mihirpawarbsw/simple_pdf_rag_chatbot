@@ -16,6 +16,11 @@ import json
 import re
 from flask import stream_with_context
 from datetime import datetime
+import base64
+import fitz  # PyMuPDF
+from PIL import Image
+import io
+import httpx
 from flask import (
     Flask,
     render_template,
@@ -200,6 +205,171 @@ def register():
         registered="success"))
 
     return render_template("register.html")
+
+####################### FOR OCR OR PPT - MP - 02-06-2026 ############
+# -----------------------------
+# Groq Vision OCR Helper
+# -----------------------------
+def image_to_base64(pil_image: Image.Image) -> str:
+    """Convert a PIL image to base64 string."""
+    buf = io.BytesIO()
+    pil_image.save(buf, format="PNG")
+    return base64.b64encode(buf.getvalue()).decode("utf-8")
+
+
+def ocr_image_with_llama(base64_image: str, page_num: int = 0) -> str:
+    """
+    Send a page image to Llama 4 Scout on Groq for OCR/extraction.
+    Returns the extracted text content.
+    """
+    api_key = os.getenv("GROQ_API_KEY")
+    
+    payload = {
+        "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+        "max_tokens": 4096,
+        "messages": [
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/png;base64,{base64_image}"
+                        }
+                    },
+                    {
+                        "type": "text",
+                        "text": (
+                            "You are an OCR and document extraction assistant. "
+                            "Extract ALL text content from this image exactly as it appears. "
+                            "For slides: include titles, bullet points, labels, captions, and any visible text. "
+                            "For scanned documents: transcribe all text preserving structure. "
+                            "Output only the extracted text, no commentary."
+                        )
+                    }
+                ]
+            }
+        ]
+    }
+
+    try:
+        response = httpx.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            },
+            json=payload,
+            timeout=60
+        )
+        response.raise_for_status()
+        data = response.json()
+        return data["choices"][0]["message"]["content"].strip()
+    except Exception as e:
+        print(f"[OCR Error] Page {page_num}: {e}")
+        return ""
+
+def is_scanned_pdf(filepath: str) -> bool:
+    """
+    Heuristic: if avg text chars per page < 50, treat as scanned.
+    """
+    try:
+        doc = fitz.open(filepath)
+        total_chars = sum(len(page.get_text()) for page in doc)
+        avg = total_chars / max(len(doc), 1)
+        doc.close()
+        return avg < 50
+    except Exception:
+        return False
+
+
+def parse_scanned_pdf(filepath: str, filename: str) -> list:
+    """
+    Render each PDF page as an image and OCR it with Llama 4 Scout.
+    """
+    docs = []
+    try:
+        pdf_doc = fitz.open(filepath)
+        for page_num in range(len(pdf_doc)):
+            page = pdf_doc[page_num]
+            # Render at 150 DPI (good balance of quality vs speed)
+            mat = fitz.Matrix(150 / 72, 150 / 72)
+            pix = page.get_pixmap(matrix=mat)
+            img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+            
+            b64 = image_to_base64(img)
+            text = ocr_image_with_llama(b64, page_num=page_num)
+            
+            if text:
+                docs.append(Document(
+                    page_content=text,
+                    metadata={"source": filename, "page": page_num}
+                ))
+        pdf_doc.close()
+    except Exception as e:
+        print(f"[Scanned PDF Error] {filename}: {e}")
+    return docs
+
+def parse_pptx_with_ocr(filepath: str, filename: str) -> list:
+    """
+    Extract text from PPTX slides. 
+    For slides with text: use python-pptx directly.
+    For image-heavy slides: render and OCR with Llama 4 Scout.
+    """
+    from pptx import Presentation
+    from pptx.util import Inches
+    import pptx
+
+    docs = []
+    try:
+        prs = Presentation(filepath)
+        for slide_num, slide in enumerate(prs.slides):
+            slide_text = []
+
+            # Extract text from text frames
+            for shape in slide.shapes:
+                if shape.has_text_frame:
+                    for para in shape.text_frame.paragraphs:
+                        line = " ".join([run.text for run in para.runs]).strip()
+                        if line:
+                            slide_text.append(line)
+
+            combined_text = "\n".join(slide_text).strip()
+
+            # If slide has little text, use vision OCR on the slide image
+            if len(combined_text) < 80:
+                try:
+                    # Render slide as image via a temp PDF conversion using python-pptx + fitz
+                    # Simpler: export shapes as images where possible, else use text fallback
+                    # For robust rendering, convert via LibreOffice or use slide thumbnail
+                    # Here we use the text we have + note OCR was attempted
+                    print(f"[PPT Slide {slide_num+1}] Low text ({len(combined_text)} chars), attempting shape image OCR...")
+                    
+                    # Extract images embedded in slide shapes
+                    for shape in slide.shapes:
+                        if shape.shape_type == pptx.enum.shapes.MSO_SHAPE_TYPE.PICTURE:
+                            image_data = shape.image.blob
+                            img = Image.open(io.BytesIO(image_data))
+                            b64 = image_to_base64(img)
+                            ocr_text = ocr_image_with_llama(b64, page_num=slide_num)
+                            if ocr_text:
+                                slide_text.append(f"[Image Content]: {ocr_text}")
+                    
+                    combined_text = "\n".join(slide_text).strip()
+                except Exception as ex:
+                    print(f"[PPT OCR Error] Slide {slide_num+1}: {ex}")
+
+            if combined_text:
+                docs.append(Document(
+                    page_content=f"Slide {slide_num + 1}:\n{combined_text}",
+                    metadata={"source": filename, "page": slide_num}
+                ))
+
+    except Exception as e:
+        print(f"[PPTX Error] {filename}: {e}")
+    return docs
+
+####################### FOR OCR OR PPT - MP - 02-06-2026 ############
 # -----------------------------
 # Session Settings Helpers
 # -----------------------------
@@ -325,8 +495,28 @@ def parse_document(filepath, filename):
     docs = []
 
     if ext == ".pdf":
-        loader = PyMuPDFLoader(filepath)
-        docs = loader.load()
+        if is_scanned_pdf(filepath):
+            print(f"[INFO] Scanned PDF detected: {filename} — using Llama 4 Scout OCR")
+            docs = parse_scanned_pdf(filepath, filename)
+        else:
+            try:
+                loader = PyMuPDFLoader(filepath)
+                docs = loader.load()
+                # If PyMuPDF extracted almost nothing, fallback to OCR anyway
+                total_text = "".join([d.page_content for d in docs]).strip()
+                if len(total_text) < 100:
+                    print(f"[INFO] PyMuPDF got too little text from {filename} — falling back to OCR")
+                    docs = parse_scanned_pdf(filepath, filename)
+            except Exception as e:
+                print(f"[PDF Error] {filename}: {e} — trying OCR fallback")
+                docs = parse_scanned_pdf(filepath, filename)
+
+    elif ext in [".pptx", ".ppt"]:
+        try:
+            docs = parse_pptx_with_ocr(filepath, filename)
+        except Exception as e:
+            print(f"[PPTX Error] {filename}: {e}")
+
     elif ext == ".docx":
         try:
             import docx
@@ -340,6 +530,7 @@ def parse_document(filepath, filename):
             print(f"Error reading docx: {e}")
             with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
                 docs = [Document(page_content=f.read(), metadata={"source": filepath, "page": 0})]
+
     elif ext == ".csv":
         try:
             import csv
@@ -354,6 +545,7 @@ def parse_document(filepath, filename):
             docs = [Document(page_content=text, metadata={"source": filepath, "page": 0})]
         except Exception as e:
             print(f"Error reading csv: {e}")
+
     else:
         # Default text loader (.txt, .md, .py, etc.)
         try:
@@ -362,7 +554,7 @@ def parse_document(filepath, filename):
         except Exception as e:
             print(f"Error reading text file: {e}")
 
-    # clean up metadata
+    # Clean up metadata — normalize source to just filename, ensure page exists
     for doc in docs:
         doc.metadata["source"] = filename
         if "page" not in doc.metadata:

@@ -2,3 +2,6 @@ __pycache__/
 *.pyc
 .env
 venv/
+uploads
+chroma_db
+chat_history.db

@@ -1,7 +1,0 @@
-Post-process OCR output:
-Fix common OCR artifacts (e.g., broken words, misread characters)
-Validate text quality before passing it downstream
-âš ï¸ Use layout-aware OCR when dealing with forms, tables, or structured documents.
-âœ… 3. DOCX Files (Word Documents)
-Use libraries like python-docx or docx2txt to extract text.
-Optionally preserve styles (e.g., bold headings) for metadata tagging.ÿÿÿÿÿÿÿ

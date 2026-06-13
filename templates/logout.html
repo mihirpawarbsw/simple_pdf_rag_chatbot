@@ -3,187 +3,184 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nexora.AI — Signed Out</title>
+<title>Nexora AI — Signed Out</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@300;400;500;700;800;900&family=Geist+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@300;400;500;700;800;900&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" crossorigin="anonymous">
 <style>
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-:root {
-  --ink: #06050a; --ink-2: #0d0b14; --ink-3: #13101e;
-  --surface: rgba(255,255,255,0.025); --surface-2: rgba(255,255,255,0.045);
-  --border: rgba(255,255,255,0.055); --border-2: rgba(255,255,255,0.10);
-  --t1: #f2f0fa; --t2: rgba(242,240,250,0.60); --t3: rgba(242,240,250,0.32);
-  --a1: #7c5cfc; --a2: #b08aff; --a3: #ff6b6b;
-  --a-glow: rgba(124,92,252,0.28); --a-glow-soft: rgba(124,92,252,0.10);
-  --a-border: rgba(124,92,252,0.22); --a-border-2: rgba(124,92,252,0.50);
-  --a-bg: rgba(124,92,252,0.07);
-  --grad: linear-gradient(135deg, #7c5cfc 0%, #b08aff 50%, #ff6b6b 100%);
-  --ff-display: 'Cabinet Grotesk', sans-serif;
-  --ff-mono: 'Geist Mono', monospace;
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --void:#030308;--deep:#07060f;
+  --panel:rgba(255,255,255,.028);--panel-2:rgba(255,255,255,.05);
+  --line:rgba(255,255,255,.07);--line-2:rgba(255,255,255,.13);
+  --t1:#eef0ff;--t2:rgba(238,240,255,.62);--t3:rgba(238,240,255,.34);
+  --v1:#7c5cfc;--v2:#b08aff;--cy:#7df9ff;--green:#3ddc84;
+  --v-glow:rgba(124,92,252,.32);--v-glow-soft:rgba(124,92,252,.10);
+  --v-line:rgba(124,92,252,.25);--v-line-2:rgba(124,92,252,.55);
+  --v-bg:rgba(124,92,252,.07);
+  --grad:linear-gradient(135deg,#7c5cfc 0%,#b08aff 50%,#7df9ff 100%);
+  --ff-display:'Cabinet Grotesk','Geist',sans-serif;
+  --ff-body:'Geist',sans-serif;--ff-mono:'Geist Mono',monospace;
+  --r-md:18px;--r-xl:38px;
+  --ease:cubic-bezier(.22,.8,.26,.99);
 }
-html { scroll-behavior: smooth; }
-body {
-  font-family: var(--ff-display); background: var(--ink); color: var(--t1);
-  min-height: 100vh; display: flex; align-items: center; justify-content: center;
-  overflow: hidden; position: relative; -webkit-font-smoothing: antialiased;
+body{
+  font-family:var(--ff-body);background:var(--void);color:var(--t1);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;position:relative;-webkit-font-smoothing:antialiased;padding:20px;
 }
-body::after {
-  content: ''; position: fixed; inset: 0; z-index: 1; pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
-  opacity: 0.5;
+::selection{background:rgba(124,92,252,.4)}
+body::after{
+  content:'';position:fixed;inset:0;z-index:2;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity:.6;
 }
-.bg-orbs { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-.orb { position: absolute; border-radius: 50%; filter: blur(130px); }
-.orb-1 { width:600px;height:600px;background:radial-gradient(circle,rgba(124,92,252,0.18) 0%,transparent 70%);top:-200px;left:-200px;animation:orbFloat 20s ease-in-out infinite alternate; }
-.orb-2 { width:500px;height:500px;background:radial-gradient(circle,rgba(255,107,107,0.12) 0%,transparent 70%);bottom:-150px;right:-150px;animation:orbFloat 20s ease-in-out infinite alternate;animation-delay:5s; }
-.orb-3 { width:350px;height:350px;background:radial-gradient(circle,rgba(176,138,255,0.10) 0%,transparent 70%);top:35%;left:50%;animation:orbFloat 20s ease-in-out infinite alternate;animation-delay:10s; }
-@keyframes orbFloat {
-  0%{transform:translate(0,0) scale(1)} 33%{transform:translate(60px,-80px) scale(1.12)} 66%{transform:translate(-40px,50px) scale(0.92)} 100%{transform:translate(30px,-20px) scale(1.05)}
-}
-.navbar {
-  position:fixed;top:0;left:0;width:100%;height:68px;z-index:500;
-  display:flex;align-items:center;justify-content:space-between;padding:0 60px;
-  border-bottom:1px solid var(--border);background:rgba(6,5,10,0.72);
-  backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);
-}
-.nav-brand { display:flex;align-items:center;gap:10px;text-decoration:none; }
-.nav-logo { width:140px;height:auto;object-fit:contain;flex-shrink:0; }
-.nav-wordmark {
-  font-family:var(--ff-display);font-size:20px;font-weight:900;letter-spacing:-0.5px;
-  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.nav-wordmark sup { font-size:9px;font-weight:600;-webkit-text-fill-color:var(--t3);color:var(--t3);letter-spacing:1px;text-transform:uppercase;vertical-align:super;margin-left:2px; }
+#neural-bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+.nebula{position:fixed;border-radius:50%;filter:blur(130px);z-index:0;pointer-events:none;animation:nebDrift 24s ease-in-out infinite alternate}
+.neb-1{width:640px;height:640px;background:radial-gradient(circle,rgba(61,220,132,.07) 0%,transparent 70%);top:-220px;left:-160px}
+.neb-2{width:580px;height:580px;background:radial-gradient(circle,rgba(124,92,252,.13) 0%,transparent 70%);bottom:-220px;right:-200px;animation-delay:8s}
+.neb-3{width:440px;height:440px;background:radial-gradient(circle,rgba(125,249,255,.07) 0%,transparent 70%);top:42%;left:56%;animation-delay:14s}
+@keyframes nebDrift{0%{transform:translate(0,0) scale(1)}45%{transform:translate(70px,-60px) scale(1.1)}100%{transform:translate(-60px,60px) scale(.94)}}
 
-/* CARD */
-.card-wrapper {
-  position:relative;z-index:10;width:100%;max-width:420px;padding:24px;
-  animation:slideUp 0.65s cubic-bezier(0.25,0.8,0.25,1) both;
+/* navbar */
+.navbar{
+  position:fixed;top:14px;left:50%;transform:translateX(-50%);
+  width:min(1280px,calc(100% - 36px));height:60px;z-index:500;
+  display:flex;align-items:center;padding:0 22px;
+  border-radius:999px;border:1px solid var(--line);
+  background:rgba(7,6,15,.72);
+  backdrop-filter:blur(26px) saturate(160%);-webkit-backdrop-filter:blur(26px) saturate(160%);
+  box-shadow:0 14px 44px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06);
 }
-@keyframes slideUp {
-  from{opacity:0;transform:translateY(32px) scale(0.96)}
-  to{opacity:1;transform:translateY(0) scale(1)}
-}
-.logout-card {
-  position:relative;background:rgba(14,10,22,0.82);border:1px solid var(--a-border);
-  border-radius:40px;padding:52px 40px 44px;text-align:center;
-  backdrop-filter:blur(48px) saturate(180%);-webkit-backdrop-filter:blur(48px) saturate(180%);
-  box-shadow:0 50px 120px rgba(0,0,0,0.75),0 0 80px var(--a-glow-soft),inset 0 1px 0 rgba(255,255,255,0.08);
+.nav-brand{display:flex;align-items:center;text-decoration:none}
+.nav-logo{width:126px;height:auto;object-fit:contain}
+
+/* card */
+.card-wrapper{position:relative;z-index:10;width:100%;max-width:430px;animation:cardIn .9s var(--ease) both}
+@keyframes cardIn{from{opacity:0;transform:translateY(38px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.logout-card{
+  position:relative;
+  background:rgba(12,10,22,.85);border:1px solid var(--v-line);border-radius:var(--r-xl);
+  padding:54px 42px 44px;text-align:center;
+  backdrop-filter:blur(36px) saturate(170%);-webkit-backdrop-filter:blur(36px) saturate(170%);
+  box-shadow:0 60px 130px rgba(0,0,0,.7),0 0 80px var(--v-glow-soft),inset 0 1px 0 rgba(255,255,255,.08);
   overflow:hidden;
 }
-.logout-card::before {
+.logout-card::before{
   content:'';position:absolute;top:0;left:0;right:0;height:1.5px;
-  background:var(--grad);border-radius:40px 40px 0 0;background-size:200% auto;
-  animation:shimmer 3s linear infinite;
+  background:var(--grad);background-size:220% auto;animation:gradFlow 4s linear infinite;
 }
-@keyframes shimmer { from{background-position:-200% center} to{background-position:200% center} }
+@keyframes gradFlow{0%{background-position:0% center}100%{background-position:220% center}}
 
-/* CHECK RING */
-.check-ring {
-  width:80px;height:80px;border-radius:50%;
-  background:rgba(61,220,132,0.06);border:1.5px solid rgba(61,220,132,0.25);
+/* check ring + ripples */
+.check-stage{position:relative;width:92px;height:92px;margin:0 auto 30px}
+.ripple{position:absolute;top:50%;left:50%;border-radius:50%;border:1px solid rgba(61,220,132,.25);transform:translate(-50%,-50%);animation:rippleOut 3s ease-out infinite}
+.ripple-2{animation-delay:1s}.ripple-3{animation-delay:2s}
+@keyframes rippleOut{0%{width:92px;height:92px;opacity:.8}100%{width:200px;height:200px;opacity:0}}
+.check-ring{
+  width:92px;height:92px;border-radius:50%;
+  background:rgba(61,220,132,.05);
+  border:1px solid rgba(61,220,132,.3);
   display:flex;align-items:center;justify-content:center;
-  margin:0 auto 32px;
-  box-shadow:0 0 40px rgba(61,220,132,0.12);
-  animation:popIn 0.55s 0.15s cubic-bezier(0.25,0.8,0.25,1) both;
+  box-shadow:0 0 44px rgba(61,220,132,.16),inset 0 1px 0 rgba(255,255,255,.08);
+  animation:popIn .6s .15s var(--ease) both,ringFloat 5s ease-in-out 1s infinite;
+  position:relative;z-index:1;
 }
-@keyframes popIn {
-  from{opacity:0;transform:scale(0.5)}
-  to{opacity:1;transform:scale(1)}
-}
-.check-ring svg { width:32px;height:32px; }
-.check-ring svg path {
-  stroke:#3ddc84;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;fill:none;
-  stroke-dasharray:32;stroke-dashoffset:32;
-  animation:drawCheck 0.45s 0.5s ease forwards;
-}
-@keyframes drawCheck { to{stroke-dashoffset:0} }
+@keyframes popIn{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+@keyframes ringFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.check-ring svg{width:36px;height:36px}
+.check-ring svg path{stroke:var(--green);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;fill:none;stroke-dasharray:38;stroke-dashoffset:38;animation:drawCheck .5s .6s ease forwards;filter:drop-shadow(0 0 6px rgba(61,220,132,.6))}
+@keyframes drawCheck{to{stroke-dashoffset:0}}
 
-/* BRAND */
-.card-brand { display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:24px; }
-.card-logo { width:160px;height:auto;object-fit:contain;display:block;margin:0 auto 8px; }
-.card-wordmark {
-  font-family:var(--ff-display);font-size:26px;font-weight:900;letter-spacing:-0.8px;
-  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  display:block;margin-bottom:6px;
-}
-.card-slogan { font-family:var(--ff-mono);font-size:11.5px;color:var(--t3);letter-spacing:0.2px;display:block; }
+/* brand */
+.card-brand{display:flex;flex-direction:column;align-items:center;margin-bottom:20px;animation:riseIn .6s .35s var(--ease) both}
+.card-logo{width:140px;height:auto;object-fit:contain;display:block;margin:0 auto 9px}
+.card-slogan{font-family:var(--ff-mono);font-size:10.5px;color:var(--t3);letter-spacing:.6px}
+@keyframes riseIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
-/* HEADING */
-.logout-heading {
-  font-family:var(--ff-display);font-size:28px;font-weight:900;
-  letter-spacing:-1px;margin-bottom:12px;
-  background:linear-gradient(135deg,#fff 0%,var(--a2) 100%);
+/* status chip */
+.status-chip{
+  display:inline-flex;align-items:center;gap:8px;padding:7px 16px;border-radius:999px;
+  background:rgba(61,220,132,.07);border:1px solid rgba(61,220,132,.22);
+  font-family:var(--ff-mono);font-size:10.5px;font-weight:500;color:var(--green);
+  letter-spacing:.5px;margin-bottom:24px;
+  animation:riseIn .6s .5s var(--ease) both;
+}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);animation:pulse 2.4s ease infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.7)}}
+
+.logout-heading{
+  font-family:var(--ff-display);font-size:30px;font-weight:900;letter-spacing:-.04em;margin-bottom:12px;
+  background:linear-gradient(135deg,#fff 0%,var(--v2) 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:riseIn .6s .62s var(--ease) both;
 }
-.logout-sub { font-size:14.5px;line-height:1.75;color:var(--t2);max-width:280px;margin:0 auto 32px; }
+.logout-sub{font-size:14px;line-height:1.8;color:var(--t2);max-width:300px;margin:0 auto 28px;animation:riseIn .6s .72s var(--ease) both}
 
-/* DIVIDER */
-.divider { width:40px;height:1px;background:var(--a-border);margin:0 auto 28px; }
+.divider{width:44px;height:1px;background:linear-gradient(90deg,transparent,var(--v-line-2),transparent);margin:0 auto 28px;animation:riseIn .6s .8s var(--ease) both}
 
-/* STATUS CHIP */
-.status-chip {
-  display:inline-flex;align-items:center;gap:7px;
-  padding:6px 14px;border-radius:999px;
-  background:rgba(61,220,132,0.07);border:1px solid rgba(61,220,132,0.20);
-  font-family:var(--ff-mono);font-size:10.5px;font-weight:600;color:#3ddc84;
-  letter-spacing:0.3px;margin-bottom:28px;
+/* CTA */
+.signin-btn{
+  display:inline-flex;align-items:center;gap:10px;height:54px;padding:0 34px;
+  background:var(--grad);color:#fff;border:none;border-radius:999px;
+  font-family:var(--ff-display);font-size:15px;font-weight:700;text-decoration:none;letter-spacing:-.1px;
+  transition:all .4s var(--ease);box-shadow:0 12px 36px var(--v-glow);
+  position:relative;overflow:hidden;cursor:pointer;
+  animation:riseIn .6s .9s var(--ease) both;
 }
-.status-dot { width:6px;height:6px;border-radius:50%;background:#3ddc84;box-shadow:0 0 6px #3ddc84; }
-
-/* CTA BUTTON */
-.signin-btn {
-  display:inline-flex;align-items:center;gap:10px;
-  height:52px;padding:0 32px;background:var(--grad);color:#fff;
-  border:none;border-radius:18px;font-family:var(--ff-display);font-size:15px;font-weight:700;
-  text-decoration:none;letter-spacing:-0.2px;cursor:pointer;
-  box-shadow:0 8px 28px var(--a-glow);transition:all 0.28s cubic-bezier(0.25,0.8,0.25,1);
+.signin-btn::after{
+  content:'';position:absolute;top:0;left:-80%;width:60%;height:100%;
+  background:linear-gradient(105deg,transparent,rgba(255,255,255,.28),transparent);
+  transform:skewX(-20deg);transition:left .6s var(--ease);
 }
-.signin-btn:hover { transform:scale(1.02) translateY(-2px);box-shadow:0 14px 40px var(--a-glow);filter:brightness(1.08); }
-.signin-btn svg { transition:transform 0.25s; }
-.signin-btn:hover svg { transform:translateX(4px); }
+.signin-btn:hover::after{left:120%}
+.signin-btn:hover{transform:translateY(-2px);box-shadow:0 18px 48px var(--v-glow);filter:brightness(1.1)}
+.signin-btn i{transition:transform .3s var(--ease)}
+.signin-btn:hover i{transform:translateX(4px)}
 
-/* SECURE NOTE */
-.secure-note { margin-top:22px;font-family:var(--ff-mono);font-size:10.5px;color:var(--t3);letter-spacing:0.2px; }
+.trust-row{display:flex;justify-content:center;gap:18px;margin-top:24px;flex-wrap:wrap;animation:riseIn .6s 1s var(--ease) both}
+.trust-badge{display:flex;align-items:center;gap:6px;font-family:var(--ff-mono);font-size:10px;color:var(--t3)}
+.trust-badge i{color:var(--cy);font-size:10px}
 
-/* TRUST ROW */
-.trust-row { display:flex;justify-content:center;gap:18px;margin-top:20px;flex-wrap:wrap; }
-.trust-badge { display:flex;align-items:center;gap:5px;font-family:var(--ff-mono);font-size:10px;color:var(--t3);letter-spacing:0.2px; }
+.secure-note{margin-top:18px;font-family:var(--ff-mono);font-size:10px;color:var(--t3);letter-spacing:.3px;animation:riseIn .6s 1.1s var(--ease) both}
 
 @media(max-width:520px){
-  .navbar{padding:0 24px;}
-  .logout-card{padding:40px 24px 32px;border-radius:28px;}
-  .nav-logo{width:120px;}
-  .card-logo{width:140px;}
+  .logout-card{padding:42px 26px 34px;border-radius:28px}
+  .nav-logo{width:110px}
+  .card-logo{width:126px}
 }
 </style>
 </head>
 <body>
 
-<div class="bg-orbs">
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
-</div>
+<canvas id="neural-bg"></canvas>
+<div class="nebula neb-1"></div>
+<div class="nebula neb-2"></div>
+<div class="nebula neb-3"></div>
 
 <nav class="navbar">
   <a class="nav-brand" href="/login">
-    <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora.AI" class="nav-logo">
+    <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora AI" class="nav-logo">
   </a>
 </nav>
 
 <div class="card-wrapper">
   <div class="logout-card">
 
-    <!-- Animated check ring -->
-    <div class="check-ring">
-      <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-        <path d="M6 17L13 23.5L26 9"/>
-      </svg>
+    <div class="check-stage">
+      <div class="ripple"></div>
+      <div class="ripple ripple-2"></div>
+      <div class="ripple ripple-3"></div>
+      <div class="check-ring">
+        <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7 19L15 26.5L29 10"/>
+        </svg>
+      </div>
     </div>
 
     <div class="card-brand">
-      <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora.AI" class="card-logo">
-      <span class="card-slogan">Enterprise Knowledge Intelligence Platform</span>
+      <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora AI" class="card-logo">
+      <span class="card-slogan">Neural Knowledge Intelligence</span>
     </div>
 
     <div class="status-chip">
@@ -193,20 +190,18 @@ body::after {
 
     <h2 class="logout-heading">You're signed out</h2>
 
-    <p class="logout-sub">
-      You've been securely signed out of your Nexora.AI workspace. Your session data has been cleared.
-    </p>
+    <p class="logout-sub">You've been securely signed out of your Nexora workspace. All session data has been cleared.</p>
 
     <div class="divider"></div>
 
     <a class="signin-btn" href="/login">
       Sign back in
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      <i class="fa-solid fa-arrow-right"></i>
     </a>
 
     <div class="trust-row">
-      <span class="trust-badge">🔐 End-to-end encrypted</span>
-      <span class="trust-badge">🛡 Isolated workspace</span>
+      <span class="trust-badge"><i class="fa-solid fa-key"></i>Encrypted</span>
+      <span class="trust-badge"><i class="fa-solid fa-circle-half-stroke"></i>Tokens revoked</span>
     </div>
 
     <p class="secure-note">All local session tokens have been revoked.</p>
@@ -214,5 +209,41 @@ body::after {
   </div>
 </div>
 
+<script>
+/* neural background — drifting synapse net */
+(function(){
+  var c=document.getElementById('neural-bg'),ctx=c.getContext('2d'),W,H,nodes=[],mx=-999,my=-999;
+  function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;build()}
+  function build(){
+    nodes=[];
+    var count=Math.min(75,Math.floor(W*H/19000));
+    for(var i=0;i<count;i++)nodes.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.26,vy:(Math.random()-.5)*.26,r:Math.random()*1.6+.6});
+  }
+  rs();window.addEventListener('resize',rs,{passive:true});
+  window.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY},{passive:true});
+  (function draw(){
+    ctx.clearRect(0,0,W,H);
+    var LINK=130;
+    for(var i=0;i<nodes.length;i++){
+      var n=nodes[i];
+      n.x+=n.vx;n.y+=n.vy;
+      if(n.x<0||n.x>W)n.vx*=-1;
+      if(n.y<0||n.y>H)n.vy*=-1;
+      var dxm=mx-n.x,dym=my-n.y,dm=Math.sqrt(dxm*dxm+dym*dym);
+      if(dm<200&&dm>1){n.x+=dxm/dm*.22;n.y+=dym/dm*.22}
+      for(var j=i+1;j<nodes.length;j++){
+        var m=nodes[j],dx=n.x-m.x,dy=n.y-m.y,d=Math.sqrt(dx*dx+dy*dy);
+        if(d<LINK){
+          ctx.beginPath();ctx.moveTo(n.x,n.y);ctx.lineTo(m.x,m.y);
+          ctx.strokeStyle='rgba(124,92,252,'+((1-d/LINK)*.12)+')';ctx.lineWidth=.7;ctx.stroke();
+        }
+      }
+      ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(176,138,255,.38)';ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  })();
+})();
+</script>
 </body>
 </html>

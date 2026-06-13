@@ -3,228 +3,292 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nexora.AI — Create Account</title>
+<title>Nexora AI — Create Account</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@300;400;500;700;800;900&family=Geist+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@300;400;500;700;800;900&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" crossorigin="anonymous">
 <style>
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-:root {
-  --ink: #06050a; --ink-2: #0d0b14; --ink-3: #13101e;
-  --surface: rgba(255,255,255,0.025); --surface-2: rgba(255,255,255,0.045);
-  --border: rgba(255,255,255,0.055); --border-2: rgba(255,255,255,0.10);
-  --t1: #f2f0fa; --t2: rgba(242,240,250,0.60); --t3: rgba(242,240,250,0.32);
-  --a1: #7c5cfc; --a2: #b08aff; --a3: #ff6b6b; --a4: #ffd46b;
-  --a-glow: rgba(124,92,252,0.28); --a-glow-soft: rgba(124,92,252,0.10);
-  --a-border: rgba(124,92,252,0.22); --a-border-2: rgba(124,92,252,0.50);
-  --a-bg: rgba(124,92,252,0.07);
-  --grad: linear-gradient(135deg, #7c5cfc 0%, #b08aff 50%, #ff6b6b 100%);
-  --ff-display: 'Cabinet Grotesk', sans-serif;
-  --ff-mono: 'Geist Mono', monospace;
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --void:#030308;--deep:#07060f;
+  --panel:rgba(255,255,255,.028);--panel-2:rgba(255,255,255,.05);
+  --line:rgba(255,255,255,.07);--line-2:rgba(255,255,255,.13);
+  --t1:#eef0ff;--t2:rgba(238,240,255,.62);--t3:rgba(238,240,255,.34);
+  --v1:#7c5cfc;--v2:#b08aff;--cy:#7df9ff;
+  --v-glow:rgba(124,92,252,.32);--v-glow-soft:rgba(124,92,252,.10);
+  --v-line:rgba(124,92,252,.25);--v-line-2:rgba(124,92,252,.55);
+  --v-bg:rgba(124,92,252,.07);
+  --cy-bg:rgba(125,249,255,.06);--cy-line:rgba(125,249,255,.22);
+  --grad:linear-gradient(135deg,#7c5cfc 0%,#b08aff 50%,#7df9ff 100%);
+  --ff-display:'Cabinet Grotesk','Geist',sans-serif;
+  --ff-body:'Geist',sans-serif;--ff-mono:'Geist Mono',monospace;
+  --r-md:18px;--r-xl:38px;
+  --ease:cubic-bezier(.22,.8,.26,.99);
 }
-html { scroll-behavior: smooth; }
-body {
-  font-family: var(--ff-display); background: var(--ink); color: var(--t1);
-  min-height: 100vh; display: flex; align-items: center; justify-content: center;
-  overflow: hidden; position: relative; -webkit-font-smoothing: antialiased;
+body{
+  font-family:var(--ff-body);background:var(--void);color:var(--t1);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;position:relative;-webkit-font-smoothing:antialiased;padding:20px;
 }
-body::after {
-  content: ''; position: fixed; inset: 0; z-index: 1; pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
-  opacity: 0.5;
+::selection{background:rgba(124,92,252,.4)}
+body::after{
+  content:'';position:fixed;inset:0;z-index:2;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity:.6;
 }
-.bg-orbs { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-.orb { position: absolute; border-radius: 50%; filter: blur(130px); }
-.orb-1 { width:600px;height:600px;background:radial-gradient(circle,rgba(124,92,252,0.18) 0%,transparent 70%);top:-200px;left:-200px;animation:orbFloat 20s ease-in-out infinite alternate; }
-.orb-2 { width:500px;height:500px;background:radial-gradient(circle,rgba(255,107,107,0.12) 0%,transparent 70%);bottom:-150px;right:-150px;animation:orbFloat 20s ease-in-out infinite alternate;animation-delay:5s; }
-.orb-3 { width:350px;height:350px;background:radial-gradient(circle,rgba(176,138,255,0.10) 0%,transparent 70%);top:35%;left:50%;animation:orbFloat 20s ease-in-out infinite alternate;animation-delay:10s; }
-@keyframes orbFloat {
-  0%{transform:translate(0,0) scale(1)} 33%{transform:translate(60px,-80px) scale(1.12)} 66%{transform:translate(-40px,50px) scale(0.92)} 100%{transform:translate(30px,-20px) scale(1.05)}
+#neural-bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+.nebula{position:fixed;border-radius:50%;filter:blur(130px);z-index:0;pointer-events:none;animation:nebDrift 24s ease-in-out infinite alternate}
+.neb-1{width:700px;height:700px;background:radial-gradient(circle,rgba(124,92,252,.15) 0%,transparent 70%);top:-260px;left:-180px}
+.neb-2{width:560px;height:560px;background:radial-gradient(circle,rgba(125,249,255,.07) 0%,transparent 70%);bottom:-220px;right:-200px;animation-delay:8s}
+.neb-3{width:460px;height:460px;background:radial-gradient(circle,rgba(176,138,255,.09) 0%,transparent 70%);top:42%;left:56%;animation-delay:14s}
+@keyframes nebDrift{0%{transform:translate(0,0) scale(1)}45%{transform:translate(70px,-60px) scale(1.1)}100%{transform:translate(-60px,60px) scale(.94)}}
+
+/* navbar */
+.navbar{
+  position:fixed;top:14px;left:50%;transform:translateX(-50%);
+  width:min(1280px,calc(100% - 36px));height:60px;z-index:500;
+  display:flex;align-items:center;justify-content:space-between;padding:0 12px 0 22px;
+  border-radius:999px;border:1px solid var(--line);
+  background:rgba(7,6,15,.72);
+  backdrop-filter:blur(26px) saturate(160%);-webkit-backdrop-filter:blur(26px) saturate(160%);
+  box-shadow:0 14px 44px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06);
 }
-.navbar {
-  position:fixed;top:0;left:0;width:100%;height:68px;z-index:500;
-  display:flex;align-items:center;justify-content:space-between;padding:0 60px;
-  border-bottom:1px solid var(--border);background:rgba(6,5,10,0.72);
-  backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);
+.nav-brand{display:flex;align-items:center;text-decoration:none}
+.nav-logo{width:126px;height:auto;object-fit:contain}
+.nav-login{
+  height:40px;padding:0 22px;background:var(--grad);color:#fff;border-radius:999px;
+  font-family:var(--ff-display);font-size:13px;font-weight:700;text-decoration:none;
+  display:inline-flex;align-items:center;gap:8px;transition:all .35s var(--ease);
+  box-shadow:0 8px 26px var(--v-glow);
 }
-.nav-brand { display:flex;align-items:center;gap:10px;text-decoration:none; }
-.nav-wordmark {
-  font-family:var(--ff-display);font-size:20px;font-weight:900;letter-spacing:-0.5px;
-  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.nav-wordmark sup { font-size:9px;font-weight:600;-webkit-text-fill-color:var(--t3);color:var(--t3);letter-spacing:1px;text-transform:uppercase;vertical-align:super;margin-left:2px; }
-.nav-logo { width:140px;height:auto;object-fit:contain;flex-shrink:0; }
-.nav-login {
-  height:38px;padding:0 20px;background:var(--surface);color:var(--t1);
-  border:1px solid var(--a-border);border-radius:10px;
-  font-family:var(--ff-display);font-size:13px;font-weight:600;
-  text-decoration:none;display:inline-flex;align-items:center;gap:6px;
-  transition:all 0.25s ease;
-}
-.nav-login:hover { border-color:var(--a-border-2);background:var(--a-bg);color:var(--a2);transform:translateY(-1px);box-shadow:0 6px 20px var(--a-glow-soft); }
-.card-wrapper {
-  position:relative;z-index:10;width:100%;max-width:440px;padding:24px;
-  animation:slideUp 0.6s cubic-bezier(0.25,0.8,0.25,1) both;
-}
-@keyframes slideUp {
-  from{opacity:0;transform:translateY(32px) scale(0.96)}
-  to{opacity:1;transform:translateY(0) scale(1)}
-}
-.register-card {
-  position:relative;background:rgba(14,10,22,0.82);border:1px solid var(--a-border);
-  border-radius:40px;padding:44px 40px 36px;
-  backdrop-filter:blur(48px) saturate(180%);-webkit-backdrop-filter:blur(48px) saturate(180%);
-  box-shadow:0 50px 120px rgba(0,0,0,0.75),0 0 80px var(--a-glow-soft),inset 0 1px 0 rgba(255,255,255,0.08);
+.nav-login:hover{transform:translateY(-2px);box-shadow:0 14px 38px var(--v-glow);filter:brightness(1.12)}
+
+/* card */
+.card-wrapper{position:relative;z-index:10;width:100%;max-width:460px;animation:cardIn .9s var(--ease) both}
+@keyframes cardIn{from{opacity:0;transform:translateY(38px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.register-card{
+  position:relative;
+  background:rgba(12,10,22,.85);border:1px solid var(--v-line);border-radius:var(--r-xl);
+  padding:46px 42px 38px;
+  backdrop-filter:blur(36px) saturate(170%);-webkit-backdrop-filter:blur(36px) saturate(170%);
+  box-shadow:0 60px 130px rgba(0,0,0,.7),0 0 80px var(--v-glow-soft),inset 0 1px 0 rgba(255,255,255,.08);
   overflow:hidden;
 }
-.register-card::before {
+.register-card::before{
   content:'';position:absolute;top:0;left:0;right:0;height:1.5px;
-  background:var(--grad);border-radius:40px 40px 0 0;background-size:200% auto;
-  animation:shimmer 3s linear infinite;
+  background:var(--grad);background-size:220% auto;animation:gradFlow 4s linear infinite;
 }
-@keyframes shimmer { from{background-position:-200% center} to{background-position:200% center} }
-.card-brand { display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:28px; }
-.card-logo { width:160px;height:auto;object-fit:contain;display:block;margin:0 auto 8px; }
-.card-wordmark {
-  font-family:var(--ff-display);font-size:26px;font-weight:900;letter-spacing:-0.8px;
-  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  display:block;margin-bottom:6px;
-}
-.card-slogan { font-family:var(--ff-mono);font-size:11.5px;color:var(--t3);letter-spacing:0.2px;display:block;text-align:center; }
-.card-heading {
-  font-family:var(--ff-display);font-size:20px;font-weight:800;
-  text-align:center;letter-spacing:-0.5px;margin-bottom:24px;
-  background:linear-gradient(135deg,#fff 0%,var(--a2) 100%);
+@keyframes gradFlow{0%{background-position:0% center}100%{background-position:220% center}}
+
+/* brand */
+.card-brand{display:flex;flex-direction:column;align-items:center;margin-bottom:24px;position:relative;z-index:1}
+.card-logo{width:150px;height:auto;object-fit:contain;display:block;margin:0 auto 10px}
+.card-slogan{font-family:var(--ff-mono);font-size:10.5px;color:var(--t3);letter-spacing:.6px;text-align:center}
+
+/* pipeline steps indicator */
+.steps{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:26px;position:relative;z-index:1}
+.step-dot{width:8px;height:8px;border-radius:50%;background:var(--panel-2);border:1px solid var(--line-2);transition:all .4s var(--ease)}
+.step-dot.active{background:var(--v1);border-color:var(--v1);width:26px;border-radius:5px;box-shadow:0 0 14px var(--v-glow)}
+.step-dot.done{background:var(--cy);border-color:var(--cy);box-shadow:0 0 10px rgba(125,249,255,.5)}
+
+.card-heading{
+  font-family:var(--ff-display);font-size:22px;font-weight:800;letter-spacing:-.5px;
+  text-align:center;margin-bottom:26px;position:relative;z-index:1;
+  background:linear-gradient(135deg,#fff 0%,var(--v2) 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-.alert { width:100%;padding:12px 16px;border-radius:18px;margin-bottom:16px;font-size:12.5px;text-align:center; }
-.alert-error { background:rgba(255,107,107,0.06);border:1px solid rgba(255,107,107,0.25);color:#ff9a9a; }
-.alert-success { background:rgba(61,220,132,0.06);border:1px solid rgba(61,220,132,0.25);color:#6fefb0; }
-.input-group { margin-bottom:10px;position:relative; }
-.input-icon { position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--t3);pointer-events:none; }
-.input-group input {
-  width:100%;height:52px;padding:0 18px 0 42px;
-  background:rgba(255,255,255,0.035);border:1px solid var(--border-2);
-  border-radius:18px;color:var(--t1);font-family:var(--ff-display);font-size:14px;
-  outline:none;transition:all 0.25s;
+
+.alert{width:100%;padding:12px 16px;border-radius:var(--r-md);margin-bottom:16px;font-size:12.5px;text-align:center;position:relative;z-index:1}
+.alert-error{background:rgba(255,107,107,.07);border:1px solid rgba(255,107,107,.25);color:#ff9a9a}
+.alert-success{background:rgba(61,220,132,.07);border:1px solid rgba(61,220,132,.3);color:#6fefb0}
+
+form{position:relative;z-index:1}
+.input-group{margin-bottom:12px;position:relative}
+.input-icon{position:absolute;left:17px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--t3);pointer-events:none;display:flex;z-index:2}
+.input-group input{
+  width:100%;height:54px;padding:0 18px 0 46px;
+  background:rgba(255,255,255,.035);border:1px solid var(--line-2);border-radius:var(--r-md);
+  color:var(--t1);font-family:var(--ff-body);font-size:14px;outline:none;
+  transition:all .3s var(--ease);
 }
-.input-group input::placeholder { color:var(--t3); }
-.input-group input:focus { background:var(--a-bg);border-color:var(--a-border-2);box-shadow:0 0 0 3px var(--a-glow-soft); }
-.strength-wrap { margin-top:8px;display:none; }
-.strength-bar { height:3px;border-radius:999px;background:rgba(255,255,255,0.06);overflow:hidden; }
-.strength-fill { height:100%;width:0%;border-radius:999px;transition:width 0.35s ease,background 0.35s ease; }
-.strength-label { font-family:var(--ff-mono);font-size:10px;color:var(--t3);margin-top:5px;display:block;letter-spacing:0.3px; }
-.submit-btn {
-  width:100%;height:52px;border:none;border-radius:18px;background:var(--grad);color:#fff;
-  font-family:var(--ff-display);font-size:15px;font-weight:700;
-  cursor:pointer;letter-spacing:-0.2px;margin-top:8px;
-  box-shadow:0 8px 28px var(--a-glow);transition:all 0.28s cubic-bezier(0.25,0.8,0.25,1);
-  display:flex;align-items:center;justify-content:center;gap:8px;
+.input-group input::placeholder{color:var(--t3)}
+.input-group input:focus{background:var(--v-bg);border-color:var(--v-line-2);box-shadow:0 0 0 4px var(--v-glow-soft)}
+
+/* strength */
+.strength-wrap{margin-top:9px;display:none;padding:0 4px}
+.strength-bar{height:3px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden}
+.strength-fill{height:100%;width:0%;border-radius:999px;transition:width .4s var(--ease),background .4s var(--ease)}
+.strength-label{font-family:var(--ff-mono);font-size:10px;color:var(--t3);margin-top:6px;display:flex;gap:6px;letter-spacing:.3px}
+.strength-label span{font-weight:600}
+
+.submit-btn{
+  width:100%;height:54px;border:none;border-radius:var(--r-md);
+  background:var(--grad);color:#fff;
+  font-family:var(--ff-display);font-size:15px;font-weight:700;cursor:pointer;letter-spacing:-.1px;
+  margin-top:8px;transition:all .4s var(--ease);box-shadow:0 12px 36px var(--v-glow);
+  display:flex;align-items:center;justify-content:center;gap:9px;position:relative;overflow:hidden;
 }
-.submit-btn:hover { transform:translateY(-2px) scale(1.01);box-shadow:0 14px 40px var(--a-glow);filter:brightness(1.08); }
-.submit-btn svg { transition:transform 0.25s; }
-.submit-btn:hover svg { transform:translateX(3px); }
-.login-link { text-align:center;font-size:13px;color:var(--t3);margin-top:18px; }
-.login-link a { color:var(--a2);text-decoration:none;font-weight:600;transition:color 0.2s; }
-.login-link a:hover { color:#fff; }
-.trust-row { display:flex;justify-content:center;gap:18px;margin-top:20px;flex-wrap:wrap; }
-.trust-badge { display:flex;align-items:center;gap:5px;font-family:var(--ff-mono);font-size:10px;color:var(--t3);letter-spacing:0.2px; }
+.submit-btn::after{
+  content:'';position:absolute;top:0;left:-80%;width:60%;height:100%;
+  background:linear-gradient(105deg,transparent,rgba(255,255,255,.28),transparent);
+  transform:skewX(-20deg);transition:left .6s var(--ease);
+}
+.submit-btn:hover::after{left:120%}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 18px 48px var(--v-glow);filter:brightness(1.1)}
+.submit-btn i{transition:transform .3s var(--ease)}
+.submit-btn:hover i{transform:translateX(4px)}
+
+.login-link{text-align:center;font-size:13px;color:var(--t3);margin-top:20px;position:relative;z-index:1}
+.login-link a{color:var(--v2);text-decoration:none;font-weight:600;transition:color .25s}
+.login-link a:hover{color:#fff}
+
+.trust-row{display:flex;justify-content:center;gap:18px;margin-top:22px;flex-wrap:wrap;position:relative;z-index:1}
+.trust-badge{display:flex;align-items:center;gap:6px;font-family:var(--ff-mono);font-size:10px;color:var(--t3)}
+.trust-badge i{color:var(--cy);font-size:10px}
+
 @media(max-width:520px){
-  .navbar{padding:0 24px;}
-  .register-card{padding:36px 24px 28px;border-radius:28px;}
-  .nav-logo{width:120px;}
-  .card-logo{width:140px;}
+  .register-card{padding:38px 26px 30px;border-radius:28px}
+  .nav-logo{width:110px}
+  .card-logo{width:134px}
 }
 </style>
 </head>
 <body>
 
-<div class="bg-orbs">
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
-</div>
+<canvas id="neural-bg"></canvas>
+<div class="nebula neb-1"></div>
+<div class="nebula neb-2"></div>
+<div class="nebula neb-3"></div>
 
 <nav class="navbar">
   <a class="nav-brand" href="/login">
-    <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora.AI" class="nav-logo">
+    <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora AI" class="nav-logo">
   </a>
-  <a class="nav-login" href="/login">
-    Sign In
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-  </a>
+  <a class="nav-login" href="/login">Sign In<i class="fa-solid fa-arrow-right" style="font-size:11px"></i></a>
 </nav>
 
 <div class="card-wrapper">
   <div class="register-card">
 
     <div class="card-brand">
-      <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora.AI" class="card-logo">
-      <span class="card-slogan">Enterprise Knowledge Intelligence Platform</span>
+      <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora AI" class="card-logo">
+      <span class="card-slogan">Neural Knowledge Intelligence</span>
+    </div>
+
+    <div class="steps">
+      <div class="step-dot active" id="step1"></div>
+      <div class="step-dot" id="step2"></div>
+      <div class="step-dot" id="step3"></div>
     </div>
 
     <h2 class="card-heading">Create your account</h2>
 
     {% if error %}
-    <div class="alert alert-error">{{ error }}</div>
+    <div class="alert alert-error"><i class="fa-solid fa-triangle-exclamation" style="margin-right:6px"></i>{{ error }}</div>
     {% endif %}
-
     {% if success %}
-    <div class="alert alert-success">{{ success }}</div>
+    <div class="alert alert-success"><i class="fa-solid fa-circle-check" style="margin-right:6px"></i>{{ success }}</div>
     {% endif %}
 
-    <form method="POST">
+    <form method="POST" id="registerForm">
       <div class="input-group">
-        <span class="input-icon">👤</span>
-        <input type="text" name="username" placeholder="Username" required autocomplete="username" id="usernameInput">
+        <span class="input-icon"><i class="fa-regular fa-user"></i></span>
+        <input type="text" name="username" placeholder="Choose a username" required autocomplete="username" id="usernameInput">
       </div>
       <div class="input-group">
-        <span class="input-icon">🔒</span>
-        <input type="password" name="password" placeholder="Password" required autocomplete="new-password" id="passwordInput">
+        <span class="input-icon"><i class="fa-solid fa-lock"></i></span>
+        <input type="password" name="password" placeholder="Create a password" required autocomplete="new-password" id="passwordInput">
         <div class="strength-wrap" id="strengthWrap">
           <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
-          <span class="strength-label" id="strengthLabel">Weak</span>
+          <div class="strength-label">Strength: <span id="strengthLabel">—</span></div>
         </div>
       </div>
-      <button type="submit" class="submit-btn">
-        Create Account
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      <button type="submit" class="submit-btn" id="submitBtn">
+        <span id="btnText">Create Account</span>
+        <i class="fa-solid fa-arrow-right"></i>
       </button>
     </form>
 
     <div class="login-link">Already have an account? <a href="/login">Sign in</a></div>
 
     <div class="trust-row">
-      <span class="trust-badge">🔐 End-to-end encrypted</span>
-      <span class="trust-badge">🛡 Isolated workspace</span>
-      <span class="trust-badge">⚡ Instant access</span>
+      <span class="trust-badge"><i class="fa-solid fa-key"></i>Encrypted</span>
+      <span class="trust-badge"><i class="fa-solid fa-circle-half-stroke"></i>Isolated workspace</span>
+      <span class="trust-badge"><i class="fa-solid fa-bolt"></i>Instant access</span>
     </div>
 
   </div>
 </div>
 
 <script>
-const pwInput = document.getElementById('passwordInput');
-const wrap    = document.getElementById('strengthWrap');
-const fill    = document.getElementById('strengthFill');
-const label   = document.getElementById('strengthLabel');
-const levels  = [
-  { pct:'20%', color:'rgba(255,107,107,0.75)', text:'Weak' },
-  { pct:'48%', color:'rgba(251,140,0,0.85)',   text:'Fair' },
-  { pct:'74%', color:'rgba(176,138,255,0.90)', text:'Good' },
-  { pct:'100%',color:'rgba(61,220,132,0.95)',  text:'Strong' },
+/* neural background — drifting synapse net */
+(function(){
+  var c=document.getElementById('neural-bg'),ctx=c.getContext('2d'),W,H,nodes=[],mx=-999,my=-999;
+  function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;build()}
+  function build(){
+    nodes=[];
+    var count=Math.min(80,Math.floor(W*H/18000));
+    for(var i=0;i<count;i++)nodes.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.28,vy:(Math.random()-.5)*.28,r:Math.random()*1.6+.6});
+  }
+  rs();window.addEventListener('resize',rs,{passive:true});
+  window.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY},{passive:true});
+  (function draw(){
+    ctx.clearRect(0,0,W,H);
+    var LINK=130;
+    for(var i=0;i<nodes.length;i++){
+      var n=nodes[i];
+      n.x+=n.vx;n.y+=n.vy;
+      if(n.x<0||n.x>W)n.vx*=-1;
+      if(n.y<0||n.y>H)n.vy*=-1;
+      var dxm=mx-n.x,dym=my-n.y,dm=Math.sqrt(dxm*dxm+dym*dym);
+      if(dm<200&&dm>1){n.x+=dxm/dm*.25;n.y+=dym/dm*.25}
+      for(var j=i+1;j<nodes.length;j++){
+        var m=nodes[j],dx=n.x-m.x,dy=n.y-m.y,d=Math.sqrt(dx*dx+dy*dy);
+        if(d<LINK){
+          ctx.beginPath();ctx.moveTo(n.x,n.y);ctx.lineTo(m.x,m.y);
+          ctx.strokeStyle='rgba(124,92,252,'+((1-d/LINK)*.13)+')';ctx.lineWidth=.7;ctx.stroke();
+        }
+      }
+      ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(176,138,255,.4)';ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  })();
+})();
+
+/* strength meter + step dots */
+var pwInput=document.getElementById('passwordInput'),
+    wrap=document.getElementById('strengthWrap'),
+    fill=document.getElementById('strengthFill'),
+    label=document.getElementById('strengthLabel'),
+    step2=document.getElementById('step2'),
+    step3=document.getElementById('step3');
+var levels=[
+  {pct:'20%',color:'#ff7a7a',text:'Weak'},
+  {pct:'50%',color:'#f0a13c',text:'Fair'},
+  {pct:'78%',color:'#b08aff',text:'Good'},
+  {pct:'100%',color:'#7df9ff',text:'Strong'},
 ];
-pwInput.addEventListener('input', function() {
-  const val = this.value;
-  if (!val) { wrap.style.display='none'; return; }
+document.getElementById('usernameInput').addEventListener('input',function(){
+  if(this.value.length>0){step2.classList.add('done')}else{step2.classList.remove('done')}
+});
+pwInput.addEventListener('input',function(){
+  var val=this.value;
+  if(!val){wrap.style.display='none';step3.classList.remove('done');return}
   wrap.style.display='block';
-  let score=0;
-  if(val.length>=6) score++;
-  if(val.length>=10) score++;
-  if(/[A-Z]/.test(val)&&/[0-9]/.test(val)) score++;
-  if(/[^A-Za-z0-9]/.test(val)) score++;
-  const lvl=levels[Math.max(0,score-1)];
-  fill.style.width=lvl.pct; fill.style.background=lvl.color;
-  label.textContent=lvl.text; label.style.color=lvl.color;
+  var score=0;
+  if(val.length>=6)score++;
+  if(val.length>=10)score++;
+  if(/[A-Z]/.test(val)&&/[0-9]/.test(val))score++;
+  if(/[^A-Za-z0-9]/.test(val))score++;
+  var lvl=levels[Math.max(0,score-1)];
+  fill.style.width=lvl.pct;fill.style.background=lvl.color;
+  label.textContent=lvl.text;label.style.color=lvl.color;
+  if(score>=3){step3.classList.add('done')}else{step3.classList.remove('done')}
+});
+document.getElementById('registerForm').addEventListener('submit',function(){
+  document.getElementById('submitBtn').style.opacity='.8';
+  document.getElementById('btnText').textContent='Creating account…';
 });
 </script>
 </body>

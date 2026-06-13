@@ -7,7 +7,7 @@
 
     <!-- Unified CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/full_report.css') }}">
+
     <!-- Marked Markdown Parser -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
@@ -17,7 +17,7 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
     <script src="{{ url_for('static', filename='js/graph.js') }}" defer></script>
-    <script src="{{ url_for('static', filename='js/full_report.js') }}" defer></script>
+
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Sora + DM Sans — same as login/register/logout -->
@@ -31,9 +31,7 @@
     <div class="blob blob2"></div>
     <div class="blob blob3"></div>
 </div>
-<div class="bg-image">
-    <canvas id="analytics-canvas"></canvas>
-</div>
+<div class="bg-image"></div>
 
 <div class="container">
 
@@ -124,24 +122,36 @@
 
             <div class="top-controls">
 
-                <input type="hidden" id="languageSelector" value="English">
+                <select id="languageSelector" title="Response Language">
+                    <option value="English">English</option>
+                    <option value="Hindi">Hindi</option>
+                    <option value="Marathi">Marathi</option>
+                    <option value="Bhojpuri">Bhojpuri</option>
+                    <option value="Punjabi">Punjabi</option>
+                    <option value="Spanish">Spanish</option>
+                    <option value="French">French</option>
+                </select>
 
-                <button class="toolbar-btn" onclick="KnowledgeGraph.open()" title="Knowledge Graph">
-                    <i class="fa-solid fa-diagram-project"></i>
-                    <span>Knowledge Graph</span>
-                </button>
+                <select id="responseTypeSelector" title="Response Style">
+                    <option value="detailed">Detailed</option>
+                    <option value="short">Short</option>
+                </select>
 
-                <button class="toolbar-btn report-trigger-btn" onclick="openReportModal()" title="Generate Full Report from Documents">
-                <i class="fa-solid fa-file-chart-column"></i>
-                <span>Executive Report</span>
-                </button>
-                <button class="toolbar-btn" onclick="downloadConversationPDF()" title="Download Conversation PDF">
-                    <i class="fa-solid fa-file-arrow-down"></i>
-                    <span>Export PDF</span>
-                </button>
+                <select id="themeSelector" onchange="handleThemeChange(this.value)" title="Choose Color Theme">
+                    <option value="lavender">Lavender Theme</option>
+                    <option value="cyan">Cyan Theme</option>
+                    <option value="sunset">Sunset Theme</option>
+                    <option value="sherbet">Sherbet Theme</option>
+                    <option value="obsidian">Obsidian Theme</option>
+                    <option value="tropical">Tropical Oasis Theme</option>
+                </select>
 
                 <button id="settingsBtn" class="header-icon-btn" onclick="toggleSettingsDrawer()" title="Session Settings">
                     <i class="fa-solid fa-sliders"></i>
+                </button>
+
+                <button id="modeToggle" class="header-icon-btn" onclick="toggleMode()" title="Toggle Dark/Light">
+                    <i class="fa-solid fa-moon"></i>
                 </button>
 
                 <button class="logout-btn" onclick="window.location.href='/logout'" title="Logout">
@@ -149,6 +159,16 @@
                 </button>
 
             </div>
+        </div>
+
+        <!-- Floating PDF download -->
+        <div class="chat-actions-bar">
+            <button class="download-chat-btn" onclick="downloadConversationPDF()" title="Download Conversation PDF">
+                <i class="fa-solid fa-file-arrow-down"></i>
+            </button>
+            <button class="download-chat-btn" onclick="KnowledgeGraph.open()" title="Knowledge Graph" style="background:linear-gradient(135deg,rgba(167,139,250,.18),rgba(103,232,249,.12));border-color:rgba(167,139,250,.4);">
+                <i class="fa-solid fa-diagram-project" style="color:#a78bfa;"></i>
+            </button>
         </div>
 
 
@@ -180,10 +200,6 @@
 
         <!-- Input bar -->
         <div class="chat-input-area">
-            <select id="responseTypeSelector" title="Response Style">
-                <option value="detailed">Detailed</option>
-                <option value="short">Short</option>
-            </select>
             <input type="text" id="questionInput" class="chat-input" placeholder="Ask a question about your knowledge files…">
             <button class="mic-btn" id="micBtn" onclick="startSpeechRecognition()" title="Voice Dictation">
                 <i class="fa-solid fa-microphone"></i>
@@ -225,29 +241,7 @@
             <label for="settingsPrompt">System Prompt Override</label>
             <textarea id="settingsPrompt" rows="6" placeholder="Provide system guidelines for the RAG agent…"></textarea>
         </div>
-
-        <div style="margin: 12px 0 6px; border-top: 1px solid var(--border);"></div>
-
-        <div class="setting-group">
-            <label for="themeSelector">Color Theme</label>
-            <select id="themeSelector" onchange="handleThemeChange(this.value)" title="Choose Color Theme">
-                <option value="lavender">Lavender Theme</option>
-                <option value="cyan">Cyan Theme</option>
-                <option value="sunset">Sunset Theme</option>
-                <option value="sherbet">Sherbet Theme</option>
-                <option value="obsidian">Obsidian Theme</option>
-                <option value="tropical">Tropical Oasis Theme</option>
-            </select>
-        </div>
-        <div class="setting-group">
-            <label for="appearanceModeSelector">Appearance Mode</label>
-            <select id="appearanceModeSelector" onchange="changeAppearanceMode(this.value)">
-                <option value="dark">Dark Mode</option>
-                <option value="light">Light Mode</option>
-            </select>
-        </div>
-
-        <button class="save-settings-btn" onclick="saveSessionSettings()" style="margin-top: 8px;">
+        <button class="save-settings-btn" onclick="saveSessionSettings()">
             <i class="fa-solid fa-floppy-disk"></i> Save Configuration
         </button>
     </div>
@@ -387,10 +381,6 @@
         }
         
         updateGreetingEmoji(theme);
-
-        if (window.analyticsBg) {
-            window.analyticsBg.updateColors();
-        }
     }
 
     function handleThemeChange(theme){
@@ -416,26 +406,14 @@
         }
     }
 
-    function changeAppearanceMode(mode) {
-        if (mode === "light") {
-            document.body.classList.add("light-mode");
-        } else {
-            document.body.classList.remove("light-mode");
-        }
-        localStorage.setItem("mode", mode);
-        const selector = document.getElementById("appearanceModeSelector");
-        if (selector) {
-            selector.value = mode;
-        }
-
-        if (window.analyticsBg) {
-            window.analyticsBg.updateColors();
-        }
-    }
-
     function toggleMode(){
+        document.body.classList.toggle("light-mode");
+        const icon = document.querySelector("#modeToggle i");
         const isLight = document.body.classList.contains("light-mode");
-        changeAppearanceMode(isLight ? "dark" : "light");
+        if (icon) {
+            icon.className = isLight ? "fa-solid fa-sun" : "fa-solid fa-moon";
+        }
+        localStorage.setItem("mode", isLight ? "light" : "dark");
     }
 
     /* ---- Sidebar ---- */
@@ -522,7 +500,6 @@
             if(data.status === "success"){
                 loadUserDocuments();
                 if(session_id) loadSessionFiles(session_id);
-                KnowledgeGraph.invalidate();
             } else { 
                 Swal.fire({
                     icon: 'error',
@@ -619,7 +596,6 @@
                 loadSessionFiles(session_id);
                 loadChats();
                 loadUserDocuments();
-                KnowledgeGraph.invalidate();
                 if(messagesData.length === 0){
                     const splash = document.getElementById("greetingSplash");
                     if(splash){ splash.style.display="none";
@@ -1172,351 +1148,6 @@
         recognition.onerror= () => micBtn.classList.remove("recording");
     }
 
-    /* ---- Analytics Canvas Background ---- */
-    class AnalyticsBackground {
-        constructor(canvasId) {
-            this.canvas = document.getElementById(canvasId);
-            if (!this.canvas) return;
-            this.ctx = this.canvas.getContext('2d');
-            
-            this.nodes = [];
-            this.packets = [];
-            this.layerNodes = [];
-            this.barTargets = [0.72, 0.48, 0.92, 0.62, 0.82, 0.55, 0.78, 0.45];
-            this.barValues = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1];
-            
-            this.gridSize = 90;
-            this.accentColor = '#B18FCF';
-            this.accentGlowColor = 'rgba(177, 143, 207, 0.12)';
-            this.textColor = 'rgba(243, 232, 255, 0.35)';
-            this.mode = 'dark';
-            this.time = 0;
-            
-            this.resize();
-            window.addEventListener('resize', () => {
-                this.resize();
-                this.initElements();
-            });
-            
-            this.initElements();
-            this.animate();
-        }
-        
-        updateColors() {
-            const style = getComputedStyle(document.body);
-            this.accentColor = (style.getPropertyValue('--accent') || '#B18FCF').trim();
-            this.accentGlowColor = (style.getPropertyValue('--accent-glow-soft') || 'rgba(177, 143, 207, 0.12)').trim();
-            this.textColor = (style.getPropertyValue('--text-muted') || 'rgba(243, 232, 255, 0.35)').trim();
-            this.parsedAccent = this.parseColor(this.accentColor);
-            this.mode = document.body.classList.contains('light-mode') ? 'light' : 'dark';
-        }
-        
-        parseColor(colorStr) {
-            colorStr = colorStr.trim();
-            if (colorStr.startsWith('rgb')) {
-                const match = colorStr.match(/\d+/g);
-                if (match && match.length >= 3) {
-                    return {
-                        r: parseInt(match[0], 10),
-                        g: parseInt(match[1], 10),
-                        b: parseInt(match[2], 10)
-                    };
-                }
-            }
-            if (colorStr.startsWith('#')) {
-                const hex = colorStr.replace('#', '');
-                if (hex.length === 3) {
-                    const r = parseInt(hex[0] + hex[0], 16);
-                    const g = parseInt(hex[1] + hex[1], 16);
-                    const b = parseInt(hex[2] + hex[2], 16);
-                    return { r, g, b };
-                } else if (hex.length >= 6) {
-                    const r = parseInt(hex.substring(0, 2), 16);
-                    const g = parseInt(hex.substring(2, 4), 16);
-                    const b = parseInt(hex.substring(4, 6), 16);
-                    return { r, g, b };
-                }
-            }
-            return { r: 177, g: 143, b: 207 };
-        }
-        
-        rgba(colorObj, alpha) {
-            return `rgba(${colorObj.r}, ${colorObj.g}, ${colorObj.b}, ${alpha})`;
-        }
-        
-        resize() {
-            const rect = this.canvas.parentElement.getBoundingClientRect();
-            this.canvas.width = rect.width || window.innerWidth;
-            this.canvas.height = rect.height || window.innerHeight;
-        }
-        
-        initElements() {
-            this.updateColors();
-            const w = this.canvas.width;
-            const h = this.canvas.height;
-            
-            // 1. Moving Neurons (drifting network nodes)
-            this.nodes = [];
-            const nodeCount = Math.min(24, Math.floor((w * h) / 70000) + 10);
-            for (let i = 0; i < nodeCount; i++) {
-                this.nodes.push({
-                    x: Math.random() * w,
-                    y: Math.random() * h,
-                    vx: (Math.random() - 0.5) * 0.32,
-                    vy: (Math.random() - 0.5) * 0.32,
-                    radius: Math.random() * 2 + 1.5,
-                    pulse: Math.random() * Math.PI
-                });
-            }
-            
-            // 2. Synaptic Moving Packets
-            this.packets = [];
-            const packetCount = Math.min(10, Math.floor(nodeCount / 2));
-            for (let i = 0; i < packetCount; i++) {
-                this.packets.push({
-                    currentNode: this.nodes[Math.floor(Math.random() * this.nodes.length)],
-                    nextNode: null,
-                    progress: 0,
-                    speed: 0.007 + Math.random() * 0.008
-                });
-            }
-            
-            // 3. Moving Column Charts target values (8 bars)
-            this.barTargets = [0.72, 0.48, 0.92, 0.62, 0.82, 0.55, 0.78, 0.45];
-            this.barValues = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1];
-            
-            // 4. Analytic Waveforms (2 curves)
-            this.waves = [];
-            for (let i = 0; i < 2; i++) {
-                this.waves.push({
-                    offset: Math.random() * 1000,
-                    speed: 0.0004 + i * 0.0002,
-                    amplitude: 30 + Math.random() * 20,
-                    yPos: h * (0.35 + i * 0.25)
-                });
-            }
-        }
-        
-        animate() {
-            requestAnimationFrame(() => this.animate());
-            this.render();
-        }
-        
-        render() {
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            this.time += 0.005;
-            
-            if (Math.random() < 0.006) {
-                this.updateColors();
-            }
-            
-            const accent = this.parsedAccent || { r: 177, g: 143, b: 207 };
-            const isLight = this.mode === 'light';
-            
-            const w = this.canvas.width;
-            const h = this.canvas.height;
-            
-            // Opacity calibrations
-            const gridOpacity = isLight ? 0.045 : 0.03;
-            const gridTickOpacity = isLight ? 0.14 : 0.09;
-            const synapseOpacity = isLight ? 0.22 : 0.14;
-            const nodeGlowOpacity = isLight ? 0.15 : 0.1;
-            const nodeCoreOpacity = isLight ? 0.48 : 0.35;
-            const packetOpacity = isLight ? 0.75 : 0.9;
-            
-            // 1. Draw Grid
-            this.ctx.strokeStyle = this.rgba(accent, gridOpacity);
-            this.ctx.lineWidth = 0.8;
-            for (let x = 0; x < w; x += this.gridSize) {
-                this.ctx.beginPath();
-                this.ctx.moveTo(x, 0);
-                this.ctx.lineTo(x, h);
-                this.ctx.stroke();
-            }
-            for (let y = 0; y < h; y += this.gridSize) {
-                this.ctx.beginPath();
-                this.ctx.moveTo(0, y);
-                this.ctx.lineTo(w, y);
-                this.ctx.stroke();
-            }
-            
-            // Draw grid intersection ticks (+)
-            this.ctx.strokeStyle = this.rgba(accent, gridTickOpacity);
-            this.ctx.lineWidth = 1;
-            for (let x = this.gridSize; x < w; x += this.gridSize) {
-                for (let y = this.gridSize; y < h; y += this.gridSize) {
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(x - 3.5, y);
-                    this.ctx.lineTo(x + 3.5, y);
-                    this.ctx.moveTo(x, y - 3.5);
-                    this.ctx.lineTo(x, y + 3.5);
-                    this.ctx.stroke();
-                }
-            }
-            
-            // 2. Draw Analytic Waveforms
-            this.waves.forEach((wave, idx) => {
-                wave.offset += wave.speed;
-                this.ctx.beginPath();
-                this.ctx.strokeStyle = idx === 0 ? this.rgba(accent, isLight ? 0.22 : 0.14) : this.rgba(accent, isLight ? 0.12 : 0.07);
-                this.ctx.lineWidth = idx === 0 ? 1.8 : 1.2;
-                
-                let started = false;
-                const step = 40;
-                for (let x = 0; x <= w + step; x += step) {
-                    const angle = (x * 0.0018) + wave.offset;
-                    const y = wave.yPos + Math.sin(angle) * wave.amplitude + Math.cos(angle * 0.5) * (wave.amplitude * 0.4);
-                    if (!started) {
-                        this.ctx.moveTo(x, y);
-                        started = true;
-                    } else {
-                        this.ctx.lineTo(x, y);
-                    }
-                }
-                this.ctx.stroke();
-            });
-            
-            // 3. Draw Moving Column Charts (Bottom Right)
-            const barX = w * 0.65;
-            const barY = h * 0.85;
-            const barW = w * 0.22;
-            const barH = h * 0.18;
-            
-            if (barW > 120 && barH > 40) {
-                // Draw thin base axis line
-                this.ctx.strokeStyle = this.rgba(accent, isLight ? 0.2 : 0.12);
-                this.ctx.lineWidth = 1;
-                this.ctx.beginPath();
-                this.ctx.moveTo(barX, barY);
-                this.ctx.lineTo(barX + barW, barY);
-                this.ctx.stroke();
-                
-                this.ctx.font = '8px monospace';
-                this.ctx.fillStyle = this.textColor;
-                this.ctx.fillText('LIVE DATA STREAM', barX, barY - barH - 8);
-                
-                // Draw 8 bars
-                const colCount = 8;
-                const colWidth = (barW / colCount) * 0.6;
-                const colSpacing = (barW / colCount) * 0.4;
-                
-                for (let i = 0; i < colCount; i++) {
-                    const target = this.barTargets[i];
-                    // Continuous oscillation wobble
-                    const wobble = Math.sin(this.time * 2.5 + i * 1.2) * 0.12;
-                    const finalVal = Math.min(1.0, Math.max(0.1, target + wobble));
-                    
-                    this.barValues[i] += (finalVal - this.barValues[i]) * 0.1;
-                    const currentHeight = this.barValues[i] * barH;
-                    
-                    const bx = barX + colSpacing/2 + i * (colWidth + colSpacing);
-                    const by = barY - currentHeight;
-                    
-                    // Gradient fill
-                    const grad = this.ctx.createLinearGradient(bx, by, bx + colWidth, barY);
-                    grad.addColorStop(0, this.rgba(accent, isLight ? 0.48 : 0.35));
-                    grad.addColorStop(1, this.rgba(accent, isLight ? 0.12 : 0.05));
-                    
-                    this.ctx.fillStyle = grad;
-                    this.ctx.fillRect(bx, by, colWidth, currentHeight);
-                    
-                    // Outline stroke
-                    this.ctx.strokeStyle = this.rgba(accent, isLight ? 0.58 : 0.42);
-                    this.ctx.lineWidth = 0.8;
-                    this.ctx.strokeRect(bx, by, colWidth, currentHeight);
-                }
-            }
-            
-            // 4. Draw moving neurons (drifting network nodes)
-            this.nodes.forEach(node => {
-                node.x += node.vx;
-                node.y += node.vy;
-                node.pulse += 0.008;
-                
-                if (node.x < 0 || node.x > w) node.vx *= -1;
-                if (node.y < 0 || node.y > h) node.vy *= -1;
-                
-                const pulseRadius = node.radius + Math.sin(node.pulse) * 1.2;
-                this.ctx.beginPath();
-                this.ctx.arc(node.x, node.y, pulseRadius, 0, Math.PI * 2);
-                this.ctx.fillStyle = this.rgba(accent, nodeGlowOpacity);
-                this.ctx.fill();
-                
-                this.ctx.beginPath();
-                this.ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
-                this.ctx.fillStyle = this.rgba(accent, nodeCoreOpacity);
-                this.ctx.fill();
-            });
-            
-            // Draw synapses (connection lines)
-            this.ctx.lineWidth = 0.9;
-            for (let i = 0; i < this.nodes.length; i++) {
-                for (let j = i + 1; j < this.nodes.length; j++) {
-                    const dx = this.nodes[i].x - this.nodes[j].x;
-                    const dy = this.nodes[i].y - this.nodes[j].y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 150) {
-                        const alpha = (1 - (dist / 150)) * synapseOpacity;
-                        this.ctx.strokeStyle = this.rgba(accent, alpha);
-                        this.ctx.beginPath();
-                        this.ctx.moveTo(this.nodes[i].x, this.nodes[i].y);
-                        this.ctx.lineTo(this.nodes[j].x, this.nodes[j].y);
-                        this.ctx.stroke();
-                    }
-                }
-            }
-            
-            // 5. Draw moving signal packets
-            this.packets.forEach(packet => {
-                if (!packet.currentNode) {
-                    packet.currentNode = this.nodes[Math.floor(Math.random() * this.nodes.length)];
-                }
-                
-                if (!packet.nextNode) {
-                    const neighbors = [];
-                    this.nodes.forEach(n => {
-                        if (n !== packet.currentNode) {
-                            const dx = n.x - packet.currentNode.x;
-                            const dy = n.y - packet.currentNode.y;
-                            const dist = Math.sqrt(dx * dx + dy * dy);
-                            if (dist < 150) {
-                                neighbors.push(n);
-                            }
-                        }
-                    });
-                    
-                    if (neighbors.length > 0) {
-                        packet.nextNode = neighbors[Math.floor(Math.random() * neighbors.length)];
-                        packet.progress = 0;
-                    } else {
-                        packet.currentNode = this.nodes[Math.floor(Math.random() * this.nodes.length)];
-                    }
-                }
-                
-                if (packet.nextNode) {
-                    packet.progress += packet.speed;
-                    const px = packet.currentNode.x + (packet.nextNode.x - packet.currentNode.x) * packet.progress;
-                    const py = packet.currentNode.y + (packet.nextNode.y - packet.currentNode.y) * packet.progress;
-                    
-                    this.ctx.beginPath();
-                    this.ctx.arc(px, py, 2.5, 0, Math.PI * 2);
-                    this.ctx.fillStyle = this.rgba(accent, packetOpacity);
-                    this.ctx.fill();
-                    
-                    this.ctx.beginPath();
-                    this.ctx.arc(px, py, 5.5, 0, Math.PI * 2);
-                    this.ctx.fillStyle = this.rgba(accent, packetOpacity * 0.35);
-                    this.ctx.fill();
-                    
-                    if (packet.progress >= 1) {
-                        packet.currentNode = packet.nextNode;
-                        packet.nextNode = null;
-                    }
-                }
-            });
-        }
-    }
-
     /* ---- Init ---- */
     window.onload = function(){
         loadChats();
@@ -1527,11 +1158,20 @@
         changeTheme(savedTheme);
         
         // Initialize Light/Dark Mode
-        const savedMode = localStorage.getItem("mode") || "dark";
-        changeAppearanceMode(savedMode);
-
-        // Initialize Analytics Background Canvas
-        window.analyticsBg = new AnalyticsBackground('analytics-canvas');
+        const savedMode = localStorage.getItem("mode");
+        if(savedMode === "light"){
+            document.body.classList.add("light-mode");
+            const modeIcon = document.querySelector("#modeToggle i");
+            if (modeIcon) {
+                modeIcon.className = "fa-solid fa-sun";
+            }
+        } else {
+            document.body.classList.remove("light-mode");
+            const modeIcon = document.querySelector("#modeToggle i");
+            if (modeIcon) {
+                modeIcon.className = "fa-solid fa-moon";
+            }
+        }
     };
 </script>
 </body>

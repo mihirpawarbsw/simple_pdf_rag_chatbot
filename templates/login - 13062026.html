@@ -601,498 +601,6 @@ footer{border-top:1px solid var(--line);padding:40px;background:rgba(255,255,255
 .trust-badge{display:flex;align-items:center;gap:6px;font-family:var(--ff-mono);font-size:10px;color:var(--t3)}
 .trust-badge i{color:var(--cy);font-size:10px}
 
-/* ═══ FROM DOCUMENTS TO INTELLIGENCE ═════════════════════ */
-.features-grid{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
-  gap:24px;margin-top:50px;
-}
-.feat-card{
-  padding:34px;border-radius:var(--r-lg);background:var(--panel);
-  border:1px solid var(--line);backdrop-filter:blur(16px);
-  position:relative;overflow:hidden;transition:all .4s var(--ease);
-  display:flex;flex-direction:column;gap:18px;min-height:360px;
-}
-.feat-card:hover{
-  border-color:var(--v-line);background:var(--panel-2);
-  transform:translateY(-4px);box-shadow:0 20px 50px rgba(0,0,0,.45),0 0 35px var(--v-glow-soft);
-}
-.feat-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,var(--v-line-2),transparent);
-  opacity:0;transition:opacity .4s;
-}
-.feat-card:hover::before{opacity:1}
-.feat-icon{
-  width:46px;height:46px;border-radius:12px;background:var(--v-bg);
-  border:1px solid var(--v-line);display:flex;align-items:center;
-  justify-content:center;font-size:18px;color:var(--v2);
-}
-.feat-card:hover .feat-icon{color:var(--cy);box-shadow:0 0 20px var(--v-glow-soft)}
-.feat-card h3{font-family:var(--ff-display);font-size:19px;font-weight:800;letter-spacing:-.4px}
-.feat-card p{font-size:13px;line-height:1.7;color:var(--t2);margin-bottom:auto}
-.feat-badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-.feat-badge{
-  font-family:var(--ff-mono);font-size:9.5px;padding:3.5px 9px;border-radius:6px;
-  background:rgba(255,255,255,.022);border:1px solid var(--line);color:var(--t2);
-}
-.feat-card:hover .feat-badge{border-color:var(--v-line);color:var(--t1)}
-.feat-visual-container{
-  height:130px;border-radius:var(--r-sm);border:1px solid var(--line);
-  background:rgba(7,6,15,.4);overflow:hidden;position:relative;
-  display:flex;align-items:center;justify-content:center;
-}
-
-/* Feature 1 visual: RAG flows */
-.feat1-flow{position:absolute;width:100%;height:100%}
-
-/* Feature 2 visual: Graph Node Canvas */
-.feat2-canvas{position:absolute;inset:0;width:100%;height:100%}
-
-/* Feature 3 visual: Stacked Reports */
-.feat3-stack{position:relative;width:90px;height:105px;perspective:800px}
-.feat3-page{
-  position:absolute;width:100%;height:100%;border-radius:6px;
-  background:rgba(12,10,22,.95);border:1px solid var(--line);
-  box-shadow:0 10px 24px rgba(0,0,0,.5);
-  transition:all .6s var(--ease);transform-origin:bottom center;
-  display:flex;flex-direction:column;padding:10px;gap:6px;
-}
-.feat3-line{height:3px;background:var(--line);border-radius:2px}
-.feat3-line.cy{background:var(--cy)}
-.feat3-line.v{background:var(--v1)}
-.feat3-p1{transform:rotateX(30deg) rotateY(-20deg) translateZ(0px)}
-.feat3-p2{transform:rotateX(30deg) rotateY(-20deg) translateZ(10px);opacity:.8}
-.feat3-p3{transform:rotateX(30deg) rotateY(-20deg) translateZ(20px);opacity:.6}
-.feat-card:hover .feat3-p1{transform:rotateX(25deg) rotateY(-15deg) translateZ(12px) translateY(-8px)}
-.feat-card:hover .feat3-p2{transform:rotateX(25deg) rotateY(-15deg) translateZ(24px) translateY(-4px);border-color:var(--v-line)}
-.feat-card:hover .feat3-p3{transform:rotateX(25deg) rotateY(-15deg) translateZ(36px);border-color:var(--cy-line)}
-
-/* Feature 4 visual: Radar scanning */
-.feat4-radar{
-  width:90px;height:90px;border-radius:50%;border:1px solid var(--line);
-  position:relative;display:flex;align-items:center;justify-content:center;
-}
-.feat4-radar::before{
-  content:'';position:absolute;inset:0;border-radius:50%;
-  background:conic-gradient(from 0deg,transparent 60%,var(--v-glow) 100%);
-  animation:spin 3.5s linear infinite;
-}
-.feat4-radar::after{
-  content:'';width:8px;height:8px;border-radius:50%;background:var(--cy);
-  box-shadow:0 0 10px var(--cy);
-}
-
-/* Feature 5 visual: Orbiting files */
-.feat5-core{
-  width:44px;height:44px;border-radius:50%;background:var(--grad);
-  display:flex;align-items:center;justify-content:center;color:#fff;
-  font-size:14px;box-shadow:0 0 20px var(--v-glow);z-index:2;
-}
-.feat5-orbit{
-  position:absolute;width:95px;height:95px;border:1px dashed var(--line);
-  border-radius:50%;display:flex;align-items:center;justify-content:center;
-  animation:spin 12s linear infinite;z-index:1;
-}
-.feat5-file{
-  position:absolute;padding:3px 6px;border-radius:4px;background:rgba(7,6,15,.9);
-  border:1px solid var(--line);font-family:var(--ff-mono);font-size:8px;
-  color:var(--cy);
-}
-.feat5-f1{top:-8px;left:34px}
-.feat5-f2{bottom:-8px;left:34px}
-.feat5-f3{top:34px;left:-14px;color:var(--v2)}
-.feat5-f4{top:34px;right:-14px;color:var(--v2)}
-
-/* Feature 6 visual: Citation Shield */
-.feat6-shield{
-  width:68px;height:68px;border-radius:18px;background:var(--v-bg);
-  border:1px solid var(--v-line);display:flex;align-items:center;
-  justify-content:center;font-size:24px;color:var(--cy);
-  box-shadow:0 0 20px var(--v-glow-soft);animation:pulse 3s ease-in-out infinite;
-}
-
-/* ═══ HOW NEXORA THINKS — Pipeline ═══════════════════════ */
-.think-stage{position:relative;margin-top:60px}
-.think-step{
-  display:grid;grid-template-columns:1fr 90px 1fr;align-items:center;
-  margin-bottom:28px;position:relative;
-}
-.think-node{
-  grid-column:2;justify-self:center;position:relative;z-index:2;
-  width:54px;height:54px;border-radius:18px;
-  background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.01));
-  border:1px solid var(--line);display:flex;align-items:center;
-  justify-content:center;font-size:18px;color:var(--t3);
-  box-shadow:0 10px 24px rgba(0,0,0,.5);backdrop-filter:blur(8px);
-  transition:all .5s var(--ease);
-}
-.think-step.active .think-node{
-  border-color:var(--cy-line);color:var(--cy);
-  box-shadow:0 0 30px var(--cy-bg);transform:scale(1.08);
-}
-.think-step.active .pipe-card{
-  border-color:var(--v-line);background:var(--panel-2);
-  box-shadow:0 14px 35px rgba(0,0,0,.35),0 0 20px var(--v-glow-soft);
-}
-.think-step:nth-child(odd) .pipe-card{grid-column:1;text-align:right}
-.think-step:nth-child(even) .pipe-card{grid-column:3;text-align:left}
-
-/* ═══ PREMIUM STATISTICS ═════════════════════════════════ */
-.stats-grid{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:24px;margin-top:50px;
-}
-.stat-card{
-  padding:36px 24px;border-radius:var(--r-md);background:var(--panel);
-  border:1px solid var(--line);backdrop-filter:blur(16px);
-  text-align:center;transition:all .4s var(--ease);
-}
-.stat-card:hover{
-  border-color:var(--cy-line);transform:translateY(-3px);
-  box-shadow:0 14px 35px rgba(0,0,0,.3),0 0 24px var(--cy-bg);
-}
-.stat-num{
-  font-family:var(--ff-display);font-size:clamp(38px,4.5vw,56px);
-  font-weight:900;letter-spacing:-1px;margin-bottom:8px;
-  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;
-}
-.stat-label{
-  font-family:var(--ff-mono);font-size:10px;font-weight:500;
-  letter-spacing:1.8px;text-transform:uppercase;color:var(--t2);
-}
-
-/* ═══ STATEMENT CORE CONVERGENCE ═════════════════════════ */
-.core-wrap{
-  position:relative;width:200px;height:200px;margin:40px auto 0;
-  display:flex;align-items:center;justify-content:center;
-}
-.core-pulse{
-  position:absolute;width:70px;height:70px;border-radius:50%;
-  background:var(--grad);box-shadow:0 0 50px var(--v-glow);
-  animation:pulseCore 3s ease-in-out infinite;z-index:2;
-}
-.core-ring{
-  position:absolute;border-radius:50%;border:1px solid var(--cy-line);
-  animation:ringWave 6s linear infinite;z-index:1;
-}
-.cr-1{width:90px;height:90px}
-.cr-2{width:140px;height:140px;animation-delay:2s;border-color:var(--v-line)}
-.cr-3{width:190px;height:190px;animation-delay:4s}
-@keyframes pulseCore{
-  0%,100%{transform:scale(1);box-shadow:0 0 40px var(--v-glow)}
-  50%{transform:scale(1.15);box-shadow:0 0 70px var(--v-glow),0 0 30px var(--cy)}
-}
-@keyframes ringWave{
-  from{transform:scale(.6);opacity:1}
-  to{transform:scale(1.4);opacity:0}
-}
-
-/* ═══ WORKFLOW SECTION ══════════════════════════════════ */
-.workflow-compare {
-  display: grid;
-  grid-template-columns: 1fr 80px 1fr;
-  gap: 0;
-  align-items: start;
-  margin-top: 40px;
-}
-.workflow-col {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: var(--r-lg);
-  padding: 32px;
-  overflow: hidden;
-  position: relative;
-  backdrop-filter: blur(16px);
-  transition: all .4s var(--ease);
-}
-.workflow-col.old {
-  opacity: 0.65;
-}
-.workflow-col.old:hover {
-  opacity: 0.8;
-  border-color: var(--line-2);
-}
-.workflow-col.new {
-  border-color: var(--v-line);
-  background: linear-gradient(180deg, var(--v-bg) 0%, rgba(255,255,255,0.005) 100%);
-  box-shadow: 0 20px 60px var(--v-glow-soft), inset 0 1px 0 rgba(255,255,255,0.06);
-}
-.workflow-col.new::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1.5px;
-  background: var(--grad);
-  background-size: 220% auto;
-  animation: gradFlow 4s linear infinite;
-}
-.wf-header {
-  font-family: var(--ff-mono);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  padding: 4px 10px;
-  border-radius: 6px;
-  display: inline-block;
-  margin-bottom: 24px;
-}
-.wf-old .wf-header {
-  background: rgba(255,255,255,0.04);
-  color: var(--t3);
-  border: 1px solid var(--line);
-}
-.wf-new .wf-header {
-  background: var(--v-bg);
-  color: var(--v2);
-  border: 1px solid var(--v-line-2);
-}
-.wf-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-.wf-step {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  padding: 14px 0;
-  position: relative;
-}
-.wf-step:not(:last-child)::after {
-  content: '';
-  position: absolute;
-  left: 15px;
-  top: 46px;
-  width: 1px;
-  bottom: 0;
-  background: linear-gradient(180deg, var(--line-2), transparent);
-}
-.step-num {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 700;
-  font-family: var(--ff-mono);
-  flex-shrink: 0;
-  position: relative;
-  z-index: 1;
-}
-.wf-old .step-num {
-  background: rgba(255,255,255,0.05);
-  color: var(--t3);
-  border: 1px solid var(--line);
-}
-.wf-new .step-num {
-  background: var(--grad);
-  color: #fff;
-  box-shadow: 0 4px 14px var(--v-glow);
-}
-.wf-step-text h4 {
-  font-family: var(--ff-display);
-  font-size: 14px;
-  font-weight: 700;
-  margin-bottom: 2px;
-}
-.wf-step-text p {
-  font-size: 12.5px;
-  color: var(--t2);
-  line-height: 1.6;
-}
-.wf-old .wf-step-text h4 {
-  color: var(--t2);
-}
-.wf-new .wf-step-text h4 {
-  color: var(--t1);
-}
-.wf-vs {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-top: 48px;
-}
-.vs-badge {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--deep);
-  border: 1px solid var(--line-2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 800;
-  color: var(--t3);
-  font-family: var(--ff-display);
-  box-shadow: 0 0 20px rgba(0,0,0,0.5);
-}
-
-/* ═══ USE CASES SECTION ══════════════════════════════════ */
-.usecases-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-  margin-top: 40px;
-}
-.usecase-card {
-  padding: 34px;
-  border-radius: var(--r-lg);
-  background: var(--panel);
-  border: 1px solid var(--line);
-  backdrop-filter: blur(16px);
-  transition: all .4s var(--ease);
-  position: relative;
-  overflow: hidden;
-}
-.usecase-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: 3px;
-  background: var(--grad);
-  opacity: 0;
-  transition: opacity .4s var(--ease);
-}
-.usecase-card:hover {
-  border-color: var(--v-line);
-  transform: translateX(4px);
-  background: var(--panel-2);
-  box-shadow: 0 20px 50px rgba(0,0,0,.4), 0 0 30px var(--v-glow-soft);
-}
-.usecase-card:hover::before {
-  opacity: 1;
-}
-.usecase-label {
-  font-family: var(--ff-mono);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  color: var(--v2);
-  margin-bottom: 12px;
-  display: block;
-}
-.usecase-card h3 {
-  font-family: var(--ff-display);
-  font-size: 19px;
-  font-weight: 800;
-  letter-spacing: -0.4px;
-  margin-bottom: 10px;
-}
-.usecase-card p {
-  font-size: 13px;
-  color: var(--t2);
-  line-height: 1.7;
-  margin-bottom: 18px;
-}
-.usecase-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.usecase-tag {
-  font-family: var(--ff-mono);
-  font-size: 10px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid var(--line);
-  color: var(--t2);
-}
-.usecase-card:hover .usecase-tag {
-  border-color: var(--v-line);
-  color: var(--t1);
-}
-
-/* ═══ FAQ SECTION ════════════════════════════════════════ */
-.faq-section {
-  max-width: 860px;
-  margin: 0 auto;
-}
-.faq-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-top: 40px;
-}
-.faq-item {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: var(--r-md);
-  overflow: hidden;
-  backdrop-filter: blur(16px);
-  transition: all .3s var(--ease);
-}
-.faq-item:hover {
-  border-color: var(--v-line);
-  background: var(--panel-2);
-  box-shadow: 0 10px 30px rgba(0,0,0,.2);
-}
-.faq-q {
-  width: 100%;
-  background: none;
-  border: none;
-  padding: 22px 28px;
-  text-align: left;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  font-family: var(--ff-display);
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--t1);
-  transition: color 0.3s var(--ease);
-}
-.faq-q:hover {
-  color: var(--cy);
-}
-.faq-caret {
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid var(--line);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  color: var(--t3);
-  flex-shrink: 0;
-  transition: all 0.3s var(--ease);
-}
-.faq-item.open .faq-caret {
-  background: var(--v-bg);
-  border-color: var(--v-line-2);
-  color: var(--cy);
-  transform: rotate(180deg);
-}
-.faq-a {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s var(--ease), padding 0.3s var(--ease);
-  padding: 0 28px;
-}
-.faq-item.open .faq-a {
-  max-height: 200px;
-  padding: 0 28px 22px;
-}
-.faq-a p {
-  font-size: 13px;
-  color: var(--t2);
-  line-height: 1.75;
-}
-
 /* ═══ RESPONSIVE ═════════════════════════════════════════ */
 @media(max-width:1024px){
   .vault-layout{grid-template-columns:1fr;gap:50px}
@@ -1112,9 +620,6 @@ footer{border-top:1px solid var(--line);padding:40px;background:rgba(255,255,255
   .modal-card{padding:38px 26px 30px;border-radius:28px}
   .footer-inner{flex-direction:column;text-align:center}
   .embed-stage{height:380px}
-  .workflow-compare{grid-template-columns:1fr;gap:16px}
-  .wf-vs{display:none}
-  .usecases-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -1166,528 +671,265 @@ footer{border-top:1px solid var(--line);padding:40px;background:rgba(255,255,255
   <div class="scroll-hint"><span>Descend into the pipeline</span><div class="scroll-line"></div></div>
 </section>
 
-<!-- ═══ FROM DOCUMENTS TO INTELLIGENCE ═════════════════════ -->
-<section class="scene">
+<!-- ═══ RAG PIPELINE ═══════════════════════════════════════ -->
+<section class="scene pipeline-scene">
   <div class="scene-inner">
     <div class="center gs-rise">
-      <div class="scene-tag"><i class="fa-solid fa-layer-group"></i>From Documents to Intelligence</div>
-      <h2 class="scene-h2">The Operating System for <em>Knowledge.</em></h2>
-      <p class="scene-sub">Upload PDFs, DOCX, PPTs, XLSX spreadsheets, and enterprise knowledge. Nexora automatically builds a searchable intelligence network that allows users to explore, analyse and understand information in ways traditional chatbots cannot.</p>
+      <div class="scene-tag"><i class="fa-solid fa-diagram-project"></i>The RAG Pipeline</div>
+      <h2 class="scene-h2">From raw documents to <em>verified answers.</em></h2>
+      <p class="scene-sub">Eight neural stages. One continuous flow of intelligence — watch the signal travel down the spine.</p>
     </div>
 
-    <div class="features-grid gs-rise">
-      <!-- Feature 1 -->
-      <div class="feat-card">
-        <div class="feat-icon"><i class="fa-solid fa-circle-nodes"></i></div>
-        <div>
-          <h3>Enterprise RAG Intelligence</h3>
-          <p>Hybrid Retrieval combines embeddings, vector search, BM25 ranking, reranking, chunk validation and citation verification to deliver highly accurate answers grounded in your documents.</p>
-        </div>
-        <div class="feat-visual-container">
-          <canvas class="feat1-flow" id="feat1-flow-canvas"></canvas>
-        </div>
-        <div class="feat-badges">
-          <span class="feat-badge">Hybrid Search</span>
-          <span class="feat-badge">Cross Encoder Reranking</span>
-          <span class="feat-badge">Citation Verification</span>
-          <span class="feat-badge">Context Validation</span>
-          <span class="feat-badge">Multi Document Reasoning</span>
-        </div>
-      </div>
-
-      <!-- Feature 2 -->
-      <div class="feat-card">
-        <div class="feat-icon"><i class="fa-solid fa-diagram-project"></i></div>
-        <div>
-          <h3>Knowledge Graph Generation</h3>
-          <p>Automatically extract entities, concepts, relationships and dependencies from uploaded knowledge bases and visualize them as an interactive intelligence graph.</p>
-        </div>
-        <div class="feat-visual-container">
-          <canvas class="feat2-canvas" id="feat2-graph-canvas"></canvas>
-        </div>
-        <div class="feat-badges">
-          <span class="feat-badge">Entity Extraction</span>
-          <span class="feat-badge">Relationship Discovery</span>
-          <span class="feat-badge">Semantic Linking</span>
-          <span class="feat-badge">Concept Exploration</span>
-          <span class="feat-badge">Interactive Graphs</span>
-        </div>
-      </div>
-
-      <!-- Feature 3 -->
-      <div class="feat-card">
-        <div class="feat-icon"><i class="fa-solid fa-chart-line"></i></div>
-        <div>
-          <h3>Executive Report Generation</h3>
-          <p>Generate professional AI-powered reports from hundreds of documents in seconds including executive summaries, key findings, detailed analysis, conclusions and recommendations.</p>
-        </div>
-        <div class="feat-visual-container">
-          <div class="feat3-stack">
-            <div class="feat3-page feat3-p3">
-              <div class="feat3-line cy" style="width: 40%"></div>
-              <div class="feat3-line" style="width: 80%"></div>
-              <div class="feat3-line" style="width: 70%"></div>
-            </div>
-            <div class="feat3-page feat3-p2">
-              <div class="feat3-line v" style="width: 50%"></div>
-              <div class="feat3-line" style="width: 75%"></div>
-              <div class="feat3-line" style="width: 60%"></div>
-            </div>
-            <div class="feat3-page feat3-p1">
-              <div class="feat3-line cy" style="width: 30%"></div>
-              <div class="feat3-line" style="width: 85%"></div>
-              <div class="feat3-line" style="width: 65%"></div>
-            </div>
-          </div>
-        </div>
-        <div class="feat-badges">
-          <span class="feat-badge">Executive Summary</span>
-          <span class="feat-badge">Key Findings</span>
-          <span class="feat-badge">Detailed Analysis</span>
-          <span class="feat-badge">Recommendations</span>
-          <span class="feat-badge">PDF & DOCX Export</span>
-        </div>
-      </div>
-
-      <!-- Feature 4 -->
-      <div class="feat-card">
-        <div class="feat-icon"><i class="fa-solid fa-compass"></i></div>
-        <div>
-          <h3>Hidden Insight Detection</h3>
-          <p>Surface trends, relationships, recurring themes and important concepts buried deep inside large document collections.</p>
-        </div>
-        <div class="feat-visual-container">
-          <div class="feat4-radar"></div>
-        </div>
-        <div class="feat-badges">
-          <span class="feat-badge">Theme Detection</span>
-          <span class="feat-badge">Pattern Discovery</span>
-          <span class="feat-badge">Cross Document Analysis</span>
-          <span class="feat-badge">Concept Clustering</span>
-        </div>
-      </div>
-
-      <!-- Feature 5 -->
-      <div class="feat-card">
-        <div class="feat-icon"><i class="fa-solid fa-file-shield"></i></div>
-        <div>
-          <h3>Universal Document Understanding</h3>
-          <p>Upload and analyze PDFs, PowerPoint files, Word documents, text files, scanned documents, spreadsheets and datasets within a single workspace.</p>
-        </div>
-        <div class="feat-visual-container">
-          <div class="feat5-core"><i class="fa-solid fa-brain"></i></div>
-          <div class="feat5-orbit">
-            <span class="feat5-file feat5-f1">PDF</span>
-            <span class="feat5-file feat5-f2">PPTX</span>
-            <span class="feat5-file feat5-f3">DOCX</span>
-            <span class="feat5-file feat5-f4">XLSX</span>
-          </div>
-        </div>
-        <div class="feat-badges">
-          <span class="feat-badge">TXT</span>
-          <span class="feat-badge">Scanned Docs</span>
-          <span class="feat-badge">Multi-Format</span>
-        </div>
-      </div>
-
-      <!-- Feature 6 -->
-      <div class="feat-card">
-        <div class="feat-icon"><i class="fa-solid fa-shield-halved"></i></div>
-        <div>
-          <h3>Trustworthy AI Responses</h3>
-          <p>Every answer is backed by retrieved document evidence, metadata tracing and citation-level verification to minimize hallucinations.</p>
-        </div>
-        <div class="feat-visual-container">
-          <div class="feat6-shield"><i class="fa-solid fa-circle-check"></i></div>
-        </div>
-        <div class="feat-badges">
-          <span class="feat-badge">Grounded Answers</span>
-          <span class="feat-badge">Source Attribution</span>
-          <span class="feat-badge">Verified Context</span>
-          <span class="feat-badge">Enterprise Reliability</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ SYNAPSE CONNECTOR ═════════════════════════════════ -->
-<div class="synapse">
-  <svg viewBox="0 0 100 100" preserveAspectRatio="none">
-    <path d="M50,0 L50,100" stroke="url(#synGrad)" stroke-width="1.5" fill="none" opacity="0.5"></path>
-  </svg>
-</div>
-
-<!-- ═══ WORKFLOW TRANSFORMATION ════════════════════════════ -->
-<section class="scene">
-  <div class="scene-inner">
-    <div class="center gs-rise">
-      <div class="scene-tag"><i class="fa-solid fa-arrows-spin"></i>Workflow Transformation</div>
-      <h2 class="scene-h2">From <em>Scattered Files</em> to Instant Answers</h2>
-      <p class="scene-sub">Stop hunting through folders. Nexora transforms your document library into a live, conversational knowledge base you can interrogate in natural language.</p>
-    </div>
-
-    <div class="workflow-compare gs-rise">
-      <!-- Old way -->
-      <div class="workflow-col old wf-old">
-        <span class="wf-header">Traditional Lookup</span>
-        <div class="wf-steps">
-          <div class="wf-step">
-            <div class="step-num">1</div>
-            <div class="wf-step-text">
-              <h4>Open File Explorer</h4>
-              <p>Search across dozens of folders and local drives.</p>
-            </div>
-          </div>
-          <div class="wf-step">
-            <div class="step-num">2</div>
-            <div class="wf-step-text">
-              <h4>Open Multiple Files</h4>
-              <p>Juggle browser tabs, PDFs, Word docs, and spreadsheets.</p>
-            </div>
-          </div>
-          <div class="wf-step">
-            <div class="step-num">3</div>
-            <div class="wf-step-text">
-              <h4>Scan & Compare Manually</h4>
-              <p>Read page by page, trying to find and cross-reference sources.</p>
-            </div>
-          </div>
-          <div class="wf-step">
-            <div class="step-num">4</div>
-            <div class="wf-step-text">
-              <h4>Incomplete Synthesis</h4>
-              <p>No guarantee of completeness, leaving room for error.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- VS -->
-      <div class="wf-vs">
-        <div class="vs-badge">VS</div>
-      </div>
-
-      <!-- New way -->
-      <div class="workflow-col new wf-new">
-        <span class="wf-header">Nexora Engine</span>
-        <div class="wf-steps">
-          <div class="wf-step">
-            <div class="step-num">1</div>
-            <div class="wf-step-text">
-              <h4>Upload Your Documents</h4>
-              <p>Drag and drop any format — PDFs, DOCX, XLSX spreadsheets, and TXT files.</p>
-            </div>
-          </div>
-          <div class="wf-step">
-            <div class="step-num">2</div>
-            <div class="wf-step-text">
-              <h4>Automated Indexing</h4>
-              <p>Semantic embeddings and BM25 hybrid indexing run in seconds.</p>
-            </div>
-          </div>
-          <div class="wf-step">
-            <div class="step-num">3</div>
-            <div class="wf-step-text">
-              <h4>Ask in Natural Language</h4>
-              <p>Conversational queries with full multi-turn context preservation.</p>
-            </div>
-          </div>
-          <div class="wf-step">
-            <div class="step-num">4</div>
-            <div class="wf-step-text">
-              <h4>Get Cited Answers</h4>
-              <p>Every response is grounded, verifying claims with document citations.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ SYNAPSE CONNECTOR ═════════════════════════════════ -->
-<div class="synapse">
-  <svg viewBox="0 0 100 100" preserveAspectRatio="none">
-    <path d="M50,0 L50,100" stroke="url(#synGrad)" stroke-width="1.5" fill="none" opacity="0.5"></path>
-  </svg>
-</div>
-
-<!-- ═══ HOW NEXORA THINKS ═════════════════════════════════ -->
-<section class="scene">
-  <div class="scene-inner">
-    <div class="center gs-rise">
-      <div class="scene-tag"><i class="fa-solid fa-brain"></i>How Nexora Thinks</div>
-      <h2 class="scene-h2">The Spine of <em>Understanding.</em></h2>
-      <p class="scene-sub">Ten neural stages. Watch the signal travel down the spine as raw data becomes verifiable knowledge.</p>
-    </div>
-
-    <div class="think-stage">
+    <div class="pipeline-stage">
       <div class="pipe-track"></div>
       <div class="pipe-glow"></div>
 
-      <!-- Stage 1 -->
-      <div class="think-step gs-rise">
+      <div class="pipe-step gs-rise">
         <div class="pipe-card">
-          <h3>Documents Ingestion</h3>
-          <p>Raw text, PDFs, slides, and spreadsheets enter the secure operational environment.</p>
-          <div class="pc-meta"><span class="pc-chip">PDF</span><span class="pc-chip">DOCX</span><span class="pc-chip">PPTX</span></div>
+          <h3>Document Upload</h3>
+          <p>PDF and DOCX files enter the system. Structure, headings, and tables are preserved during extraction.</p>
+          <div class="pc-meta"><span class="pc-chip">PDF</span><span class="pc-chip">DOCX</span></div>
         </div>
-        <div class="think-node"><i class="fa-regular fa-file-lines"></i></div>
+        <div class="pipe-node" data-n="1"><i class="fa-solid fa-file-import"></i></div>
       </div>
 
-      <!-- Stage 2 -->
-      <div class="think-step gs-rise">
-        <div class="think-node"><i class="fa-solid fa-scissors"></i></div>
+      <div class="pipe-step gs-rise">
+        <div class="pipe-node" data-n="2"><i class="fa-solid fa-table-cells-large"></i></div>
         <div class="pipe-card">
           <h3>Semantic Chunking</h3>
-          <p>Text is intelligently split based on conceptual boundaries, maintaining structural integrity.</p>
-          <div class="pc-meta"><span class="pc-chip cy">recursive boundary</span><span class="pc-chip">token count</span></div>
+          <p>Content is split into overlapping, meaning-preserving fragments so no idea is severed mid-thought.</p>
+          <div class="pc-meta"><span class="pc-chip">recursive splitter</span><span class="pc-chip cy">overlap windows</span></div>
         </div>
       </div>
 
-      <!-- Stage 3 -->
-      <div class="think-step gs-rise">
+      <div class="pipe-step gs-rise">
         <div class="pipe-card">
-          <h3>Vector Embeddings</h3>
-          <p>Chunks are mapped into high-dimensional semantic spaces, turning concepts into math vectors.</p>
-          <div class="pc-meta"><span class="pc-chip">dense vectors</span><span class="pc-chip cy">1536 dims</span></div>
+          <h3>Embedding</h3>
+          <p>Each fragment is projected into high-dimensional vector space, where meaning becomes geometry.</p>
+          <div class="pc-meta"><span class="pc-chip cy">dense vectors</span><span class="pc-chip">semantic space</span></div>
         </div>
-        <div class="think-node"><i class="fa-solid fa-cubes"></i></div>
+        <div class="pipe-node" data-n="3"><i class="fa-solid fa-cubes"></i></div>
       </div>
 
-      <!-- Stage 4 -->
-      <div class="think-step gs-rise">
-        <div class="think-node"><i class="fa-solid fa-database"></i></div>
+      <div class="pipe-step gs-rise">
+        <div class="pipe-node" data-n="4"><i class="fa-solid fa-database"></i></div>
         <div class="pipe-card">
-          <h3>Vector Intelligence</h3>
-          <p>Embeddings are stored in high-performance memory indices, optimized for rapid cosine matching.</p>
-          <div class="pc-meta"><span class="pc-chip">ChromaDB</span><span class="pc-chip cy">ANN Index</span></div>
+          <h3>Vector Database</h3>
+          <p>Embeddings are indexed in a persistent vector store, organized for instant nearest-neighbor search.</p>
+          <div class="pc-meta"><span class="pc-chip">ChromaDB</span><span class="pc-chip cy">ANN index</span></div>
         </div>
       </div>
 
-      <!-- Stage 5 -->
-      <div class="think-step gs-rise">
+      <div class="pipe-step gs-rise">
         <div class="pipe-card">
           <h3>Hybrid Retrieval</h3>
-          <p>Queries trigger combined vector similarities and lexical BM25 database passes.</p>
-          <div class="pc-meta"><span class="pc-chip cy">semantic</span><span class="pc-chip">keyword search</span></div>
+          <p>Queries are condensed, then matched both semantically and lexically — meaning and keywords together.</p>
+          <div class="pc-meta"><span class="pc-chip">semantic search</span><span class="pc-chip cy">keyword match</span></div>
         </div>
-        <div class="think-node"><i class="fa-solid fa-magnifying-glass-arrow-right"></i></div>
+        <div class="pipe-node" data-n="5"><i class="fa-solid fa-magnifying-glass-arrow-right"></i></div>
       </div>
 
-      <!-- Stage 6 -->
-      <div class="think-step gs-rise">
-        <div class="think-node"><i class="fa-solid fa-arrow-down-wide-short"></i></div>
+      <div class="pipe-step gs-rise">
+        <div class="pipe-node" data-n="6"><i class="fa-solid fa-arrow-down-wide-short"></i></div>
         <div class="pipe-card">
           <h3>Cross-Encoder Reranking</h3>
-          <p>Retrieved segments are cross-checked for precise relevance relative to the query prompt.</p>
-          <div class="pc-meta"><span class="pc-chip cy">precision scoring</span><span class="pc-chip">reranker model</span></div>
+          <p>A second neural pass scores every candidate against the question, surfacing only what truly matters.</p>
+          <div class="pc-meta"><span class="pc-chip cy">relevance scoring</span><span class="pc-chip">precision filter</span></div>
         </div>
       </div>
 
-      <!-- Stage 7 -->
-      <div class="think-step gs-rise">
+      <div class="pipe-step gs-rise">
         <div class="pipe-card">
-          <h3>Knowledge Graph</h3>
-          <p>Entity relations and concept connections are dynamically constructed and cross-linked.</p>
-          <div class="pc-meta"><span class="pc-chip">relationships</span><span class="pc-chip cy">semantic graph</span></div>
+          <h3>LLM Reasoning</h3>
+          <p>The assembled context flows into a large language model that reasons strictly within retrieved evidence.</p>
+          <div class="pc-meta"><span class="pc-chip">context assembly</span><span class="pc-chip cy">grounded generation</span></div>
         </div>
-        <div class="think-node"><i class="fa-solid fa-diagram-project"></i></div>
+        <div class="pipe-node" data-n="7"><i class="fa-solid fa-brain"></i></div>
       </div>
 
-      <!-- Stage 8 -->
-      <div class="think-step gs-rise">
-        <div class="think-node"><i class="fa-solid fa-compass"></i></div>
+      <div class="pipe-step gs-rise">
+        <div class="pipe-node" data-n="8"><i class="fa-solid fa-circle-check"></i></div>
         <div class="pipe-card">
-          <h3>Insight Engine</h3>
-          <p>Underlying themes, semantic patterns, and hidden insights are analyzed and compiled.</p>
-          <div class="pc-meta"><span class="pc-chip cy">insight extraction</span><span class="pc-chip">clustering</span></div>
-        </div>
-      </div>
-
-      <!-- Stage 9 -->
-      <div class="think-step gs-rise">
-        <div class="pipe-card">
-          <h3>Verified Answers</h3>
-          <p>Large language models formulate answers grounded strictly in source passages, generating citations.</p>
-          <div class="pc-meta"><span class="pc-chip">hallucination guard</span><span class="pc-chip cy">grounded output</span></div>
-        </div>
-        <div class="think-node"><i class="fa-solid fa-circle-check"></i></div>
-      </div>
-
-      <!-- Stage 10 -->
-      <div class="think-step gs-rise">
-        <div class="think-node"><i class="fa-solid fa-chart-line"></i></div>
-        <div class="pipe-card">
-          <h3>Executive Reports</h3>
-          <p>Synthesize and export comprehensive, beautifully formatted report outputs for decision-makers.</p>
-          <div class="pc-meta"><span class="pc-chip cy">report gen</span><span class="pc-chip">PDF export</span></div>
+          <h3>Citation Validation</h3>
+          <p>Every claim is checked against source passages. The final answer ships with verifiable citations.</p>
+          <div class="pc-meta"><span class="pc-chip cy">source-linked</span><span class="pc-chip">hallucination guard</span></div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══ SYNAPSE CONNECTOR ═════════════════════════════════ -->
-<div class="synapse">
-  <svg viewBox="0 0 100 100" preserveAspectRatio="none">
-    <path d="M50,0 L50,100" stroke="url(#synGrad)" stroke-width="1.5" fill="none" opacity="0.5"></path>
-  </svg>
-</div>
+<!-- ═══ EMBEDDING SPACE ════════════════════════════════════ -->
+<section class="scene embed-scene">
+  <div class="scene-inner">
+    <div class="center gs-rise">
+      <div class="scene-tag"><i class="fa-solid fa-cubes"></i>Vector Space</div>
+      <h2 class="scene-h2">Where meaning becomes <em>geometry.</em></h2>
+      <p class="scene-sub">Inside the embedding space, related knowledge clusters together. A query lands in the field and pulls its nearest neighbors into the light.</p>
+    </div>
+    <div class="embed-stage gs-rise">
+      <canvas id="embed-canvas"></canvas>
+      <div class="embed-hud">
+        <div class="hud-row"><span class="hud-dot hd-c"></span>query vector</div>
+        <div class="hud-row"><span class="hud-dot hd-v"></span>retrieved neighbors</div>
+        <div class="hud-row"><span class="hud-dot hd-g"></span>knowledge fragments</div>
+      </div>
+      <div class="embed-hud-br"><i class="fa-solid fa-cube"></i>cosine similarity field</div>
+    </div>
+  </div>
+</section>
 
-<!-- ═══ USE CASES ═════════════════════════════════════════ -->
+<!-- ═══ HOLOGRAPHIC CONSOLE ════════════════════════════════ -->
+<section class="scene console-scene">
+  <div class="scene-inner">
+    <div class="center gs-rise">
+      <div class="scene-tag"><i class="fa-solid fa-terminal"></i>Intelligence Console</div>
+      <h2 class="scene-h2">Answers <em>materialize</em> from evidence.</h2>
+      <p class="scene-sub">Watch the full retrieval trace fire beneath the response — citations illuminate the instant their passage is used.</p>
+    </div>
+    <div class="console-stage gs-rise">
+      <div class="holo-beams"><div class="beam"></div><div class="beam"></div><div class="beam"></div><div class="beam"></div></div>
+      <div class="console">
+        <div class="console-head">
+          <div class="con-orb"></div>
+          <div class="con-title">Nexora Intelligence Console</div>
+          <div class="con-badge">GROUNDED</div>
+        </div>
+        <div class="console-body">
+          <div class="con-q">What were the key strategic initiatives from last quarter?</div>
+          <div class="con-a">
+            <div class="con-a-head"><div class="con-orb"></div><span class="con-a-name">Nexora</span></div>
+            <div class="con-a-body" id="answerText"><span class="type-caret"></span></div>
+            <div class="cite-row">
+              <span class="cite" id="cite1"><i class="fa-regular fa-file-lines"></i>Q3_Strategy.pdf</span>
+              <span class="cite" id="cite2"><i class="fa-regular fa-file-lines"></i>Board_Update.docx</span>
+              <span class="cite" id="cite3"><i class="fa-regular fa-file-lines"></i>Roadmap.pdf</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="trace-row" id="traceRow">
+        <span class="trace-step" data-t="0"><i class="fa-solid fa-compress"></i>Condense</span>
+        <span class="trace-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+        <span class="trace-step" data-t="1"><i class="fa-solid fa-magnifying-glass"></i>Retrieve</span>
+        <span class="trace-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+        <span class="trace-step" data-t="2"><i class="fa-solid fa-arrow-down-wide-short"></i>Rerank</span>
+        <span class="trace-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+        <span class="trace-step" data-t="3"><i class="fa-solid fa-layer-group"></i>Assemble</span>
+        <span class="trace-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+        <span class="trace-step" data-t="4"><i class="fa-solid fa-brain"></i>Reason</span>
+        <span class="trace-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+        <span class="trace-step" data-t="5"><i class="fa-solid fa-circle-check"></i>Verify</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECURITY VAULT ═════════════════════════════════════ -->
+<section class="scene vault-scene">
+  <div class="scene-inner">
+    <div class="vault-layout">
+      <div class="gs-rise">
+        <div class="scene-tag"><i class="fa-solid fa-shield-halved"></i>Enterprise Security</div>
+        <h2 class="scene-h2">A vault around every <em>workspace.</em></h2>
+        <p class="scene-sub" style="margin-bottom:6px">Knowledge is isolated per user, encrypted at every layer, and retrieval only ever touches what the requester is permitted to see.</p>
+        <div class="sec-list">
+          <div class="sec-row">
+            <div class="sec-glyph"><i class="fa-solid fa-fingerprint"></i></div>
+            <div><h4>Authentication</h4><p>Identity-bound sessions with hashed credentials and rotating tokens.</p></div>
+          </div>
+          <div class="sec-row">
+            <div class="sec-glyph"><i class="fa-solid fa-key"></i></div>
+            <div><h4>Encryption</h4><p>Data encrypted at rest and in transit across every pipeline stage.</p></div>
+          </div>
+          <div class="sec-row">
+            <div class="sec-glyph"><i class="fa-solid fa-circle-half-stroke"></i></div>
+            <div><h4>Data Isolation</h4><p>Each workspace owns a sealed vector collection — no cross-tenant leakage.</p></div>
+          </div>
+          <div class="sec-row">
+            <div class="sec-glyph"><i class="fa-solid fa-satellite-dish"></i></div>
+            <div><h4>Secure Retrieval</h4><p>Queries are scoped to the requesting user's knowledge field, always.</p></div>
+          </div>
+        </div>
+      </div>
+      <div class="gs-fade">
+        <div class="vault-stage">
+          <div class="shield-field"></div>
+          <div class="energy-ring er-1"></div>
+          <div class="energy-ring er-2"></div>
+          <div class="energy-ring er-3"></div>
+          <div class="token tk-1"><i class="fa-solid fa-fingerprint"></i>auth·session</div>
+          <div class="token tk-2"><i class="fa-solid fa-key"></i>encrypted</div>
+          <div class="token tk-3"><i class="fa-solid fa-circle-half-stroke"></i>isolated</div>
+          <div class="token tk-4"><i class="fa-solid fa-satellite-dish"></i>scoped·query</div>
+          <div class="vault-core"><div class="vault-core-inner"><i class="fa-solid fa-shield-halved"></i></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ LIVE PLATFORM ══════════════════════════════════════ -->
 <section class="scene">
   <div class="scene-inner">
     <div class="center gs-rise">
-      <div class="scene-tag"><i class="fa-solid fa-briefcase"></i>Applications</div>
-      <h2 class="scene-h2">Built for every <em>Knowledge Workflow</em></h2>
-      <p class="scene-sub">From compliance audits to academic synthesis, Nexora adapts to any unstructured document pipeline.</p>
+      <div class="scene-tag"><i class="fa-solid fa-window-restore"></i>Live Platform</div>
+      <h2 class="scene-h2">The workstation, <em>suspended.</em></h2>
+      <p class="scene-sub">Move your cursor — the neural workstation tilts in space.</p>
     </div>
-
-    <div class="usecases-grid gs-rise">
-      <!-- Legal Document Analysis -->
-      <div class="usecase-card">
-        <span class="usecase-label"><i class="fa-solid fa-scale-balanced" style="margin-right: 6px;"></i>Legal & Compliance</span>
-        <h3>Legal Document Analysis</h3>
-        <p>Query contracts, regulatory filings, and compliance protocols. Review clauses, compare agreements, and perform compliance audits with precise, page-level citations.</p>
-        <div class="usecase-tags">
-          <span class="usecase-tag">Contract Review</span>
-          <span class="usecase-tag">Compliance Queries</span>
-          <span class="usecase-tag">Audit Trail</span>
-        </div>
-      </div>
-
-      <!-- Financial Auditing -->
-      <div class="usecase-card">
-        <span class="usecase-label"><i class="fa-solid fa-chart-line" style="margin-right: 6px;"></i>Finance & Analytics</span>
-        <h3>Financial Auditing</h3>
-        <p>Analyze quarterly statements, annual reports, spreadsheets, and analyst reports. Query metrics, track segment growth, and summarize risk profiles naturally.</p>
-        <div class="usecase-tags">
-          <span class="usecase-tag">Financial Reports</span>
-          <span class="usecase-tag">Spreadsheet Queries</span>
-          <span class="usecase-tag">Performance Summary</span>
-        </div>
-      </div>
-
-      <!-- Corporate Wikis -->
-      <div class="usecase-card">
-        <span class="usecase-label"><i class="fa-solid fa-sitemap" style="margin-right: 6px;"></i>Enterprise Operations</span>
-        <h3>Corporate Knowledge Bases</h3>
-        <p>Consolidate internal directories, handbooks, SOP guides, and policy wikis. Give teams immediate access to employee operational guidelines.</p>
-        <div class="usecase-tags">
-          <span class="usecase-tag">HR Documentation</span>
-          <span class="usecase-tag">SOP Retrieval</span>
-          <span class="usecase-tag">Wiki Discovery</span>
-        </div>
-      </div>
-
-      <!-- Research Synthesis -->
-      <div class="usecase-card">
-        <span class="usecase-label"><i class="fa-solid fa-flask" style="margin-right: 6px;"></i>Research & Development</span>
-        <h3>Research Synthesis</h3>
-        <p>Query academic papers, literature collections, and patents simultaneously. Speed up correlation discovery and cite paper origins accurately.</p>
-        <div class="usecase-tags">
-          <span class="usecase-tag">Literature Review</span>
-          <span class="usecase-tag">Paper Querying</span>
-          <span class="usecase-tag">Citation Tracing</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ SYNAPSE CONNECTOR ═════════════════════════════════ -->
-<div class="synapse">
-  <svg viewBox="0 0 100 100" preserveAspectRatio="none">
-    <path d="M50,0 L50,100" stroke="url(#synGrad)" stroke-width="1.5" fill="none" opacity="0.5"></path>
-  </svg>
-</div>
-
-<!-- ═══ FREQUENTLY ASKED QUESTIONS ═════════════════════════ -->
-<section class="scene">
-  <div class="scene-inner">
-    <div class="center gs-rise">
-      <div class="scene-tag"><i class="fa-solid fa-circle-question"></i>FAQ</div>
-      <h2 class="scene-h2">Frequently Asked <em>Questions</em></h2>
-      <p class="scene-sub">Everything you need to know about the Nexora knowledge engine.</p>
-    </div>
-
-    <div class="faq-section gs-rise">
-      <div class="faq-list">
-        <!-- Question 1 -->
-        <div class="faq-item">
-          <button class="faq-q">
-            What file formats does Nexora support?
-            <span class="faq-caret"><i class="fa-solid fa-chevron-down"></i></span>
-          </button>
-          <div class="faq-a">
-            <p>Nexora supports PDFs, Word documents (DOCX), text files (TXT), and spreadsheets (XLSX). Every document is parsed, segmented into semantic chunks, and embedded instantly into your secure workspace database.</p>
+    <div class="device-stage gs-rise">
+      <div class="glass-device" id="glassDevice">
+        <div class="device-head">
+          <div class="con-orb" style="width:26px;height:26px"></div>
+          <div>
+            <div class="dh-title">Nexora Workspace</div>
+            <div class="dh-sub">knowledge-base · grounded chat</div>
           </div>
+          <div class="dh-badge">LIVE</div>
         </div>
-
-        <!-- Question 2 -->
-        <div class="faq-item">
-          <button class="faq-q">
-            How does the knowledge indexing process work?
-            <span class="faq-caret"><i class="fa-solid fa-chevron-down"></i></span>
-          </button>
-          <div class="faq-a">
-            <p>Upon upload, text is extracted and chunked based on semantic sentence boundaries. These chunks are embedded into high-dimensional vector representations stored in ChromaDB, while a parallel BM25 lexical index is built. Queries are processed through a hybrid fusion ranker to pull accurate context.</p>
+        <div class="device-body">
+          <div class="device-rail">
+            <div class="rail-title">Knowledge Bases</div>
+            <div class="rail-item on"><i class="fa-regular fa-folder-open"></i>Company Docs</div>
+            <div class="rail-item"><i class="fa-solid fa-scale-balanced"></i>Legal</div>
+            <div class="rail-item"><i class="fa-solid fa-chart-line"></i>Financial</div>
+            <div class="rail-item"><i class="fa-solid fa-code"></i>Technical</div>
+            <div class="rail-title" style="margin-top:14px">Pipeline</div>
+            <div class="rail-item"><i class="fa-solid fa-cubes"></i>Embeddings</div>
+            <div class="rail-item"><i class="fa-solid fa-database"></i>Vector Store</div>
           </div>
-        </div>
-
-        <!-- Question 3 -->
-        <div class="faq-item">
-          <button class="faq-q">
-            Are citations always accurate and verifiable?
-            <span class="faq-caret"><i class="fa-solid fa-chevron-down"></i></span>
-          </button>
-          <div class="faq-a">
-            <p>Yes. Every single answer is strictly grounded in the uploaded document passages. Inline citation badges highlight exact source files and page references, and you can inspect the retrieved text snippets directly to verify the information.</p>
-          </div>
-        </div>
-
-        <!-- Question 4 -->
-        <div class="faq-item">
-          <button class="faq-q">
-            Is my data private? Can other users access my files?
-            <span class="faq-caret"><i class="fa-solid fa-chevron-down"></i></span>
-          </button>
-          <div class="faq-a">
-            <p>Absolutely not. Nexora employs database-level isolation. Your documents, embeddings, and chat history are separated per account namespace. No other user can ever query or access your knowledge store.</p>
+          <div class="device-main">
+            <div class="dm-q">Summarize our strategic position from the board documents.</div>
+            <div class="dm-a">
+              <div class="dm-a-head"><div class="con-orb"></div><span class="con-a-name">Nexora</span></div>
+              <div class="dm-a-body">
+                The board documents outline three pillars: <strong>enterprise AI expansion</strong>, <strong>new market entry</strong>, and <strong>infrastructure modernization</strong> — each grounded in retrieved passages from your knowledge base.
+                <div class="dm-cites">
+                  <span class="cite lit"><i class="fa-regular fa-file-lines"></i>Board_Update.docx</span>
+                  <span class="cite lit"><i class="fa-regular fa-file-lines"></i>Strategy.pdf</span>
+                </div>
+              </div>
+            </div>
+            <div class="dm-input">
+              <input type="text" placeholder="Ask your knowledge anything…" readonly>
+              <button class="dm-send"><i class="fa-solid fa-arrow-up"></i></button>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 </section>
-
-<!-- ═══ SYNAPSE CONNECTOR ═════════════════════════════════ -->
-<div class="synapse">
-  <svg viewBox="0 0 100 100" preserveAspectRatio="none">
-    <path d="M50,0 L50,100" stroke="url(#synGrad)" stroke-width="1.5" fill="none" opacity="0.5"></path>
-  </svg>
-</div>
-
 
 <!-- ═══ FINALE ═════════════════════════════════════════════ -->
 <section class="finale">
   <canvas id="finale-canvas"></canvas>
   <div class="finale-inner gs-rise">
-    <h2 style="font-size: clamp(34px, 4.5vw, 68px); line-height: 1.1; margin-bottom: 14px;">Beyond Search. <em>Beyond Chat.</em></h2>
-    <p style="font-size: clamp(16px, 1.8vw, 24px); line-height: 1.4; color: var(--t1); margin-bottom: 24px;">Nexora converts information into intelligence.</p>
-    
-    <div class="core-wrap">
-      <div class="core-pulse"></div>
-      <div class="core-ring cr-1"></div>
-      <div class="core-ring cr-2"></div>
-      <div class="core-ring cr-3"></div>
-    </div>
-
-    <div class="finale-actions" style="margin-top: 40px;">
-      <button class="btn-primary magnetic" onclick="openLogin()">Enter Intelligence Workspace<i class="fa-solid fa-arrow-right"></i></button>
-      <button class="btn-ghost magnetic" onclick="openLogin()"><i class="fa-solid fa-compass"></i>Explore Intelligence Engine</button>
+    <h2>Intelligence, <em>grounded.</em></h2>
+    <p>Step inside the neural engine for enterprise knowledge.</p>
+    <div class="finale-actions">
+      <button class="btn-primary magnetic" onclick="openLogin()">Enter Platform<i class="fa-solid fa-arrow-right"></i></button>
+      <a class="btn-ghost magnetic" href="/register"><i class="fa-regular fa-circle-user"></i>Create Account</a>
     </div>
   </div>
 </section>
@@ -2280,51 +1522,22 @@ document.querySelectorAll('.magnetic').forEach(function(btn){
   new IntersectionObserver(function(es,obs){es.forEach(function(e){if(e.isIntersecting){run();obs.disconnect()}})},{threshold:.4}).observe(target);
 })();
 
-/* ═══ Finale constellation — converging particles ═══ */
+/* ═══ Finale constellation ═══ */
 (function(){
   var c=document.getElementById('finale-canvas');if(!c)return;
   var ctx=c.getContext('2d');
-  var W,H,particles=[];
-  function size(){
-    W=c.width=c.offsetWidth;
-    H=c.height=c.offsetHeight;
-    build();
-  }
-  function build(){
-    particles = [];
-    for(var i=0;i<80;i++){
-      var angle = Math.random() * Math.PI * 2;
-      var dist = 100 + Math.random() * 350;
-      particles.push({
-        angle: angle,
-        dist: dist,
-        baseDist: dist,
-        speed: 0.4 + Math.random() * 0.9,
-        r: Math.random() * 1.5 + 0.5,
-        color: Math.random() > 0.5 ? 'rgba(125, 249, 255, ' : 'rgba(124, 92, 252, '
-      });
-    }
-  }
+  function size(){c.width=c.offsetWidth;c.height=c.offsetHeight}
   size();window.addEventListener('resize',size,{passive:true});
+  var stars=[];
+  for(var i=0;i<60;i++)stars.push({x:Math.random(),y:Math.random(),r:Math.random()*1.6+.5,seed:Math.random()*Math.PI*2});
   var t=0;
   (function draw(){
-    ctx.clearRect(0,0,W,H);
-    t++;
-    var cx = W / 2, cy = H / 2;
-    particles.forEach(function(p){
-      p.dist -= p.speed;
-      if(p.dist <= 15) {
-        p.dist = p.baseDist + Math.random() * 80;
-        p.angle = Math.random() * Math.PI * 2;
-      }
-      var px = cx + Math.cos(p.angle) * p.dist;
-      var py = cy + Math.sin(p.angle) * p.dist;
-      var opacity = Math.min(1, (p.dist / 100)) * 0.35;
-      
-      ctx.beginPath();
-      ctx.arc(px, py, p.r, 0, Math.PI*2);
-      ctx.fillStyle = p.color + opacity + ')';
-      ctx.fill();
+    var W=c.width,H=c.height;
+    ctx.clearRect(0,0,W,H);t++;
+    stars.forEach(function(s){
+      var a=(Math.sin(t*.02+s.seed)*.5+.5)*.5+.08;
+      ctx.beginPath();ctx.arc(s.x*W,s.y*H,s.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(176,138,255,'+a+')';ctx.fill();
     });
     requestAnimationFrame(draw);
   })();
@@ -2344,155 +1557,6 @@ document.querySelectorAll('.magnetic').forEach(function(btn){
     dev.style.transform='rotateY(0) rotateX(0)';
     setTimeout(function(){dev.style.transition=''},800);
   });
-})();
-
-/* ═══ FEATURE 1 — RAG FLOW VISUALIZER ═══ */
-(function(){
-  var c = document.getElementById('feat1-flow-canvas'); if(!c) return;
-  var ctx = c.getContext('2d');
-  var W, H, packets = [];
-  function rs(){
-    W = c.width = c.offsetWidth;
-    H = c.height = c.offsetHeight;
-  }
-  rs();
-  window.addEventListener('resize', rs, {passive:true});
-  (function draw(){
-    ctx.clearRect(0,0,W,H);
-    // Draw pipeline track
-    ctx.beginPath();
-    ctx.moveTo(30, H/2);
-    ctx.lineTo(W-30, H/2);
-    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-    
-    // Draw stage nodes
-    var stages = [30, W*0.35, W*0.65, W-30];
-    stages.forEach(function(sx, idx){
-      ctx.beginPath();
-      ctx.arc(sx, H/2, 4, 0, Math.PI*2);
-      ctx.fillStyle = idx === 3 ? '#7df9ff' : '#7c5cfc';
-      ctx.fill();
-    });
-
-    if(Math.random() < 0.035) {
-      packets.push({x: 30, speed: 1.2 + Math.random()*0.8});
-    }
-
-    for(var i=packets.length-1; i>=0; i--){
-      var p = packets[i];
-      p.x += p.speed;
-      if(p.x >= W-30){
-        packets.splice(i, 1);
-        continue;
-      }
-      ctx.beginPath();
-      ctx.arc(p.x, H/2, 2, 0, Math.PI*2);
-      ctx.fillStyle = '#7df9ff';
-      ctx.shadowBlur = 4;
-      ctx.shadowColor = '#7df9ff';
-      ctx.fill();
-      ctx.shadowBlur = 0;
-    }
-    requestAnimationFrame(draw);
-  })();
-})();
-
-/* ═══ FEATURE 2 — KNOWLEDGE GRAPH ═══ */
-(function(){
-  var c = document.getElementById('feat2-graph-canvas'); if(!c) return;
-  var ctx = c.getContext('2d');
-  var nodes = [], W, H;
-  function rs(){
-    W = c.width = c.offsetWidth;
-    H = c.height = c.offsetHeight;
-    nodes = [];
-    for(var i=0; i<8; i++){
-      nodes.push({
-        x: Math.random() * W,
-        y: Math.random() * H,
-        vx: (Math.random() - 0.5) * 0.25,
-        vy: (Math.random() - 0.5) * 0.25,
-        r: 2.2 + Math.random()*1.8
-      });
-    }
-  }
-  rs();
-  window.addEventListener('resize', rs, {passive:true});
-  
-  var scrollY = 0;
-  window.addEventListener('scroll', function(){
-    scrollY = window.scrollY;
-  }, {passive:true});
-
-  (function draw(){
-    ctx.clearRect(0, 0, W, H);
-    // Draw links
-    ctx.lineWidth = 0.8;
-    for(var i=0; i<nodes.length; i++){
-      var n = nodes[i];
-      n.x += n.vx + Math.sin(scrollY * 0.003 + i) * 0.15;
-      n.y += n.vy;
-      
-      if(n.x<10 || n.x>W-10) n.vx *= -1;
-      if(n.y<10 || n.y>H-10) n.vy *= -1;
-
-      for(var j=i+1; j<nodes.length; j++){
-        var m = nodes[j];
-        var d = Math.sqrt((n.x-m.x)*(n.x-m.x) + (n.y-m.y)*(n.y-m.y));
-        if(d < 70){
-          ctx.beginPath();
-          ctx.moveTo(n.x, n.y);
-          ctx.lineTo(m.x, m.y);
-          ctx.strokeStyle = 'rgba(124, 92, 252, ' + (1 - d/70)*0.25 + ')';
-          ctx.stroke();
-        }
-      }
-      ctx.beginPath();
-      ctx.arc(n.x, n.y, n.r, 0, Math.PI*2);
-      ctx.fillStyle = i % 2 === 0 ? '#7df9ff' : '#7c5cfc';
-      ctx.fill();
-    }
-    requestAnimationFrame(draw);
-  })();
-})();
-
-/* ═══ FAQ Accordion ═══ */
-(function(){
-  document.querySelectorAll('.faq-item').forEach(function(item) {
-    var btn = item.querySelector('.faq-q');
-    btn.addEventListener('click', function() {
-      var isOpen = item.classList.contains('open');
-      document.querySelectorAll('.faq-item.open').forEach(function(el) {
-        el.classList.remove('open');
-      });
-      if(!isOpen) {
-        item.classList.add('open');
-      }
-    });
-  });
-})();
-
-/* ═══ GSAP UPGRADED PIPELINE GLOW ═══ */
-(function(){
-  if(window.gsap && window.ScrollTrigger) {
-    gsap.utils.toArray('.think-step').forEach(function(el){
-      ScrollTrigger.create({
-        trigger: el,
-        start: 'top 70%',
-        end: 'bottom 30%',
-        onEnter: function(){ el.classList.add('active') },
-        onLeave: function(){ el.classList.remove('active') },
-        onEnterBack: function(){ el.classList.add('active') },
-        onLeaveBack: function(){ el.classList.remove('active') }
-      });
-    });
-  } else {
-    document.querySelectorAll('.think-step').forEach(function(el){
-      el.classList.add('active');
-    });
-  }
 })();
 </script>
 </body>

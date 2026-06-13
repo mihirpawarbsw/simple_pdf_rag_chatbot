@@ -1,7 +1,10 @@
+# Flask
 flask
 python-dotenv
 gunicorn
+werkzeug
 
+# LangChain
 langchain
 langchain-core
 langchain-community
@@ -10,14 +13,32 @@ langchain-groq
 langchain-chroma
 langchain-huggingface
 
+# Vector DB
 chromadb
 
+# Hugging Face
 huggingface_hub
 
+# Embeddings / ML
+numpy
+rank-bm25
+
+# Document Processing
 pymupdf
 python-docx
+python-pptx
+pillow
 
-rank-bm25
-numpy
+# PDF Report Generation
+reportlab
 
-werkzeug
+# HTTP Requests
+httpx
+
+# Chroma Dependencies
+pydantic
+
+# Optional OCR
+pytesseract
+
+# SQLite is built into Python (no package needed)

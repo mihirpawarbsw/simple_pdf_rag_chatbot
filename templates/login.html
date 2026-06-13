@@ -83,6 +83,16 @@ body::after{
 }
 .nav-cta:hover{transform:translateY(-2px);box-shadow:0 14px 38px var(--v-glow);filter:brightness(1.12)}
 
+/* ── NAVBAR LINKS ── */
+.nav-links{display:flex;align-items:center;gap:24px}
+.nav-link{font-family:var(--ff-mono);font-size:11px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--t2);text-decoration:none;transition:all .3s var(--ease);position:relative;padding:4px 0}
+.nav-link::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:0;height:1px;background:var(--cy);box-shadow:0 0 8px var(--cy);transition:width .3s var(--ease)}
+.nav-link:hover{color:var(--cy);text-shadow:0 0 8px var(--cy-bg)}
+.nav-link:hover::after{width:100%}
+@media(max-width:991px){
+  .nav-links{display:none}
+}
+
 .page{position:relative;z-index:3}
 
 /* ═══ HERO — NEURAL BRAIN ════════════════════════════════ */
@@ -1116,6 +1126,269 @@ footer{border-top:1px solid var(--line);padding:40px;background:rgba(255,255,255
   .wf-vs{display:none}
   .usecases-grid{grid-template-columns:1fr}
 }
+
+
+/* Grid of Features */
+.explore-features-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 28px;
+}
+.explore-feat-card {
+  padding: 30px; border-radius: var(--r-lg); background: var(--panel);
+  border: 1px solid var(--line); backdrop-filter: blur(16px);
+  position: relative; overflow: hidden; transition: all 0.4s var(--ease);
+  display: flex; flex-direction: column; gap: 18px; min-height: 480px;
+}
+.explore-feat-card:hover {
+  border-color: var(--v-line); background: var(--panel-2);
+  transform: translateY(-4px); box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 35px var(--v-glow-soft);
+}
+.explore-feat-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1.5px;
+  background: linear-gradient(90deg, transparent, var(--v-line-2), transparent);
+  opacity: 0; transition: opacity 0.4s;
+}
+.explore-feat-card:hover::before { opacity: 1; }
+
+.explore-feat-header {
+  display: flex; align-items: center; gap: 16px;
+}
+.explore-feat-icon {
+  width: 48px; height: 48px; border-radius: 12px; background: var(--v-bg);
+  border: 1px solid var(--v-line); display: flex; align-items: center;
+  justify-content: center; font-size: 20px; color: var(--v2); transition: all 0.3s;
+}
+.explore-feat-card:hover .explore-feat-icon {
+  color: var(--cy); box-shadow: 0 0 20px var(--v-glow-soft); transform: scale(1.08);
+}
+.explore-feat-header h3 {
+  font-family: var(--ff-display); font-size: 19px; font-weight: 800; letter-spacing: -0.4px;
+}
+.explore-feat-desc {
+  font-size: 13px; line-height: 1.65; color: var(--t2);
+}
+.explore-feat-cap-title {
+  font-family: var(--ff-mono); font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--t3);
+  margin-top: 4px; margin-bottom: -4px;
+}
+.explore-feat-caps {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.explore-feat-cap {
+  font-family: var(--ff-mono); font-size: 9px; padding: 3px 8px; border-radius: 5px;
+  background: rgba(255, 255, 255, 0.02); border: 1px solid var(--line); color: var(--t2);
+}
+.explore-feat-card:hover .explore-feat-cap {
+  border-color: var(--v-line-2); color: var(--t1);
+}
+.explore-feat-benefit {
+  font-size: 12.5px; line-height: 1.6; color: var(--t2); padding-top: 10px; border-top: 1px solid var(--line);
+}
+.explore-feat-benefit strong { color: var(--cy); font-weight: 600; }
+.explore-feat-preview {
+  height: 120px; border-radius: var(--r-sm); border: 1px solid var(--line);
+  background: rgba(7, 6, 15, 0.5); overflow: hidden; position: relative;
+  display: flex; align-items: center; justify-content: center; margin-top: auto;
+}
+.explore-feat-footer {
+  font-family: var(--ff-mono); font-size: 9px; color: var(--t3); display: flex; align-items: center; justify-content: space-between;
+}
+
+/* ── PREVIEW ANIMATIONS ── */
+/* 1. Knowledge Graph Preview */
+.graph-preview { position: absolute; inset: 0; }
+.graph-preview .node {
+  position: absolute; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--v2); box-shadow: 0 0 8px var(--v2);
+  animation: graphNodeMove 8s infinite alternate ease-in-out;
+}
+.graph-preview .node.cy { background: var(--cy); box-shadow: 0 0 8px var(--cy); }
+.graph-preview .node:nth-child(1) { top: 20%; left: 20%; animation-duration: 7s; }
+.graph-preview .node:nth-child(2) { top: 30%; left: 75%; animation-duration: 9s; }
+.graph-preview .node:nth-child(3) { top: 70%; left: 30%; animation-duration: 8s; }
+.graph-preview .node:nth-child(4) { top: 80%; left: 60%; animation-duration: 6s; }
+.graph-preview .node:nth-child(5) { top: 45%; left: 45%; animation-duration: 10s; }
+.graph-preview .line {
+  position: absolute; background: linear-gradient(90deg, var(--v-line), var(--cy-line));
+  transform-origin: 0 0; opacity: 0.4;
+}
+@keyframes graphNodeMove {
+  from { transform: translate(0, 0); }
+  to { transform: translate(15px, -15px); }
+}
+
+/* 2. Mind Map Preview */
+.map-preview { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.map-preview .core {
+  width: 14px; height: 14px; border-radius: 50%; background: var(--grad);
+  box-shadow: 0 0 12px var(--v1); z-index: 2;
+}
+.map-preview .branch {
+  position: absolute; width: 1.5px; background: var(--v-line); transform-origin: left center; z-index: 1;
+}
+.map-preview .node-point {
+  position: absolute; width: 5px; height: 5px; border-radius: 50%; background: var(--cy);
+  box-shadow: 0 0 8px var(--cy); transform: scale(0); animation: mapNodeExpand 4s infinite ease-in-out;
+}
+@keyframes mapNodeExpand {
+  0%, 100% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1); opacity: 1; }
+}
+
+/* 3. Cluster Universe Preview */
+.cluster-preview { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.cluster-preview .core {
+  width: 12px; height: 12px; border-radius: 50%; background: var(--cy);
+  box-shadow: 0 0 12px var(--cy); z-index: 2;
+}
+.cluster-preview .bubble {
+  position: absolute; border-radius: 50%; background: var(--v-bg); border: 1px solid var(--v-line);
+  animation: clusterOrbit 12s linear infinite;
+}
+.cluster-preview .bubble:nth-child(1) { width: 34px; height: 34px; animation-duration: 8s; }
+.cluster-preview .bubble:nth-child(2) { width: 24px; height: 24px; animation-duration: 12s; animation-direction: reverse; }
+.cluster-preview .bubble:nth-child(3) { width: 28px; height: 28px; animation-duration: 16s; }
+@keyframes clusterOrbit {
+  from { transform: rotate(0deg) translate(28px) rotate(0deg); }
+  to { transform: rotate(360deg) translate(28px) rotate(-360deg); }
+}
+
+/* 4. NLP Analytics Preview */
+.nlp-preview {
+  display: flex; align-items: flex-end; gap: 8px; width: 120px; height: 60px;
+}
+.nlp-preview .bar {
+  flex: 1; background: var(--grad); border-radius: 3px 3px 0 0;
+  animation: nlpBarHeight 2s infinite alternate ease-in-out;
+}
+.nlp-preview .bar:nth-child(1) { height: 40%; animation-delay: 0.1s; }
+.nlp-preview .bar:nth-child(2) { height: 80%; animation-delay: 0.4s; }
+.nlp-preview .bar:nth-child(3) { height: 50%; animation-delay: 0.2s; }
+.nlp-preview .bar:nth-child(4) { height: 95%; animation-delay: 0.6s; }
+.nlp-preview .bar:nth-child(5) { height: 30%; animation-delay: 0.3s; }
+@keyframes nlpBarHeight {
+  from { transform: scaleY(0.4); }
+  to { transform: scaleY(1); }
+}
+
+/* 5. Smart Action Tracker Preview */
+.tracker-preview {
+  display: flex; gap: 10px; width: 180px; height: 70px;
+}
+.tracker-preview .col {
+  flex: 1; background: rgba(255,255,255,0.015); border: 1px dashed var(--line); border-radius: 6px; padding: 4px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.tracker-preview .card {
+  height: 16px; border-radius: 4px; background: var(--v-bg); border: 1px solid var(--v-line);
+  position: relative; animation: trackerCardSlide 5s infinite alternate ease-in-out;
+}
+.tracker-preview .card.cy { background: var(--cy-bg); border-color: var(--cy-line); }
+@keyframes trackerCardSlide {
+  0%, 30% { transform: translateY(0); }
+  70%, 100% { transform: translateY(18px); }
+}
+
+/* 6. Executive Report Preview */
+.report-preview {
+  width: 50px; height: 64px; perspective: 300px;
+}
+.report-preview .page {
+  position: absolute; width: 100%; height: 100%; border-radius: 4px;
+  background: rgba(12,10,22,0.95); border: 1px solid var(--line);
+  transform-origin: left center; animation: reportPageFlip 3.5s infinite ease-in-out;
+  display: flex; flex-direction: column; padding: 6px; gap: 4px;
+}
+.report-preview .page-line { height: 2px; background: var(--line); border-radius: 1px; }
+.report-preview .page-line.v { background: var(--v2); }
+.report-preview .page-line.c { background: var(--cy); }
+@keyframes reportPageFlip {
+  0%, 100% { transform: rotateY(0deg); z-index: 3; }
+  50% { transform: rotateY(-130deg); z-index: 1; }
+}
+
+/* 7. Advanced RAG Intelligence Preview */
+.rag-preview {
+  display: flex; align-items: center; justify-content: center; gap: 14px; width: 220px;
+}
+.rag-preview .node {
+  width: 28px; height: 28px; border-radius: 8px; background: var(--v-bg); border: 1px solid var(--v-line);
+  display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--v2);
+  position: relative;
+}
+.rag-preview .node.cy { border-color: var(--cy-line); color: var(--cy); }
+.rag-preview .signal {
+  position: absolute; width: 4px; height: 4px; border-radius: 50%; background: var(--cy);
+  box-shadow: 0 0 6px var(--cy); animation: ragSignalFlow 2s infinite linear;
+}
+@keyframes ragSignalFlow {
+  0% { left: 0%; opacity: 0; }
+  10%, 90% { opacity: 1; }
+  100% { left: 100%; opacity: 0; }
+}
+
+/* ── AI CAPABILITIES STRIP ── */
+.capabilities-strip-section {
+  margin-top: 50px; overflow: hidden; position: relative; padding: 18px 0;
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+}
+.capabilities-strip-section::before, .capabilities-strip-section::after {
+  content: ''; position: absolute; top: 0; bottom: 0; width: 100px; z-index: 2; pointer-events: none;
+}
+.capabilities-strip-section::before { left: 0; background: linear-gradient(90deg, var(--deep), transparent); }
+.capabilities-strip-section::after { right: 0; background: linear-gradient(-90deg, var(--deep), transparent); }
+
+.capabilities-strip-track {
+  display: flex; gap: 16px; width: max-content;
+  animation: stripScroll 35s linear infinite;
+}
+.capabilities-badge {
+  font-family: var(--ff-mono); font-size: 11px; font-weight: 500; letter-spacing: 1px;
+  padding: 6px 16px; border-radius: 99px; background: var(--v-bg); border: 1px solid var(--v-line); color: var(--v2);
+  white-space: nowrap; transition: all 0.3s;
+  box-shadow: 0 0 10px rgba(124,92,252,0.05);
+}
+.capabilities-badge:hover {
+  color: var(--cy); border-color: var(--cy-line); box-shadow: 0 0 16px var(--v-glow);
+}
+@keyframes stripScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Enterprise Stats CSS removed */
+
+/* ── FINAL HERO MESSAGE ── */
+.final-hero-section {
+  margin-top: 64px; text-align: center; position: relative; padding: 50px 30px;
+  background: radial-gradient(circle, rgba(124,92,252,0.07) 0%, transparent 70%);
+  border-radius: var(--r-lg); overflow: hidden;
+}
+.final-hero-pulse {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 280px; height: 280px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(125,249,255,0.08) 0%, transparent 60%);
+  animation: fieldBreath 4s ease-in-out infinite; pointer-events: none;
+}
+.final-hero-tag {
+  display: inline-flex; align-items: center; gap: 8px; padding: 5px 14px; border-radius: 999px;
+  background: var(--v-bg); border: 1px solid var(--v-line-2);
+  font-family: var(--ff-mono); font-size: 10px; font-weight: 600; letter-spacing: 1.5px; color: var(--v2);
+  margin-bottom: 18px;
+}
+.final-hero-title {
+  font-family: var(--ff-display); font-size: clamp(28px, 3.8vw, 48px); font-weight: 900;
+  letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 18px;
+}
+.final-hero-text {
+  font-size: 14.5px; line-height: 1.8; color: var(--t2); max-width: 780px; margin: 0 auto;
+}
+
+@media(max-width: 768px) {
+  .explore-panel-backdrop { padding: 18px 14px; }
+  .explore-panel-card { padding: 36px 20px 24px; border-radius: 28px; }
+  .explore-features-grid { grid-template-columns: 1fr; }
+  .explore-feat-card { min-height: auto; }
+}
 </style>
 </head>
 <body>
@@ -1131,6 +1404,13 @@ footer{border-top:1px solid var(--line);padding:40px;background:rgba(255,255,255
   <a class="nav-brand" href="/">
     <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora AI" class="nav-logo">
   </a>
+  <div class="nav-links">
+    <a href="#features" class="nav-link">Features</a>
+    <a href="#workflow" class="nav-link">Workflow</a>
+    <a href="#pipeline" class="nav-link">Pipeline</a>
+    <a href="#usecases" class="nav-link">Use Cases</a>
+    <a href="#faq" class="nav-link">FAQ</a>
+  </div>
   <div class="nav-right">
     <div class="nav-status"><span class="nav-pulse"></span>NEURAL CORE ONLINE</div>
     <button class="nav-cta magnetic" onclick="openLogin()">Enter Platform</button>
@@ -1167,7 +1447,7 @@ footer{border-top:1px solid var(--line);padding:40px;background:rgba(255,255,255
 </section>
 
 <!-- ═══ FROM DOCUMENTS TO INTELLIGENCE ═════════════════════ -->
-<section class="scene">
+<section class="scene" id="features">
   <div class="scene-inner">
     <div class="center gs-rise">
       <div class="scene-tag"><i class="fa-solid fa-layer-group"></i>From Documents to Intelligence</div>
@@ -1175,138 +1455,287 @@ footer{border-top:1px solid var(--line);padding:40px;background:rgba(255,255,255
       <p class="scene-sub">Upload PDFs, DOCX, PPTs, XLSX spreadsheets, and enterprise knowledge. Nexora automatically builds a searchable intelligence network that allows users to explore, analyse and understand information in ways traditional chatbots cannot.</p>
     </div>
 
-    <div class="features-grid gs-rise">
-      <!-- Feature 1 -->
-      <div class="feat-card">
-        <div class="feat-icon"><i class="fa-solid fa-circle-nodes"></i></div>
-        <div>
-          <h3>Enterprise RAG Intelligence</h3>
-          <p>Hybrid Retrieval combines embeddings, vector search, BM25 ranking, reranking, chunk validation and citation verification to deliver highly accurate answers grounded in your documents.</p>
+    <div class="explore-features-grid gs-rise">
+      <!-- Feature 1: Knowledge Graph -->
+      <div class="explore-feat-card">
+        <div class="explore-feat-header">
+          <div class="explore-feat-icon"><i class="fa-solid fa-diagram-project"></i></div>
+          <h3>Knowledge Graph</h3>
         </div>
-        <div class="feat-visual-container">
-          <canvas class="feat1-flow" id="feat1-flow-canvas"></canvas>
+        <p class="explore-feat-desc">Convert thousands of document chunks into a connected knowledge network.</p>
+        <div class="explore-feat-cap-title">Capabilities</div>
+        <div class="explore-feat-caps">
+          <span class="explore-feat-cap">Entity extraction</span>
+          <span class="explore-feat-cap">Relationship discovery</span>
+          <span class="explore-feat-cap">Concept linking</span>
+          <span class="explore-feat-cap">Cross-document connections</span>
+          <span class="explore-feat-cap">Knowledge exploration</span>
         </div>
-        <div class="feat-badges">
-          <span class="feat-badge">Hybrid Search</span>
-          <span class="feat-badge">Cross Encoder Reranking</span>
-          <span class="feat-badge">Citation Verification</span>
-          <span class="feat-badge">Context Validation</span>
-          <span class="feat-badge">Multi Document Reasoning</span>
+        <p class="explore-feat-benefit"><strong>User Benefit:</strong> Understand how people, organizations, concepts, events, and topics are connected across all uploaded documents.</p>
+        <div class="explore-feat-preview">
+          <div class="graph-preview">
+            <div class="node" style="top: 20%; left: 20%;"></div>
+            <div class="node cy" style="top: 30%; left: 75%;"></div>
+            <div class="node" style="top: 70%; left: 30%;"></div>
+            <div class="node cy" style="top: 80%; left: 60%;"></div>
+            <div class="node" style="top: 45%; left: 45%;"></div>
+            <!-- connections simulated with CSS lines -->
+            <div class="line" style="width: 80px; height: 1px; top: 25%; left: 22%; transform: rotate(10deg);"></div>
+            <div class="line" style="width: 65px; height: 1px; top: 25%; left: 22%; transform: rotate(70deg);"></div>
+            <div class="line" style="width: 90px; height: 1px; top: 73%; left: 32%; transform: rotate(-45deg);"></div>
+            <div class="line" style="width: 50px; height: 1px; top: 48%; left: 47%; transform: rotate(40deg);"></div>
+            <div class="line" style="width: 85px; height: 1px; top: 32%; left: 47%; transform: rotate(-10deg);"></div>
+          </div>
+        </div>
+        <div class="explore-feat-footer">
+          <span>Visual Preview</span>
+          <span>Based on: Knowledge Graph Engine</span>
         </div>
       </div>
 
-      <!-- Feature 2 -->
-      <div class="feat-card">
-        <div class="feat-icon"><i class="fa-solid fa-diagram-project"></i></div>
-        <div>
-          <h3>Knowledge Graph Generation</h3>
-          <p>Automatically extract entities, concepts, relationships and dependencies from uploaded knowledge bases and visualize them as an interactive intelligence graph.</p>
+      <!-- Feature 2: Interactive Mind Map -->
+      <div class="explore-feat-card">
+        <div class="explore-feat-header">
+          <div class="explore-feat-icon"><i class="fa-solid fa-brain"></i></div>
+          <h3>Interactive Mind Map</h3>
         </div>
-        <div class="feat-visual-container">
-          <canvas class="feat2-canvas" id="feat2-graph-canvas"></canvas>
+        <p class="explore-feat-desc">Automatically generate hierarchical mind maps from uploaded documents.</p>
+        <div class="explore-feat-cap-title">Capabilities</div>
+        <div class="explore-feat-caps">
+          <span class="explore-feat-cap">Theme extraction</span>
+          <span class="explore-feat-cap">Concept grouping</span>
+          <span class="explore-feat-cap">Hierarchical exploration</span>
+          <span class="explore-feat-cap">Expandable drill-down views</span>
+          <span class="explore-feat-cap">Topic navigation</span>
         </div>
-        <div class="feat-badges">
-          <span class="feat-badge">Entity Extraction</span>
-          <span class="feat-badge">Relationship Discovery</span>
-          <span class="feat-badge">Semantic Linking</span>
-          <span class="feat-badge">Concept Exploration</span>
-          <span class="feat-badge">Interactive Graphs</span>
+        <p class="explore-feat-benefit"><strong>User Benefit:</strong> Instantly understand document structure and major themes without reading hundreds of pages.</p>
+        <div class="explore-feat-preview">
+          <div class="map-preview">
+            <div class="core"></div>
+            <div class="branch" style="width: 60px; height: 1.5px; transform: rotate(30deg); top: 50%; left: 50%;"></div>
+            <div class="branch" style="width: 60px; height: 1.5px; transform: rotate(-30deg); top: 50%; left: 50%;"></div>
+            <div class="branch" style="width: 60px; height: 1.5px; transform: rotate(150deg); top: 50%; left: 50%;"></div>
+            <div class="branch" style="width: 60px; height: 1.5px; transform: rotate(-150deg); top: 50%; left: 50%;"></div>
+            <div class="node-point" style="top: 31%; left: 74%;"></div>
+            <div class="node-point" style="top: 64%; left: 74%;"></div>
+            <div class="node-point" style="top: 31%; left: 22%;"></div>
+            <div class="node-point" style="top: 64%; left: 22%;"></div>
+          </div>
+        </div>
+        <div class="explore-feat-footer">
+          <span>Visual Preview</span>
+          <span>Based on: Mind Map Engine</span>
         </div>
       </div>
 
-      <!-- Feature 3 -->
-      <div class="feat-card">
-        <div class="feat-icon"><i class="fa-solid fa-chart-line"></i></div>
-        <div>
-          <h3>Executive Report Generation</h3>
-          <p>Generate professional AI-powered reports from hundreds of documents in seconds including executive summaries, key findings, detailed analysis, conclusions and recommendations.</p>
+      <!-- Feature 3: Cluster Universe -->
+      <div class="explore-feat-card">
+        <div class="explore-feat-header">
+          <div class="explore-feat-icon"><i class="fa-solid fa-circle-nodes"></i></div>
+          <h3>Cluster Universe</h3>
         </div>
-        <div class="feat-visual-container">
-          <div class="feat3-stack">
-            <div class="feat3-page feat3-p3">
-              <div class="feat3-line cy" style="width: 40%"></div>
-              <div class="feat3-line" style="width: 80%"></div>
-              <div class="feat3-line" style="width: 70%"></div>
+        <p class="explore-feat-desc">Group documents into intelligent topic clusters.</p>
+        <div class="explore-feat-cap-title">Capabilities</div>
+        <div class="explore-feat-caps">
+          <span class="explore-feat-cap">Topic discovery</span>
+          <span class="explore-feat-cap">Document grouping</span>
+          <span class="explore-feat-cap">Semantic categorization</span>
+          <span class="explore-feat-cap">Cluster summaries</span>
+          <span class="explore-feat-cap">Keyword extraction</span>
+        </div>
+        <p class="explore-feat-benefit"><strong>User Benefit:</strong> Discover hidden patterns and automatically organize large document collections.</p>
+        <div class="explore-feat-preview">
+          <div class="cluster-preview">
+            <div class="core"></div>
+            <div class="bubble" style="width: 34px; height: 34px;"></div>
+            <div class="bubble" style="width: 24px; height: 24px; animation-duration: 8s;"></div>
+            <div class="bubble" style="width: 28px; height: 28px; animation-duration: 16s;"></div>
+          </div>
+        </div>
+        <div class="explore-feat-footer">
+          <span>Visual Preview</span>
+          <span>Based on: Cluster Universe Engine</span>
+        </div>
+      </div>
+
+      <!-- Feature 4: NLP Analytics Suite -->
+      <div class="explore-feat-card">
+        <div class="explore-feat-header">
+          <div class="explore-feat-icon"><i class="fa-solid fa-chart-simple"></i></div>
+          <h3>NLP Analytics Suite</h3>
+        </div>
+        <p class="explore-feat-desc">Run advanced NLP intelligence over entire knowledge bases.</p>
+        <div class="explore-feat-cap-title">Capabilities</div>
+        <div class="explore-feat-caps">
+          <span class="explore-feat-cap">Sentiment Analysis</span>
+          <span class="explore-feat-cap">Topic Modeling</span>
+          <span class="explore-feat-cap">Entity Recognition</span>
+          <span class="explore-feat-cap">Key Phrase Extraction</span>
+          <span class="explore-feat-cap">Readability Analysis</span>
+          <span class="explore-feat-cap">Word Frequency Insights</span>
+        </div>
+        <p class="explore-feat-benefit"><strong>User Benefit:</strong> Gain data-driven understanding of document sentiment, themes, complexity, and important concepts.</p>
+        <div class="explore-feat-preview">
+          <div class="nlp-preview">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+          </div>
+        </div>
+        <div class="explore-feat-footer">
+          <span>Visual Preview</span>
+          <span>Based on: NLP Analytics Engine</span>
+        </div>
+      </div>
+
+      <!-- Feature 5: Smart Action Tracker -->
+      <div class="explore-feat-card">
+        <div class="explore-feat-header">
+          <div class="explore-feat-icon"><i class="fa-solid fa-list-check"></i></div>
+          <h3>Smart Action Tracker</h3>
+        </div>
+        <p class="explore-feat-desc">Automatically detect action items, decisions, deadlines, and responsibilities.</p>
+        <div class="explore-feat-cap-title">Capabilities</div>
+        <div class="explore-feat-caps">
+          <span class="explore-feat-cap">Task extraction</span>
+          <span class="explore-feat-cap">Deadline detection</span>
+          <span class="explore-feat-cap">Decision tracking</span>
+          <span class="explore-feat-cap">Kanban workflow</span>
+          <span class="explore-feat-cap">Timeline visualization</span>
+          <span class="explore-feat-cap">Progress monitoring</span>
+        </div>
+        <p class="explore-feat-benefit"><strong>User Benefit:</strong> Turn meetings, reports, and business documents into actionable workflows.</p>
+        <div class="explore-feat-preview">
+          <div class="tracker-preview">
+            <div class="col">
+              <div class="card"></div>
+              <div class="card cy"></div>
             </div>
-            <div class="feat3-page feat3-p2">
-              <div class="feat3-line v" style="width: 50%"></div>
-              <div class="feat3-line" style="width: 75%"></div>
-              <div class="feat3-line" style="width: 60%"></div>
+            <div class="col">
+              <div class="card"></div>
             </div>
-            <div class="feat3-page feat3-p1">
-              <div class="feat3-line cy" style="width: 30%"></div>
-              <div class="feat3-line" style="width: 85%"></div>
-              <div class="feat3-line" style="width: 65%"></div>
+            <div class="col">
+              <div class="card cy" style="animation-delay: -1s;"></div>
             </div>
           </div>
         </div>
-        <div class="feat-badges">
-          <span class="feat-badge">Executive Summary</span>
-          <span class="feat-badge">Key Findings</span>
-          <span class="feat-badge">Detailed Analysis</span>
-          <span class="feat-badge">Recommendations</span>
-          <span class="feat-badge">PDF & DOCX Export</span>
+        <div class="explore-feat-footer">
+          <span>Visual Preview</span>
+          <span>Based on: Action Tracker Engine</span>
         </div>
       </div>
 
-      <!-- Feature 4 -->
-      <div class="feat-card">
-        <div class="feat-icon"><i class="fa-solid fa-compass"></i></div>
-        <div>
-          <h3>Hidden Insight Detection</h3>
-          <p>Surface trends, relationships, recurring themes and important concepts buried deep inside large document collections.</p>
+      <!-- Feature 6: Executive Report Generator -->
+      <div class="explore-feat-card">
+        <div class="explore-feat-header">
+          <div class="explore-feat-icon"><i class="fa-solid fa-file-contract"></i></div>
+          <h3>Executive Report Generator</h3>
         </div>
-        <div class="feat-visual-container">
-          <div class="feat4-radar"></div>
+        <p class="explore-feat-desc">Generate enterprise-ready reports from multiple documents.</p>
+        <div class="explore-feat-cap-title">Capabilities</div>
+        <div class="explore-feat-caps">
+          <span class="explore-feat-cap">Executive Summary</span>
+          <span class="explore-feat-cap">Key Findings</span>
+          <span class="explore-feat-cap">Detailed Analysis</span>
+          <span class="explore-feat-cap">Recommendations</span>
+          <span class="explore-feat-cap">PDF Export</span>
+          <span class="explore-feat-cap">DOCX Export</span>
         </div>
-        <div class="feat-badges">
-          <span class="feat-badge">Theme Detection</span>
-          <span class="feat-badge">Pattern Discovery</span>
-          <span class="feat-badge">Cross Document Analysis</span>
-          <span class="feat-badge">Concept Clustering</span>
-        </div>
-      </div>
-
-      <!-- Feature 5 -->
-      <div class="feat-card">
-        <div class="feat-icon"><i class="fa-solid fa-file-shield"></i></div>
-        <div>
-          <h3>Universal Document Understanding</h3>
-          <p>Upload and analyze PDFs, PowerPoint files, Word documents, text files, scanned documents, spreadsheets and datasets within a single workspace.</p>
-        </div>
-        <div class="feat-visual-container">
-          <div class="feat5-core"><i class="fa-solid fa-brain"></i></div>
-          <div class="feat5-orbit">
-            <span class="feat5-file feat5-f1">PDF</span>
-            <span class="feat5-file feat5-f2">PPTX</span>
-            <span class="feat5-file feat5-f3">DOCX</span>
-            <span class="feat5-file feat5-f4">XLSX</span>
+        <p class="explore-feat-benefit"><strong>User Benefit:</strong> Convert large document collections into boardroom-ready reports within seconds.</p>
+        <div class="explore-feat-preview">
+          <div class="report-preview">
+            <div class="page">
+              <div class="page-line v" style="width: 80%;"></div>
+              <div class="page-line" style="width: 90%;"></div>
+              <div class="page-line" style="width: 50%;"></div>
+              <div class="page-line c" style="width: 70%;"></div>
+            </div>
+            <div class="page" style="animation-delay: -1.75s;">
+              <div class="page-line c" style="width: 60%;"></div>
+              <div class="page-line" style="width: 85%;"></div>
+              <div class="page-line v" style="width: 75%;"></div>
+              <div class="page-line" style="width: 40%;"></div>
+            </div>
           </div>
         </div>
-        <div class="feat-badges">
-          <span class="feat-badge">TXT</span>
-          <span class="feat-badge">Scanned Docs</span>
-          <span class="feat-badge">Multi-Format</span>
+        <div class="explore-feat-footer">
+          <span>Visual Preview</span>
+          <span>Based on: Full Report Generator</span>
         </div>
       </div>
 
-      <!-- Feature 6 -->
-      <div class="feat-card">
-        <div class="feat-icon"><i class="fa-solid fa-shield-halved"></i></div>
-        <div>
-          <h3>Trustworthy AI Responses</h3>
-          <p>Every answer is backed by retrieved document evidence, metadata tracing and citation-level verification to minimize hallucinations.</p>
+      <!-- Feature 7: Advanced RAG Intelligence -->
+      <div class="explore-feat-card">
+        <div class="explore-feat-header">
+          <div class="explore-feat-icon"><i class="fa-solid fa-microchip"></i></div>
+          <h3>Advanced RAG Intelligence</h3>
         </div>
-        <div class="feat-visual-container">
-          <div class="feat6-shield"><i class="fa-solid fa-circle-check"></i></div>
+        <p class="explore-feat-desc">Enterprise-grade Retrieval-Augmented Generation engine powering Nexora.</p>
+        <div class="explore-feat-cap-title">Capabilities</div>
+        <div class="explore-feat-caps">
+          <span class="explore-feat-cap">Hybrid Search</span>
+          <span class="explore-feat-cap">Dense + Sparse Retrieval</span>
+          <span class="explore-feat-cap">Cross-Encoder Reranking</span>
+          <span class="explore-feat-cap">Query Rewriting</span>
+          <span class="explore-feat-cap">Hallucination Detection</span>
+          <span class="explore-feat-cap">Citation Verification</span>
+          <span class="explore-feat-cap">OCR Processing</span>
+          <span class="explore-feat-cap">Embedding Caching</span>
         </div>
-        <div class="feat-badges">
-          <span class="feat-badge">Grounded Answers</span>
-          <span class="feat-badge">Source Attribution</span>
-          <span class="feat-badge">Verified Context</span>
-          <span class="feat-badge">Enterprise Reliability</span>
+        <p class="explore-feat-benefit"><strong>User Benefit:</strong> Receive highly accurate, explainable, source-grounded answers from your knowledge base.</p>
+        <div class="explore-feat-preview">
+          <div class="rag-preview">
+            <div class="node"><i class="fa-solid fa-file"></i><div class="signal"></div></div>
+            <div class="node cy"><i class="fa-solid fa-magnifying-glass"></i><div class="signal" style="animation-delay: 0.6s;"></div></div>
+            <div class="node"><i class="fa-solid fa-brain"></i><div class="signal" style="animation-delay: 1.2s;"></div></div>
+          </div>
+        </div>
+        <div class="explore-feat-footer">
+          <span>Visual Preview</span>
+          <span>Based on: Nexora RAG Engine</span>
         </div>
       </div>
+    </div>
+
+    <!-- AI CAPABILITIES STRIP -->
+    <div class="capabilities-strip-section gs-fade">
+      <div class="capabilities-strip-track">
+        <span class="capabilities-badge">Semantic Search</span>
+        <span class="capabilities-badge">Knowledge Discovery</span>
+        <span class="capabilities-badge">Document Intelligence</span>
+        <span class="capabilities-badge">AI Analytics</span>
+        <span class="capabilities-badge">Executive Reporting</span>
+        <span class="capabilities-badge">OCR Extraction</span>
+        <span class="capabilities-badge">Entity Recognition</span>
+        <span class="capabilities-badge">Topic Modeling</span>
+        <span class="capabilities-badge">Action Mining</span>
+        <span class="capabilities-badge">Decision Tracking</span>
+        <span class="capabilities-badge">Relationship Mapping</span>
+        <span class="capabilities-badge">Enterprise AI</span>
+        <!-- Duplicate for infinite seamless scroll loop -->
+        <span class="capabilities-badge">Semantic Search</span>
+        <span class="capabilities-badge">Knowledge Discovery</span>
+        <span class="capabilities-badge">Document Intelligence</span>
+        <span class="capabilities-badge">AI Analytics</span>
+        <span class="capabilities-badge">Executive Reporting</span>
+        <span class="capabilities-badge">OCR Extraction</span>
+        <span class="capabilities-badge">Entity Recognition</span>
+        <span class="capabilities-badge">Topic Modeling</span>
+        <span class="capabilities-badge">Action Mining</span>
+        <span class="capabilities-badge">Decision Tracking</span>
+        <span class="capabilities-badge">Relationship Mapping</span>
+        <span class="capabilities-badge">Enterprise AI</span>
+      </div>
+    </div>
+
+    <!-- FINAL HERO MESSAGE -->
+    <div class="final-hero-section gs-rise">
+      <div class="final-hero-pulse"></div>
+      <div class="final-hero-tag"><i class="fa-solid fa-shield-halved"></i> Giga-Scale AI</div>
+      <h2 class="final-hero-title">Beyond Document Chat</h2>
+      <p class="final-hero-text">Nexora transforms static documents into an intelligent knowledge ecosystem where users can explore relationships, uncover insights, extract actions, generate executive reports, analyze sentiment, visualize concepts, and interact with information using enterprise-grade AI.</p>
     </div>
   </div>
 </section>
@@ -1319,7 +1748,7 @@ footer{border-top:1px solid var(--line);padding:40px;background:rgba(255,255,255
 </div>
 
 <!-- ═══ WORKFLOW TRANSFORMATION ════════════════════════════ -->
-<section class="scene">
+<section class="scene" id="workflow">
   <div class="scene-inner">
     <div class="center gs-rise">
       <div class="scene-tag"><i class="fa-solid fa-arrows-spin"></i>Workflow Transformation</div>
@@ -1414,7 +1843,7 @@ footer{border-top:1px solid var(--line);padding:40px;background:rgba(255,255,255
 </div>
 
 <!-- ═══ HOW NEXORA THINKS ═════════════════════════════════ -->
-<section class="scene">
+<section class="scene" id="pipeline">
   <div class="scene-inner">
     <div class="center gs-rise">
       <div class="scene-tag"><i class="fa-solid fa-brain"></i>How Nexora Thinks</div>
@@ -1537,7 +1966,7 @@ footer{border-top:1px solid var(--line);padding:40px;background:rgba(255,255,255
 </div>
 
 <!-- ═══ USE CASES ═════════════════════════════════════════ -->
-<section class="scene">
+<section class="scene" id="usecases">
   <div class="scene-inner">
     <div class="center gs-rise">
       <div class="scene-tag"><i class="fa-solid fa-briefcase"></i>Applications</div>
@@ -1605,7 +2034,7 @@ footer{border-top:1px solid var(--line);padding:40px;background:rgba(255,255,255
 </div>
 
 <!-- ═══ FREQUENTLY ASKED QUESTIONS ═════════════════════════ -->
-<section class="scene">
+<section class="scene" id="faq">
   <div class="scene-inner">
     <div class="center gs-rise">
       <div class="scene-tag"><i class="fa-solid fa-circle-question"></i>FAQ</div>
@@ -1698,7 +2127,11 @@ footer{border-top:1px solid var(--line);padding:40px;background:rgba(255,255,255
   <div class="footer-inner">
     <div class="footer-brand">Nexora <em>AI</em></div>
     <nav class="footer-links">
-      <a href="#">Platform</a><a href="#">Pipeline</a><a href="#">Security</a><a href="/login">Sign In</a>
+      <a href="#features">Features</a>
+      <a href="#workflow">Workflow</a>
+      <a href="#pipeline">Pipeline</a>
+      <a href="#usecases">Use Cases</a>
+      <a href="#faq">FAQ</a>
     </nav>
     <div class="footer-copy">© 2026 Nexora AI</div>
   </div>
@@ -1735,6 +2168,7 @@ footer{border-top:1px solid var(--line);padding:40px;background:rgba(255,255,255
   </div>
 </div>
 
+
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
@@ -1746,6 +2180,8 @@ function closeLogin(){document.getElementById('loginModal').classList.remove('op
 document.getElementById('loginModal').addEventListener('click',function(e){if(e.target===this)closeLogin()});
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLogin()});
 {% if error or success %}window.addEventListener('load',function(){openLogin()});{% endif %}
+
+/* Stats counter scroll logic removed */
 
 /* ═══ Lenis + GSAP ═══ */
 var hasGsap=window.gsap&&window.ScrollTrigger;
@@ -2346,117 +2782,7 @@ document.querySelectorAll('.magnetic').forEach(function(btn){
   });
 })();
 
-/* ═══ FEATURE 1 — RAG FLOW VISUALIZER ═══ */
-(function(){
-  var c = document.getElementById('feat1-flow-canvas'); if(!c) return;
-  var ctx = c.getContext('2d');
-  var W, H, packets = [];
-  function rs(){
-    W = c.width = c.offsetWidth;
-    H = c.height = c.offsetHeight;
-  }
-  rs();
-  window.addEventListener('resize', rs, {passive:true});
-  (function draw(){
-    ctx.clearRect(0,0,W,H);
-    // Draw pipeline track
-    ctx.beginPath();
-    ctx.moveTo(30, H/2);
-    ctx.lineTo(W-30, H/2);
-    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-    
-    // Draw stage nodes
-    var stages = [30, W*0.35, W*0.65, W-30];
-    stages.forEach(function(sx, idx){
-      ctx.beginPath();
-      ctx.arc(sx, H/2, 4, 0, Math.PI*2);
-      ctx.fillStyle = idx === 3 ? '#7df9ff' : '#7c5cfc';
-      ctx.fill();
-    });
-
-    if(Math.random() < 0.035) {
-      packets.push({x: 30, speed: 1.2 + Math.random()*0.8});
-    }
-
-    for(var i=packets.length-1; i>=0; i--){
-      var p = packets[i];
-      p.x += p.speed;
-      if(p.x >= W-30){
-        packets.splice(i, 1);
-        continue;
-      }
-      ctx.beginPath();
-      ctx.arc(p.x, H/2, 2, 0, Math.PI*2);
-      ctx.fillStyle = '#7df9ff';
-      ctx.shadowBlur = 4;
-      ctx.shadowColor = '#7df9ff';
-      ctx.fill();
-      ctx.shadowBlur = 0;
-    }
-    requestAnimationFrame(draw);
-  })();
-})();
-
-/* ═══ FEATURE 2 — KNOWLEDGE GRAPH ═══ */
-(function(){
-  var c = document.getElementById('feat2-graph-canvas'); if(!c) return;
-  var ctx = c.getContext('2d');
-  var nodes = [], W, H;
-  function rs(){
-    W = c.width = c.offsetWidth;
-    H = c.height = c.offsetHeight;
-    nodes = [];
-    for(var i=0; i<8; i++){
-      nodes.push({
-        x: Math.random() * W,
-        y: Math.random() * H,
-        vx: (Math.random() - 0.5) * 0.25,
-        vy: (Math.random() - 0.5) * 0.25,
-        r: 2.2 + Math.random()*1.8
-      });
-    }
-  }
-  rs();
-  window.addEventListener('resize', rs, {passive:true});
-  
-  var scrollY = 0;
-  window.addEventListener('scroll', function(){
-    scrollY = window.scrollY;
-  }, {passive:true});
-
-  (function draw(){
-    ctx.clearRect(0, 0, W, H);
-    // Draw links
-    ctx.lineWidth = 0.8;
-    for(var i=0; i<nodes.length; i++){
-      var n = nodes[i];
-      n.x += n.vx + Math.sin(scrollY * 0.003 + i) * 0.15;
-      n.y += n.vy;
-      
-      if(n.x<10 || n.x>W-10) n.vx *= -1;
-      if(n.y<10 || n.y>H-10) n.vy *= -1;
-
-      for(var j=i+1; j<nodes.length; j++){
-        var m = nodes[j];
-        var d = Math.sqrt((n.x-m.x)*(n.x-m.x) + (n.y-m.y)*(n.y-m.y));
-        if(d < 70){
-          ctx.beginPath();
-          ctx.moveTo(n.x, n.y);
-          ctx.lineTo(m.x, m.y);
-          ctx.strokeStyle = 'rgba(124, 92, 252, ' + (1 - d/70)*0.25 + ')';
-          ctx.stroke();
-        }
-      }
-      ctx.beginPath();
-      ctx.arc(n.x, n.y, n.r, 0, Math.PI*2);
-      ctx.fillStyle = i % 2 === 0 ? '#7df9ff' : '#7c5cfc';
-      ctx.fill();
-    }
-    requestAnimationFrame(draw);
-  })();
-})();
+// Old canvases removed
 
 /* ═══ FAQ Accordion ═══ */
 (function(){

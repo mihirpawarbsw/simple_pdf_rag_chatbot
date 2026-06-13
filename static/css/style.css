@@ -1914,3 +1914,310 @@ body.light-mode .nexora-swal-cancel-btn {
 .swal2-toast .swal2-icon {
     font-size: 18px !important;
 }
+
+/* ==========================================
+   EXPLORE FEATURES TOGGLE BUTTON & FLOATING DOCK
+   ========================================== */
+.explore-btn {
+    height: 36px;
+    padding: 0 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--bg-glass);
+    color: var(--text-primary);
+    font-family: var(--font-display), sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s var(--transition);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.explore-btn:hover {
+    background: var(--accent-bg);
+    border-color: var(--border-hover);
+    box-shadow: 0 0 14px var(--accent-glow-soft);
+    transform: translateY(-1px);
+}
+
+.explore-btn .header-icon {
+    font-size: 14px;
+    color: var(--accent);
+    background: none;
+    -webkit-text-fill-color: initial;
+    display: inline-block;
+}
+
+.explore-arrow {
+    font-size: 10px;
+    color: var(--text-secondary);
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.explore-btn.active {
+    background: var(--accent-bg);
+    border-color: var(--accent-glow);
+}
+
+.explore-btn.active .explore-arrow {
+    transform: rotate(180deg);
+}
+
+.explore-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+/* ── Brand logo styling ── */
+.header-brand-section {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-family: var(--font-display), sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    letter-spacing: -0.1px;
+}
+
+.header-brand-section i {
+    color: var(--accent);
+    font-size: 14px;
+}
+
+/* ── Features Dropdown Menu ── */
+.features-dropdown {
+    position: absolute;
+    top: 44px; /* Directly below the Explore Features button */
+    right: 0;  /* Align with the right edge of the button */
+    left: auto;
+    background: var(--bg-glass-deep);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 8px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4), 0 0 20px var(--accent-glow-soft);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-10px) scale(0.95);
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), visibility 0s linear 0.25s;
+    z-index: 100;
+    min-width: 220px;
+}
+
+.features-dropdown.open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), visibility 0s linear 0s;
+}
+
+.features-dropdown .toolbar-btn {
+    width: 100%;
+    height: 38px;
+    justify-content: flex-start;
+    background: transparent;
+    border: 1px solid transparent;
+    box-shadow: none;
+    border-radius: 8px;
+    padding: 0 12px;
+    transition: all 0.15s ease;
+}
+
+.features-dropdown .toolbar-btn:hover {
+    background: var(--accent-bg);
+    border-color: var(--border-hover);
+    color: var(--accent-light);
+    transform: none;
+    box-shadow: none;
+}
+
+body.light-mode .features-dropdown .toolbar-btn:hover {
+    color: var(--accent);
+}
+
+/* ── Floating Export PDF Button ── */
+.floating-export-btn {
+    position: absolute;
+    top: 64px; /* Hovering right below header on the right */
+    right: 28px; /* Aligned with chat header padding */
+    z-index: 90;
+    height: 36px;
+    padding: 0 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--bg-glass-deep);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    color: var(--text-primary);
+    font-family: var(--font-display), sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15), 0 0 10px var(--accent-glow-soft);
+    transition: all 0.2s var(--transition);
+}
+
+.floating-export-btn:hover {
+    background: var(--accent-bg);
+    border-color: var(--border-hover);
+    box-shadow: 0 6px 16px var(--accent-glow);
+    transform: translateY(-1px);
+}
+
+.floating-export-btn i {
+    font-size: 13.5px;
+    color: var(--accent);
+}
+
+/* ── Embedded Feature Workspace Layout ── */
+#featureWorkspace {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: none;
+    overflow: hidden;
+}
+
+.chat-area.feature-active #featureWorkspace {
+    display: block;
+}
+
+/* Hide standard chat parts when feature is active */
+.chat-area.feature-active #messages,
+.chat-area.feature-active #starterSuggestions,
+.chat-area.feature-active .chat-input-area,
+.chat-area.feature-active .floating-export-btn {
+    display: none !important;
+}
+
+/* ── Breadcrumb Bar ── */
+.breadcrumb-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 48px;
+    padding: 0 28px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-glass-deep);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    flex-shrink: 0;
+    z-index: 15;
+    font-family: var(--font-display), sans-serif;
+}
+
+.breadcrumb-bar .back-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 13px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.breadcrumb-bar .back-btn:hover {
+    color: var(--accent);
+    background: var(--accent-bg);
+}
+
+.breadcrumb-bar .back-btn i {
+    font-size: 13px;
+}
+
+.breadcrumb-bar .breadcrumb-separator {
+    color: var(--text-muted);
+    font-size: 13px;
+    user-select: none;
+}
+
+.breadcrumb-bar .breadcrumb-active {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 13px;
+}
+
+/* ── Modal Overrides when embedded inside featureWorkspace ── */
+#featureWorkspace #nlpOverlay,
+#featureWorkspace #cuOverlay,
+#featureWorkspace #kgModal,
+#featureWorkspace #mmOverlay,
+#featureWorkspace #nexoraReportModal,
+#featureWorkspace #actionTrackerOverlay {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    z-index: 1 !important;
+    box-shadow: none !important;
+    border: none !important;
+    display: none;
+}
+
+/* Override flex displays when active classes are applied */
+#featureWorkspace #nlpOverlay.nlp-active,
+#featureWorkspace #cuOverlay.cu-active,
+#featureWorkspace #kgModal.open,
+#featureWorkspace #mmOverlay.mm-active,
+#featureWorkspace #actionTrackerOverlay.open {
+    display: flex !important;
+    align-items: stretch !important;
+    justify-content: stretch !important;
+}
+
+#featureWorkspace #nlpModal,
+#featureWorkspace #cuModal,
+#featureWorkspace #kgPanel,
+#featureWorkspace #mmModal,
+#featureWorkspace .report-modal-card,
+#featureWorkspace #actionTrackerModal {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: var(--bg-glass-deep) !important;
+    margin: 0 !important;
+    animation: none !important;
+}
+
+/* Custom internal scrollbars/flex parameters for full-width panels */
+#featureWorkspace #nlpBody,
+#featureWorkspace #cuBody,
+#featureWorkspace #mmCanvasWrap,
+#featureWorkspace #kgSvgWrap,
+#featureWorkspace .at-body {
+    flex: 1;
+    overflow-y: auto;
+}
+

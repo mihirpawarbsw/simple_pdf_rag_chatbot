@@ -1,0 +1,384 @@
+/* =============================================================
+   mindmap.css — Nexora AI  |  Interactive Mind Map (L→R Tree)
+   ============================================================= */
+
+/* ── Overlay ──────────────────────────────────────────────────── */
+#mmOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 1400;
+    align-items: center;
+    justify-content: center;
+}
+
+#mmOverlay.mm-active {
+    display: flex;
+}
+
+/* ── Modal ────────────────────────────────────────────────────── */
+#mmModal {
+    background: var(--surface, #111118);
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+    border-radius: 22px;
+    width: min(1280px, 97vw);
+    height: min(860px, 94vh);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 32px 100px rgba(0, 0, 0, 0.7);
+    animation: mm-in 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative;
+}
+
+@keyframes mm-in {
+    from { opacity: 0; transform: scale(0.96) translateY(20px); }
+    to   { opacity: 1; transform: scale(1)    translateY(0);    }
+}
+
+/* ── Header ──────────────────────────────────────────────────── */
+#mmHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px 12px;
+    border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.07));
+    flex-shrink: 0;
+    gap: 12px;
+}
+
+#mmTitleGroup {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.mmHeaderIcon {
+    font-size: 1.5rem;
+    color: var(--accent, #b18fcf);
+    opacity: 0.9;
+}
+
+#mmTitleGroup h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text, #f0f0f0);
+    line-height: 1.2;
+}
+
+#mmSubtitle {
+    font-size: 0.74rem;
+    color: var(--text-muted, rgba(240, 240, 240, 0.42));
+    margin-top: 2px;
+}
+
+#mmHeaderRight {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+#mmGenBtn {
+    background: rgba(177, 143, 207, 0.14);
+    border: 1px solid rgba(177, 143, 207, 0.35);
+    color: var(--accent, #b18fcf);
+    border-radius: 10px;
+    padding: 7px 18px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-family: inherit;
+    transition: background 0.2s, border-color 0.2s;
+    white-space: nowrap;
+}
+
+#mmGenBtn:hover {
+    background: rgba(177, 143, 207, 0.26);
+    border-color: rgba(177, 143, 207, 0.6);
+}
+
+#mmGenBtn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+#mmCloseBtn {
+    background: none;
+    border: none;
+    color: var(--text-muted, rgba(240, 240, 240, 0.45));
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 5px 8px;
+    border-radius: 8px;
+    line-height: 1;
+    transition: color 0.2s, background 0.2s;
+}
+
+#mmCloseBtn:hover {
+    color: var(--text, #f0f0f0);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+/* ── Canvas + panel wrapper ──────────────────────────────────── */
+#mmCanvasWrap {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    min-height: 0;
+    display: flex;
+}
+
+/* ── Scrollable SVG area ─────────────────────────────────────── */
+#mmScrollArea {
+    flex: 1;
+    overflow: auto;
+    padding: 16px 0 16px 16px;
+    min-width: 0;
+    /* Custom scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(177, 143, 207, 0.2) transparent;
+}
+
+#mmScrollArea::-webkit-scrollbar { width: 5px; height: 5px; }
+#mmScrollArea::-webkit-scrollbar-thumb {
+    background: rgba(177, 143, 207, 0.25);
+    border-radius: 99px;
+}
+
+#mmSvg {
+    display: block;
+    overflow: visible;
+    min-width: 100%;
+}
+
+/* ── State overlay ────────────────────────────────────────────── */
+.mm-state {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: rgba(17, 17, 24, 0.7);
+    backdrop-filter: blur(2px);
+    color: var(--text-muted, rgba(240, 240, 240, 0.4));
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 24px;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.mm-state-icon {
+    font-size: 2.8rem;
+    opacity: 0.3;
+}
+
+/* ── Side detail panel ────────────────────────────────────────── */
+#mmPanel {
+    width: 300px;
+    flex-shrink: 0;
+    height: 100%;
+    background: var(--surface, #111118);
+    border-left: 1px solid var(--border, rgba(255, 255, 255, 0.07));
+    padding: 22px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    overflow-y: auto;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+                width 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative;
+    z-index: 5;
+}
+
+#mmPanel::-webkit-scrollbar { width: 4px; }
+#mmPanel::-webkit-scrollbar-thumb {
+    background: rgba(177, 143, 207, 0.2);
+    border-radius: 99px;
+}
+
+.mm-panel-hidden {
+    width: 0;
+    padding: 0;
+    overflow: hidden;
+    border-left: none;
+}
+
+.mm-panel-open {
+    width: 300px;
+    padding: 22px 20px 20px;
+}
+
+#mmPanelClose {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    cursor: pointer;
+    color: var(--text-muted, rgba(240, 240, 240, 0.4));
+    font-size: 0.9rem;
+    padding: 4px 6px;
+    border-radius: 6px;
+    transition: color 0.15s;
+}
+
+#mmPanelClose:hover {
+    color: var(--text, #f0f0f0);
+}
+
+/* Type badge */
+.mm-type-badge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+#mmPanelLabel {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text, #f0f0f0);
+    line-height: 1.35;
+}
+
+#mmPanelSummary {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--text-muted, rgba(240, 240, 240, 0.6));
+    line-height: 1.55;
+    white-space: pre-wrap;
+}
+
+/* Keywords */
+#mmPanelKeywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.mm-kw {
+    font-size: 0.7rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid;
+    opacity: 0.85;
+    font-weight: 500;
+}
+
+/* Sources */
+#mmPanelSources {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.mm-src-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted, rgba(240, 240, 240, 0.35));
+    margin-bottom: 2px;
+}
+
+.mm-src-tag {
+    font-size: 0.73rem;
+    color: var(--text-muted, rgba(240, 240, 240, 0.55));
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mm-src-tag i {
+    color: #ef476f;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+}
+
+/* Deep Dive button */
+#mmDrillBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 0;
+    border-radius: 10px;
+    border: 1px solid rgba(177, 143, 207, 0.35);
+    background: rgba(177, 143, 207, 0.1);
+    color: var(--accent, #b18fcf);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: auto;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+#mmDrillBtn:hover {
+    background: rgba(177, 143, 207, 0.22);
+    border-color: rgba(177, 143, 207, 0.6);
+}
+
+#mmDrillLoader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: var(--text-muted, rgba(240, 240, 240, 0.5));
+    padding: 10px 0;
+    margin-top: auto;
+}
+
+/* ── SVG node hover effect ────────────────────────────────────── */
+#mmSvg .mm-node rect {
+    transition: fill 0.15s, stroke 0.15s;
+}
+#mmSvg .mm-node:hover rect {
+    filter: brightness(1.2);
+}
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 700px) {
+    #mmModal {
+        border-radius: 18px 18px 0 0;
+        width: 100%;
+        height: 95vh;
+        align-self: flex-end;
+    }
+
+    #mmCanvasWrap {
+        flex-direction: column;
+    }
+
+    #mmPanel,
+    .mm-panel-open {
+        width: 100% !important;
+        height: 45%;
+        border-left: none;
+        border-top: 1px solid var(--border, rgba(255, 255, 255, 0.07));
+        flex-shrink: 0;
+    }
+
+    .mm-panel-hidden {
+        height: 0;
+        padding: 0;
+    }
+}

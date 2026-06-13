@@ -21,7 +21,8 @@
   function injectModal() {
     if (document.getElementById(MODAL_ID)) return;
 
-    document.body.insertAdjacentHTML(
+    const target = document.getElementById("featureWorkspace") || document.body;
+    target.insertAdjacentHTML(
       "beforeend",
       `
 <!-- ======= FULL REPORT MODAL ======= -->
@@ -118,6 +119,7 @@
     const el = document.getElementById(MODAL_ID);
     if (el) el.style.display = "none";
     _generating = false;
+    if (typeof backToChatbot === "function") backToChatbot();
   };
 
   window.selectReportFormat = function (btn, fmt) {

@@ -263,7 +263,7 @@ const KnowledgeGraph = (() => {
 
       <div id="kgTooltip"></div>
     `;
-    document.body.appendChild(modal);
+    (document.getElementById("featureWorkspace") || document.body).appendChild(modal);
 
     modal.addEventListener("click", e => {
       if (e.target === modal) KnowledgeGraph.close();
@@ -525,6 +525,7 @@ const KnowledgeGraph = (() => {
     const tooltip = document.getElementById("kgTooltip");
     if (tooltip) tooltip.classList.remove("visible");
     isOpen = false;
+    if (typeof backToChatbot === "function") backToChatbot();
   }
 
   /**

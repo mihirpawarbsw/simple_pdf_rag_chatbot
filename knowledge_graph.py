@@ -68,65 +68,45 @@ def _fetch_chunks_for_user(username: str, filenames: list[str] | None = None) ->
 
 
 def _extract_triples_with_llm(chunks: list[dict], session_id: str) -> list[dict]:
-    """
-    Ask the LLM to extract (subject, relation, object) triples from text chunks.
-    Processes chunks grouped by source so each triple carries its origin PDF.
-    Returns list of {"subject": ..., "relation": ..., "object": ..., "source": ...}
-    """
     if not chunks:
         return []
 
-    # Group chunks by source document for per-PDF extraction
     from collections import defaultdict
+    from token_utils  import trim_to_budget
+    from api_router   import call_llm_with_fallback
+
     by_source: dict[str, list[str]] = defaultdict(list)
     for ch in chunks:
         by_source[ch["source"]].append(ch["text"])
 
     all_triples: list[dict] = []
 
-    # Process each source — cap to 10 sources, 10 chunks each
-    for source, texts in list(by_source.items())[:10]:
-        combined = "\n\n---\n\n".join(texts[:10])
-        if len(combined) > 6000:
-            combined = combined[:6000]
+    for source, texts in list(by_source.items())[:6]:   # cap at 6 sources
+        # ← KEY CHANGE: 1 400 tokens per source instead of raw 6 000 chars
+        combined = trim_to_budget(" ".join(texts[:8]), 1_400)
 
-        prompt = f"""You are a knowledge-graph extraction assistant.
+        prompt = f"""Extract up to 15 factual triples from "{source}".
+Each triple: short subject, verb-phrase relation, short object (all 2-6 words).
+Output ONLY a JSON array with keys "subject", "relation", "object". No markdown.
 
-Given the following document text from "{source}", extract up to 20 meaningful factual triples.
+Text: \\"\\"\\"{combined}\\"\\"\\"
 
-Rules:
-- Each field must be a SHORT noun phrase or verb phrase (2-6 words max).
-- Subjects and objects are entities (people, organisations, concepts, products, places, terms).
-- Relations are concise verbs or verb phrases (e.g. "is a type of", "works at", "defines", "consists of").
-- Omit trivial filler triples.
-- Output ONLY valid JSON — an array of objects with keys "subject", "relation", "object". No explanation, no markdown.
-
-Document text:
-\"\"\"
-{combined}
-\"\"\"
-
-JSON output:"""
+JSON:"""
 
         try:
-            llm      = get_llm(session_id, _get_llm_settings())
-            response = llm.invoke(prompt)
-            raw      = response.content.strip()
-
-            # Strip possible markdown fences
-            raw = re.sub(r"^```[a-z]*\n?", "", raw, flags=re.MULTILINE)
-            raw = re.sub(r"```$", "", raw, flags=re.MULTILINE).strip()
-
-            match = re.search(r"\[.*\]", raw, re.DOTALL)
+            raw = call_llm_with_fallback(
+                prompt,
+                {"model_name": "llama-3.3-70b-versatile", "temperature": 0.0, "max_tokens": 800}
+            )
+            raw = re.sub(r"^```[a-z]*\\n?|```$", "", raw, flags=re.MULTILINE).strip()
+            match = re.search(r"\\[.*\\]", raw, re.DOTALL)
             if match:
-                triples = json.loads(match.group())
-                for t in triples:
-                    if (isinstance(t, dict)
-                            and t.get("subject") and t.get("relation") and t.get("object")):
-                        t["source"] = source          # ← traceability: which PDF
+                for t in json.loads(match.group()):
+                    if isinstance(t, dict) and t.get("subject") and t.get("relation") and t.get("object"):
+                        t["source"] = source
                         all_triples.append(t)
         except Exception as e:
-            print(f"[KG] LLM extraction error for {source}: {e}")
+            print(f"[KG] LLM error for {source}: {e}")
 
     return all_triples
 

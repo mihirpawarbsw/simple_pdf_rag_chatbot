@@ -8,6 +8,10 @@
     <!-- Unified CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/full_report.css') }}">
+    <link  rel="stylesheet" href="{{ url_for('static', filename='css/action_tracker.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/nlp_analytics.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mindmap.css') }}">
+
     <!-- Marked Markdown Parser -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
@@ -18,6 +22,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
     <script src="{{ url_for('static', filename='js/graph.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/full_report.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/nlp_analytics.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/action_tracker.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/cluster.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/mindmap.js') }}" defer></script>
+
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Sora + DM Sans — same as login/register/logout -->
@@ -117,28 +126,52 @@
         <!-- Header -->
         <div class="chat-header">
 
-            <div class="header-title-section">
-                <i class="fa-solid fa-compass-drafting header-icon"></i>
-                <h1>Transforming Documents Into Intelligent Conversations</h1>
+            <div class="header-brand-section">
+                <i class="fa-solid fa-cube brand-icon"></i>
+                <span>Your Intelligent Knowledge Companion</span>
             </div>
 
             <div class="top-controls">
-
                 <input type="hidden" id="languageSelector" value="English">
 
-                <button class="toolbar-btn" onclick="KnowledgeGraph.open()" title="Knowledge Graph">
-                    <i class="fa-solid fa-diagram-project"></i>
-                    <span>Knowledge Graph</span>
-                </button>
+                <!-- Explore Features Menu -->
+                <div class="explore-wrapper">
+                    <button id="exploreFeaturesBtn" class="explore-btn" onclick="toggleExploreFeatures()" title="Explore Nexora Features">
+                        <i class="fa-solid fa-compass-drafting header-icon"></i>
+                        <span>Explore Features</span>
+                        <i class="fa-solid fa-chevron-down explore-arrow" id="exploreArrow"></i>
+                    </button>
 
-                <button class="toolbar-btn report-trigger-btn" onclick="openReportModal()" title="Generate Full Report from Documents">
-                <i class="fa-solid fa-file-chart-column"></i>
-                <span>Executive Report</span>
-                </button>
-                <button class="toolbar-btn" onclick="downloadConversationPDF()" title="Download Conversation PDF">
-                    <i class="fa-solid fa-file-arrow-down"></i>
-                    <span>Export PDF</span>
-                </button>
+                    <!-- Features Dropdown Menu -->
+                    <div class="features-dropdown" id="featuresDropdown">
+                        <button class="toolbar-btn nlp-analytics-btn" onclick="openFeatureInWorkspace('NLP Analytics', () => NLPAnalytics.open())" title="NLP Analytics Suite">
+                            <i class="fa-solid fa-flask-vial"></i>
+                            <span>NLP Analytics</span>
+                        </button>
+
+                        <button class="toolbar-btn mindmap-btn" onclick="openFeatureInWorkspace('Mind Map', () => MindMap.open())" title="Interactive Mind Map">
+                        <i class="fa-solid fa-brain"></i>
+                        <span>Mind Map</span>
+                        </button>
+                        
+                        <button class="toolbar-btn" onclick="openFeatureInWorkspace('Knowledge Graph', () => KnowledgeGraph.open())" title="Knowledge Graph">
+                            <i class="fa-solid fa-diagram-project"></i>
+                            <span>Knowledge Graph</span>
+                        </button>
+                        <button class="toolbar-btn" onclick="openFeatureInWorkspace('Cluster Universe', () => ClusterUniverse.open())" title="Cluster Universe">
+                            <i class="fa-solid fa-circle-nodes"></i>
+                            <span>Cluster Universe</span>
+                        </button>
+                        <button class="toolbar-btn action-tracker-btn" onclick="openFeatureInWorkspace('Action Tracker', () => ActionTracker.open())" title="Action Items & Decision Tracker">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>Action Tracker</span>
+                        </button>
+                        <button class="toolbar-btn report-trigger-btn" onclick="openFeatureInWorkspace('Executive Report', () => openReportModal())" title="Generate Full Report from Documents">
+                            <i class="fa-solid fa-chart-pie"></i>
+                            <span>Executive Report</span>
+                        </button>
+                    </div>
+                </div>
 
                 <button id="settingsBtn" class="header-icon-btn" onclick="toggleSettingsDrawer()" title="Session Settings">
                     <i class="fa-solid fa-sliders"></i>
@@ -148,6 +181,89 @@
                     <i class="fa-solid fa-right-from-bracket"></i>
                 </button>
 
+            </div>
+        </div>
+
+        <!-- Floating Export PDF Button in Chat Area -->
+        <button class="floating-export-btn" onclick="downloadConversationPDF()" title="Download Conversation PDF">
+            <i class="fa-solid fa-file-arrow-down"></i>
+            <span>Export PDF</span>
+        </button>
+
+        <!-- Breadcrumb bar for feature workspace navigation -->
+        <div class="breadcrumb-bar" id="breadcrumbBar" style="display: none;">
+            <button onclick="backToChatbot()" class="back-btn" title="Back to chat companion">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Back to Chatbot</span>
+            </button>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-active" id="activeFeatureName"></span>
+        </div>
+
+        <!-- Embedded Feature Workspace -->
+        <div id="featureWorkspace">
+            <!-- Action Tracker Overlay (inline inside workspace) -->
+            <div id="actionTrackerOverlay" onclick="if(event.target===this) ActionTracker.close()">
+                <div id="actionTrackerModal">
+                    <!-- Header -->
+                    <div class="at-header">
+                        <div class="at-header-left">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <h2>Action Items &amp; Decision Tracker</h2>
+                        </div>
+                        <div class="at-header-right">
+                            <button id="atExtractBtn" class="at-extract-btn" onclick="ActionTracker.extract(false)">
+                                <i class="fa-solid fa-bolt"></i> Extract Items
+                            </button>
+                            <button class="at-extract-btn secondary" onclick="ActionTracker.extract(true)" title="Re-scan and overwrite">
+                                <i class="fa-solid fa-rotate"></i> Re-scan
+                            </button>
+                            <button class="at-clear-btn" onclick="ActionTracker.clearAll()">
+                                <i class="fa-solid fa-trash"></i> Clear All
+                            </button>
+                            <button class="at-close-btn" onclick="ActionTracker.close()">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Toolbar -->
+                    <div class="at-toolbar">
+                        <div class="at-view-toggle">
+                            <button class="at-view-btn active" data-view="kanban" onclick="ActionTracker.setView('kanban')">
+                                <i class="fa-solid fa-table-columns"></i> Kanban
+                            </button>
+                            <button class="at-view-btn" data-view="timeline" onclick="ActionTracker.setView('timeline')">
+                                <i class="fa-solid fa-timeline"></i> Timeline
+                            </button>
+                        </div>
+                        <div class="at-filter-group">
+                            <select class="at-filter-select" onchange="ActionTracker.setFilterType(this.value)">
+                                <option value="">All Types</option>
+                                <option value="action">Actions</option>
+                                <option value="deadline">Deadlines</option>
+                                <option value="decision">Decisions</option>
+                            </select>
+                            <select class="at-filter-select" onchange="ActionTracker.setFilterStatus(this.value)">
+                                <option value="">All Statuses</option>
+                                <option value="todo">To Do</option>
+                                <option value="inprogress">In Progress</option>
+                                <option value="done">Done</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Stats bar -->
+                    <div class="at-stats-bar" id="atStatBar"></div>
+
+                    <!-- Body -->
+                    <div class="at-body" id="atBody">
+                        <div class="at-empty">
+                            <i class="fa-solid fa-inbox"></i>
+                            <span>Click <strong>Extract Items</strong> to scan your documents for action items, deadlines, and decisions.</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -252,7 +368,14 @@
         </button>
     </div>
 </div>
+<!-- ====================================================
+     ACTION TRACKER — OVERDUE ALERT BANNER
+==================================================== -->
+<div id="actionAlertBanner" class="hidden" onclick="ActionTracker.open()"></div>
 
+<!-- ====================================================
+     ACTION TRACKER MODAL (Moved to feature workspace)
+     ==================================================== -->
 <!-- ====================================================
      CITATION MODAL
 ==================================================== -->
@@ -523,6 +646,7 @@
                 loadUserDocuments();
                 if(session_id) loadSessionFiles(session_id);
                 KnowledgeGraph.invalidate();
+                ClusterUniverse.invalidate();
             } else { 
                 Swal.fire({
                     icon: 'error',
@@ -793,6 +917,136 @@
 
     function toggleSettingsDrawer(){
         document.getElementById("settingsDrawer").classList.toggle("active");
+    }
+
+    function toggleExploreFeatures(){
+        const btn = document.getElementById("exploreFeaturesBtn");
+        const dropdown = document.getElementById("featuresDropdown");
+        btn.classList.toggle("active");
+        dropdown.classList.toggle("open");
+    }
+
+    let _isTransitioningBack = false;
+
+    function openFeatureInWorkspace(featureName, openFunc) {
+        // 1. Hide the dropdown
+        const dropdown = document.getElementById("featuresDropdown");
+        if (dropdown) dropdown.classList.remove("open");
+        const btn = document.getElementById("exploreFeaturesBtn");
+        if (btn) btn.classList.remove("active");
+
+        // 2. Hide other features to clean state (without recursion)
+        try { NLPAnalytics.close(); } catch(e){}
+        try { MindMap.close(); } catch(e){}
+        try { KnowledgeGraph.close(); } catch(e){}
+        try { ClusterUniverse.close(); } catch(e){}
+        try { ActionTracker.close(); } catch(e){}
+        try { closeReportModal(); } catch(e){}
+
+        // 3. Set the active feature title in breadcrumb
+        document.getElementById("activeFeatureName").innerText = featureName;
+
+        // 4. Show the workspace (breadcrumb will be inserted inside it dynamically)
+        document.getElementById("featureWorkspace").style.display = "block";
+
+        // 5. Hide chatbot sections
+        document.getElementById("messages").style.display = "none";
+        const starter = document.getElementById("starterSuggestions");
+        if (starter) starter.style.display = "none";
+        const inputArea = document.querySelector(".chat-input-area");
+        if (inputArea) inputArea.style.display = "none";
+        const exportBtn = document.querySelector(".floating-export-btn");
+        if (exportBtn) exportBtn.style.display = "none";
+
+        // Add feature-active class to chat-area
+        document.querySelector(".chat-area").classList.add("feature-active");
+
+        // 6. Invoke the feature's open function
+        if (typeof openFunc === 'function') {
+            openFunc();
+        }
+
+        // 7. Find the active feature's header and insert the breadcrumb bar right after it
+        setTimeout(() => {
+            const breadcrumbBar = document.getElementById("breadcrumbBar");
+            if (breadcrumbBar) {
+                const headers = document.querySelectorAll(
+                    "#featureWorkspace #nlpHeader, " +
+                    "#featureWorkspace #cuHeader, " +
+                    "#featureWorkspace #kgHeader, " +
+                    "#featureWorkspace #mmHeader, " +
+                    "#featureWorkspace .report-modal-header, " +
+                    "#featureWorkspace .at-header"
+                );
+                let activeHeader = null;
+                for (let h of headers) {
+                    const parentModal = h.closest("#nlpOverlay, #cuOverlay, #kgModal, #mmOverlay, #nexoraReportModal, #actionTrackerOverlay");
+                    if (parentModal) {
+                        const style = window.getComputedStyle(parentModal);
+                        if (style.display !== "none" && style.opacity !== "0" && style.visibility !== "hidden") {
+                            activeHeader = h;
+                            break;
+                        }
+                    }
+                }
+                
+                if (activeHeader) {
+                    activeHeader.parentNode.insertBefore(breadcrumbBar, activeHeader.nextSibling);
+                    breadcrumbBar.style.display = "flex";
+                } else {
+                    const workspace = document.getElementById("featureWorkspace");
+                    if (workspace) {
+                        workspace.insertBefore(breadcrumbBar, workspace.firstChild);
+                        breadcrumbBar.style.display = "flex";
+                    }
+                }
+            }
+            
+            // Dispatch window resize event so visualization canvases/SVGs adjust to the new container size
+            window.dispatchEvent(new Event('resize'));
+        }, 120);
+    }
+
+    function backToChatbot() {
+        if (_isTransitioningBack) return;
+        _isTransitioningBack = true;
+
+        // 1. Close any active features in JS
+        try { NLPAnalytics.close(); } catch(e){}
+        try { MindMap.close(); } catch(e){}
+        try { KnowledgeGraph.close(); } catch(e){}
+        try { ClusterUniverse.close(); } catch(e){}
+        try { ActionTracker.close(); } catch(e){}
+        try { closeReportModal(); } catch(e){}
+
+        // 2. Move breadcrumb back to its original parent before #featureWorkspace
+        const breadcrumbBar = document.getElementById("breadcrumbBar");
+        const workspace = document.getElementById("featureWorkspace");
+        if (breadcrumbBar && workspace) {
+            workspace.parentNode.insertBefore(breadcrumbBar, workspace);
+            breadcrumbBar.style.display = "none";
+        }
+
+        // Hide workspace
+        if (workspace) workspace.style.display = "none";
+
+        // 3. Show chatbot sections
+        const messages = document.getElementById("messages");
+        if (messages) messages.style.display = "flex";
+        const starter = document.getElementById("starterSuggestions");
+        if (starter) starter.style.display = "flex";
+        const inputArea = document.querySelector(".chat-input-area");
+        if (inputArea) inputArea.style.display = "flex";
+        const exportBtn = document.querySelector(".floating-export-btn");
+        if (exportBtn) exportBtn.style.display = "flex";
+
+        // Remove feature-active class
+        document.querySelector(".chat-area").classList.remove("feature-active");
+
+        // 4. Trigger resize event so chatbot elements adjust
+        window.dispatchEvent(new Event('resize'));
+
+        _isTransitioningBack = false;
     }
 
     function uuidv4(){

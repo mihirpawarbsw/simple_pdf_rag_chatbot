@@ -668,7 +668,6 @@ def sanitize_answer(answer: str) -> str:
 # ============================================================
 # 13. QUERY CONDENSATION + VALIDATION (fix #10)
 # ============================================================
-
 def condense_question(
     session_id: str,
     question: str,
@@ -679,22 +678,23 @@ def condense_question(
         return question
 
     try:
-        llm = get_llm(session_id, settings)
+        from token_utils import trim_to_budget
+        from api_router  import call_llm_with_fallback
+
+        # ← KEY CHANGE: only last 3 turns, each answer/question capped at 200 chars
         history_str = ""
         for msg in chat_history[-3:]:
-            history_str += f"User: {msg.get('question','')}\nAssistant: {msg.get('answer','')}\n"
+            q = (msg.get("question", "") or "")[:200]
+            a = (msg.get("answer",   "") or "")[:200]
+            history_str += f"User: {q}\\nAssistant: {a}\\n"
 
-        prompt = f"""Given the following conversation history and a follow-up question, rephrase the follow-up question to be a standalone question in its original language.
-
-Conversation History:
+        prompt = f"""Rephrase the follow-up question as a standalone question.
+History:
 {history_str}
+Follow-up: {question}
+Standalone question (output only):"""
 
-Follow-up Question: {question}
-
-Standalone Question (output only the question, no explanation):"""
-
-        response   = llm.invoke(prompt)
-        standalone = response.content.strip()
+        standalone = call_llm_with_fallback(prompt, {**settings, "max_tokens": 128})
         return standalone if standalone else question
     except Exception as e:
         print(f"[Condense] Error: {e}")
@@ -839,15 +839,12 @@ def evaluate_rag_answer(
 # 17. LLM LOADER (shared, avoids re-import in app.py)
 # ============================================================
 
-def get_llm(session_id: str, settings: dict) -> ChatGroq:
-    api_key = os.getenv("GROQ_API_KEY")
-    if not api_key or "your_groq_api_key" in api_key:
-        raise ValueError("GROQ_API_KEY is not configured. Please add it to your .env file.")
-    return ChatGroq(
-        groq_api_key=api_key,
-        model_name=settings["model_name"],
-        temperature=settings["temperature"]
-    )
+def get_llm(session_id: str, settings: dict):
+    """
+    Drop-in replacement: routes to api_router for key rotation + Gemini fallback.
+    """
+    from api_router import get_routed_llm
+    return get_routed_llm(session_id, settings)
 
 
 # ============================================================

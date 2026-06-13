@@ -110,12 +110,24 @@ def fetch_document_chunks(username: str, selected_docs: list[str]) -> dict[str, 
 # ─────────────────────────────────────────────────────────────────────────────
 # STEP 2 — LLM section generation
 # ─────────────────────────────────────────────────────────────────────────────
-
 def _call_llm(prompt: str, session_id: str, settings: dict) -> str:
-    """Call the Groq LLM and return clean text."""
-    llm = get_llm(session_id, settings)
-    response = llm.invoke(prompt)
-    return response.content.strip()
+    """Uses dedicated GROQ_API_KEY_FULL_REPORT, falls back to router."""
+    import os
+    from api_router import call_llm_with_fallback
+    dedicated = os.getenv("GROQ_API_KEY_FULL_REPORT", "").strip()
+    if dedicated:
+        try:
+            from langchain_groq import ChatGroq
+            llm = ChatGroq(
+                groq_api_key=dedicated,
+                model_name=settings.get("model_name", "llama-3.3-70b-versatile"),
+                temperature=settings.get("temperature", 0.0),
+                max_tokens=2048,
+            )
+            return llm.invoke(prompt).content.strip()
+        except Exception as e:
+            print(f"[Report] Dedicated key failed ({e}), using router.")
+    return call_llm_with_fallback(prompt, {**settings, "max_tokens": 2048})
 
 
 def generate_section(
@@ -125,60 +137,38 @@ def generate_section(
     session_id: str,
     settings: dict,
 ) -> str:
-    """Generate one report section using the LLM over concatenated doc context."""
+    from token_utils import trim_to_budget
     combined_context = ""
     for fname, text in doc_map.items():
-        snippet = text[:4000]          # stay within context window per doc
-        combined_context += f"\n\n--- Document: {fname} ---\n{snippet}"
+        # ← KEY CHANGE: 1 200 tokens per doc instead of 4 000 chars
+        snippet = trim_to_budget(text, 1_200)
+        combined_context += f"\\n\\n--- Document: {fname} ---\\n{snippet}"
+
+    # Trim the whole context to 6 000 tokens max
+    combined_context = trim_to_budget(combined_context, 6_000)
 
     prompts = {
-        "executive_summary": f"""You are a professional report writer.
-Based on the following enterprise documents, write a concise and professional
-Executive Summary (3-5 paragraphs) that captures the overall purpose, scope,
-and most critical information across all the documents.
+        "executive_summary": f"""Write a concise Executive Summary (3-5 paragraphs) for these documents.
+DOCUMENTS:{combined_context}
+Executive Summary only:""",
 
-DOCUMENTS:
-{combined_context}
+        "key_findings": f"""List the top 8-12 Key Findings (numbered) from these documents. Be specific.
+DOCUMENTS:{combined_context}
+Key Findings only:""",
 
-Write ONLY the Executive Summary. Use professional, clear language.""",
+        "detailed_analysis": f"""Provide a Detailed Analysis with sub-sections:
+1. Content Overview  2. Main Themes  3. Data & Metrics  4. Risks  5. Strengths
+DOCUMENTS:{combined_context}
+Detailed Analysis only:""",
 
-        "key_findings": f"""You are a professional analyst.
-Based on the following enterprise documents, extract and list the top 8-12
-Key Findings. Each finding should be a clear, numbered statement that
-highlights an important fact, insight, risk, or conclusion drawn from
-the documents. Be specific and data-driven where possible.
-
-DOCUMENTS:
-{combined_context}
-
-Write ONLY the numbered Key Findings list.""",
-
-        "detailed_analysis": f"""You are a senior business analyst.
-Provide a Detailed Analysis of the following documents. Structure your
-analysis with these sub-sections:
-1. Content Overview
-2. Main Themes & Topics
-3. Data & Metrics Highlighted
-4. Risks & Concerns Identified
-5. Strengths & Opportunities
-
-DOCUMENTS:
-{combined_context}
-
-Write a thorough, well-structured Detailed Analysis using the sub-sections above.""",
-
-        "conclusion": f"""You are a professional consultant.
-Based on the following enterprise documents, write:
-1. A concise Conclusion (2-3 paragraphs summarising what the documents collectively convey)
-2. A Recommendations section with 5-8 actionable, prioritised recommendations
-
-DOCUMENTS:
-{combined_context}
-
-Write ONLY the Conclusion and Recommendations.""",
+        "conclusion": f"""Write:
+1. A concise Conclusion (2-3 paragraphs)
+2. Recommendations (5-8 actionable, prioritised items)
+DOCUMENTS:{combined_context}
+Conclusion and Recommendations only:""",
     }
 
-    prompt = prompts.get(section_key, f"Summarise the following documents:\n{combined_context}")
+    prompt = prompts.get(section_key, f"Summarise these documents:\\n{combined_context}")
     return _call_llm(prompt, session_id, settings)
 
 

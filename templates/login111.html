@@ -77,20 +77,21 @@ body::after{
   box-shadow:0 14px 40px rgba(45,42,110,.06),inset 0 1px 0 rgba(255,255,255,.7);
 }
 .nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;z-index:5;position:relative}
-.logo-wrapper{
+.nav-logo-mark{
+  position:relative;width:38px;height:38px;border-radius:11px;flex-shrink:0;
+  background:var(--grad);background-size:220% 220%;
   display:flex;align-items:center;justify-content:center;
-  background:var(--ink);padding:8px 20px;border-radius:999px;
-  box-shadow:0 4px 12px rgba(36,31,61,.12);
-  transition:all .3s var(--ease);
-}
-.logo-wrapper:hover{
-  transform:translateY(-1px);
-  box-shadow:0 6px 18px rgba(36,31,61,.2);
-}
-.logo-wrapper img{
-  width:130px;height:auto;display:block;
+  box-shadow:0 6px 18px var(--glow);
+  animation:logoFlow 6s ease infinite;
 }
 @keyframes logoFlow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.nav-logo-mark::after{
+  content:'';position:absolute;inset:0;border-radius:11px;
+  background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.55),transparent 60%);
+}
+.nav-logo-mark i{color:#fff;font-size:16px;position:relative;z-index:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.15))}
+.nav-wordmark{font-family:var(--ff-display);font-size:19px;font-weight:800;letter-spacing:-.3px;color:var(--ink);white-space:nowrap}
+.nav-wordmark em{font-style:normal;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .nav-links{display:flex;align-items:center;gap:26px}
 .nav-link{font-family:var(--ff-display);font-size:13.5px;font-weight:600;color:var(--ink-2);text-decoration:none;transition:color .3s var(--ease);position:relative;padding:4px 0}
 .nav-link::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;border-radius:2px;background:var(--grad);transition:width .3s var(--ease)}
@@ -267,96 +268,6 @@ body::after{
 .feat-card h3{font-family:var(--ff-display);font-size:16.5px;font-weight:700;margin-bottom:8px;letter-spacing:-.01em}
 .feat-card p{font-size:14px;line-height:1.6;color:var(--ink-2)}
 
-/* ═══ TOOL SHOWCASE — every engine, explained simply ═══ */
-.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-@media(max-width:980px){.tool-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:640px){.tool-grid{grid-template-columns:1fr}}
-.tool-card{
-  background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
-  padding:0;text-align:left;overflow:hidden;display:flex;flex-direction:column;
-  transition:transform .4s var(--ease),box-shadow .4s var(--ease),border-color .4s var(--ease);
-}
-.tool-card:hover{transform:translateY(-6px);box-shadow:0 26px 54px rgba(45,42,110,.1);border-color:var(--line-2)}
-.tool-preview{
-  position:relative;height:120px;background:var(--bg-2);border-bottom:1px solid var(--line);
-  overflow:hidden;
-}
-.tool-preview::before{
-  content:'';position:absolute;inset:0;background:var(--grad-soft);opacity:.6;
-}
-.tool-body{padding:22px 22px 24px;display:flex;flex-direction:column;flex:1}
-.tool-head{display:flex;align-items:center;gap:11px;margin-bottom:10px}
-.tool-icon{
-  width:36px;height:36px;border-radius:11px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff;
-  background:var(--grad);background-size:220% 220%;
-}
-.tool-card h3{font-family:var(--ff-display);font-size:16px;font-weight:700;letter-spacing:-.01em}
-.tool-card>.tool-body>p{font-size:13.5px;line-height:1.6;color:var(--ink-2);margin-bottom:14px}
-.tool-list{display:flex;flex-direction:column;gap:7px;margin-top:auto}
-.tool-list li{list-style:none;display:flex;align-items:flex-start;gap:8px;font-size:13px;line-height:1.5;color:var(--ink-2)}
-.tool-list li i{color:var(--magenta);font-size:10px;margin-top:5px;flex-shrink:0}
-
-/* mini preview animations — simplified, theme-matched */
-.mp-dot{position:absolute;width:7px;height:7px;border-radius:50%;background:var(--magenta);box-shadow:0 0 8px var(--glow);animation:mpFloat ease-in-out infinite alternate}
-.mp-dot.alt{background:var(--amber);box-shadow:0 0 8px rgba(255,167,59,.5)}
-.mp-line{position:absolute;height:1px;background:var(--line-2);transform-origin:left center}
-@keyframes mpFloat{from{transform:translateY(0)}to{transform:translateY(-8px)}}
-
-.mp-graph .mp-dot:nth-child(1){top:25%;left:18%;animation-duration:4s}
-.mp-graph .mp-dot:nth-child(2){top:35%;left:70%;animation-duration:5s}
-.mp-graph .mp-dot:nth-child(3){top:70%;left:32%;animation-duration:4.6s}
-.mp-graph .mp-dot:nth-child(4){top:75%;left:60%;animation-duration:5.4s}
-.mp-graph .mp-line:nth-child(5){width:70px;top:30%;left:20%;transform:rotate(8deg)}
-.mp-graph .mp-line:nth-child(6){width:60px;top:72%;left:34%;transform:rotate(-30deg)}
-
-.mp-map{display:flex;align-items:center;justify-content:center;height:100%}
-.mp-map-core{width:14px;height:14px;border-radius:50%;background:var(--grad);box-shadow:0 0 14px var(--glow)}
-.mp-map .mp-line{width:46px;top:50%;left:50%}
-.mp-map .mp-line:nth-child(2){transform:rotate(25deg)}
-.mp-map .mp-line:nth-child(3){transform:rotate(-25deg)}
-.mp-map .mp-line:nth-child(4){transform:rotate(155deg)}
-.mp-map .mp-line:nth-child(5){transform:rotate(-155deg)}
-.mp-map .mp-dot:nth-child(6){top:28%;left:74%;animation-duration:4s}
-.mp-map .mp-dot:nth-child(7){top:68%;left:74%;animation-duration:4.8s}
-.mp-map .mp-dot:nth-child(8){top:28%;left:24%;animation-duration:5.2s}
-
-.mp-cluster{display:flex;align-items:center;justify-content:center;height:100%;position:relative}
-.mp-bubble{position:absolute;border-radius:50%;border:1.5px solid var(--magenta);opacity:.55;animation:mpSpin linear infinite}
-@keyframes mpSpin{to{transform:rotate(360deg)}}
-.mp-bubble.b1{width:60px;height:60px;animation-duration:9s}
-.mp-bubble.b2{width:84px;height:84px;animation-duration:14s;border-color:var(--amber);animation-direction:reverse}
-.mp-bubble.b3{width:36px;height:36px;animation-duration:6s}
-
-.mp-bars{display:flex;align-items:flex-end;gap:7px;height:100%;padding:30px 26px}
-.mp-bars .bar{flex:1;border-radius:4px 4px 0 0;background:var(--grad);animation:mpBar 2.4s ease-in-out infinite alternate}
-.mp-bars .bar:nth-child(1){height:35%;animation-delay:.1s}
-.mp-bars .bar:nth-child(2){height:75%;animation-delay:.3s}
-.mp-bars .bar:nth-child(3){height:50%;animation-delay:.5s}
-.mp-bars .bar:nth-child(4){height:90%;animation-delay:.2s}
-.mp-bars .bar:nth-child(5){height:28%;animation-delay:.6s}
-@keyframes mpBar{from{transform:scaleY(.85)}to{transform:scaleY(1)}}
-
-.mp-tracker{display:flex;gap:9px;height:100%;padding:20px 22px;align-items:flex-start}
-.mp-tracker .col{flex:1;display:flex;flex-direction:column;gap:7px}
-.mp-tracker .card{height:18px;border-radius:6px;background:var(--surface);border:1px solid var(--line-2)}
-.mp-tracker .card.cy{background:var(--grad-soft);border-color:var(--magenta)}
-
-.mp-report{display:flex;gap:10px;height:100%;padding:18px 22px;align-items:center}
-.mp-report .page{flex:1;height:78px;background:var(--surface);border:1px solid var(--line-2);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:6px;animation:mpReport 4s ease-in-out infinite}
-.mp-report .page:nth-child(2){animation-delay:2s}
-@keyframes mpReport{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-.mp-report .pl{height:3px;border-radius:2px;background:var(--line-2)}
-.mp-report .pl.v{background:var(--magenta)}
-.mp-report .pl.c{background:var(--amber)}
-
-.mp-rag{display:flex;align-items:center;justify-content:space-around;height:100%;padding:0 18px}
-.mp-rag .node{width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--line-2);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--magenta);position:relative}
-.mp-rag .node::after{content:'';position:absolute;inset:-5px;border-radius:50%;border:1px solid var(--line-2);animation:mpPing 2s ease-out infinite}
-.mp-rag .node:nth-child(2)::after{animation-delay:.5s}
-.mp-rag .node:nth-child(3)::after{animation-delay:1s}
-@keyframes mpPing{0%{transform:scale(.8);opacity:.8}100%{transform:scale(1.6);opacity:0}}
-
 /* ═══ CAPABILITIES STRIP — auto-scroll ═══ */
 .strip-section{margin-top:64px;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
 .strip-track{display:flex;gap:12px;width:max-content;animation:stripScroll 32s linear infinite}
@@ -425,7 +336,7 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:36px
 }
 .modal-backdrop.open{opacity:1;pointer-events:auto}
 .modal-card{
-  width:100%;max-width:440px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
+  width:100%;max-width:400px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
   padding:36px 32px 30px;position:relative;
   box-shadow:0 30px 80px rgba(36,31,61,.25);
   transform:translateY(16px) scale(.97);opacity:0;transition:all .4s var(--ease);
@@ -497,14 +408,12 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:36px
 <!-- NAVBAR — logo always visible: gradient mark + wordmark, no image filter tricks -->
 <nav class="navbar">
   <a class="nav-brand" href="/">
-    <div class="logo-wrapper">
-      <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora">
-    </div>
+    <span class="nav-logo-mark"><i class="fa-solid fa-circle-nodes"></i></span>
+    <span class="nav-wordmark">Nex<em>ora</em></span>
   </a>
   <div class="nav-links">
     <a href="#how" class="nav-link">How it works</a>
     <a href="#features" class="nav-link">Features</a>
-    <a href="#tools" class="nav-link">Tools</a>
     <a href="#usecases" class="nav-link">Who it's for</a>
     <a href="#faq" class="nav-link">FAQ</a>
   </div>
@@ -587,7 +496,7 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:36px
     <div class="center gs-rise">
       <div class="scene-tag"><i class="fa-solid fa-sparkles"></i>What you get</div>
       <h2 class="scene-h2">Everything you need, <em>nothing you don't.</em></h2>
-      <p class="scene-sub">A quick look at the highlights — then a full walkthrough of every tool just below.</p>
+      <p class="scene-sub">Powerful tools underneath, presented in a way anyone can pick up in minutes.</p>
     </div>
 
     <div class="feat-grid gs-rise">
@@ -643,164 +552,6 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:36px
         <span class="strip-badge">PDF & Word export</span>
         <span class="strip-badge">Works on any device</span>
       </div>
-    </div>
-  </div>
-</section>
-
-<div class="synapse"><div class="synapse-line"></div></div>
-
-<!-- ═══ FULL TOOL SHOWCASE — every engine in the product, explained plainly ═══ -->
-<section class="scene" id="tools">
-  <div class="scene-inner">
-    <div class="center gs-rise">
-      <div class="scene-tag"><i class="fa-solid fa-layer-group"></i>Explore every tool</div>
-      <h2 class="scene-h2">One workspace, <em>seven superpowers.</em></h2>
-      <p class="scene-sub">Behind the simple chat box sits a full toolkit. Open any of these any time — no extra setup, just a click.</p>
-    </div>
-
-    <div class="tool-grid gs-rise">
-
-      <!-- 1. Knowledge Graph -->
-      <div class="tool-card">
-        <div class="tool-preview mp-graph">
-          <div class="mp-dot"></div><div class="mp-dot alt"></div><div class="mp-dot"></div><div class="mp-dot alt"></div>
-          <div class="mp-line"></div><div class="mp-line"></div>
-        </div>
-        <div class="tool-body">
-          <div class="tool-head">
-            <div class="tool-icon"><i class="fa-solid fa-diagram-project"></i></div>
-            <h3>Knowledge Graph</h3>
-          </div>
-          <p>See how everything in your documents connects — people, companies, topics, and ideas, drawn as a simple web.</p>
-          <ul class="tool-list">
-            <li><i class="fa-solid fa-circle"></i>Spot relationships you'd otherwise miss</li>
-            <li><i class="fa-solid fa-circle"></i>Click any point to jump to the source</li>
-            <li><i class="fa-solid fa-circle"></i>Works across all your files at once</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- 2. Interactive Mind Map -->
-      <div class="tool-card">
-        <div class="tool-preview mp-map">
-          <div class="mp-line"></div><div class="mp-line"></div><div class="mp-line"></div><div class="mp-line"></div>
-          <div class="mp-map-core"></div>
-          <div class="mp-dot"></div><div class="mp-dot alt"></div><div class="mp-dot"></div>
-        </div>
-        <div class="tool-body">
-          <div class="tool-head">
-            <div class="tool-icon"><i class="fa-solid fa-brain"></i></div>
-            <h3>Interactive Mind Map</h3>
-          </div>
-          <p>Turns a long document into a visual tree of its main ideas, so you can see the big picture in seconds.</p>
-          <ul class="tool-list">
-            <li><i class="fa-solid fa-circle"></i>Built automatically — nothing to draw yourself</li>
-            <li><i class="fa-solid fa-circle"></i>Expand any branch for more detail</li>
-            <li><i class="fa-solid fa-circle"></i>Great for studying or skimming reports</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- 3. Cluster Universe -->
-      <div class="tool-card">
-        <div class="tool-preview mp-cluster">
-          <div class="mp-bubble b2"></div><div class="mp-bubble b1"></div><div class="mp-bubble b3"></div>
-        </div>
-        <div class="tool-body">
-          <div class="tool-head">
-            <div class="tool-icon"><i class="fa-solid fa-circle-nodes"></i></div>
-            <h3>Cluster Universe</h3>
-          </div>
-          <p>Automatically sorts a big pile of files into neat topic groups, so related documents find each other.</p>
-          <ul class="tool-list">
-            <li><i class="fa-solid fa-circle"></i>No folders or tags to manage by hand</li>
-            <li><i class="fa-solid fa-circle"></i>Each group comes with a short summary</li>
-            <li><i class="fa-solid fa-circle"></i>Perfect for messy, unsorted archives</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- 4. NLP Analytics Suite -->
-      <div class="tool-card">
-        <div class="tool-preview mp-bars">
-          <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
-        </div>
-        <div class="tool-body">
-          <div class="tool-head">
-            <div class="tool-icon"><i class="fa-solid fa-chart-simple"></i></div>
-            <h3>Document Analytics</h3>
-          </div>
-          <p>Get an instant read on tone, key phrases, and how complex a document is — without reading it cover to cover.</p>
-          <ul class="tool-list">
-            <li><i class="fa-solid fa-circle"></i>Tells you if the tone is positive or negative</li>
-            <li><i class="fa-solid fa-circle"></i>Highlights the most-used ideas and terms</li>
-            <li><i class="fa-solid fa-circle"></i>Flags whether something is a hard read</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- 5. Smart Action Tracker -->
-      <div class="tool-card">
-        <div class="tool-preview mp-tracker">
-          <div class="col"><div class="card"></div><div class="card cy"></div></div>
-          <div class="col"><div class="card"></div></div>
-          <div class="col"><div class="card cy"></div></div>
-        </div>
-        <div class="tool-body">
-          <div class="tool-head">
-            <div class="tool-icon"><i class="fa-solid fa-list-check"></i></div>
-            <h3>Smart Action Tracker</h3>
-          </div>
-          <p>Reads meeting notes and reports for you, then pulls out every task, deadline, and decision automatically.</p>
-          <ul class="tool-list">
-            <li><i class="fa-solid fa-circle"></i>Nothing falls through the cracks</li>
-            <li><i class="fa-solid fa-circle"></i>Drag tasks across a simple to-do board</li>
-            <li><i class="fa-solid fa-circle"></i>See who's responsible for what</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- 6. Executive Report Generator -->
-      <div class="tool-card">
-        <div class="tool-preview mp-report">
-          <div class="page"><div class="pl v" style="width:80%"></div><div class="pl" style="width:90%"></div><div class="pl c" style="width:55%"></div></div>
-          <div class="page"><div class="pl c" style="width:60%"></div><div class="pl" style="width:85%"></div><div class="pl v" style="width:70%"></div></div>
-        </div>
-        <div class="tool-body">
-          <div class="tool-head">
-            <div class="tool-icon"><i class="fa-solid fa-file-contract"></i></div>
-            <h3>One-Click Report Builder</h3>
-          </div>
-          <p>Turns a whole folder of documents into one clean, readable report — ready to download or share.</p>
-          <ul class="tool-list">
-            <li><i class="fa-solid fa-circle"></i>Includes a summary and key takeaways</li>
-            <li><i class="fa-solid fa-circle"></i>Export straight to PDF or Word</li>
-            <li><i class="fa-solid fa-circle"></i>Saves hours of manual copy-pasting</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- 7. Advanced RAG Intelligence (the engine under it all) -->
-      <div class="tool-card">
-        <div class="tool-preview mp-rag">
-          <div class="node"><i class="fa-solid fa-file"></i></div>
-          <div class="node"><i class="fa-solid fa-magnifying-glass"></i></div>
-          <div class="node"><i class="fa-solid fa-brain"></i></div>
-        </div>
-        <div class="tool-body">
-          <div class="tool-head">
-            <div class="tool-icon"><i class="fa-solid fa-microchip"></i></div>
-            <h3>The Engine Behind It All</h3>
-          </div>
-          <p>Every tool above runs on the same accuracy-first engine: it searches your real documents before it ever answers.</p>
-          <ul class="tool-list">
-            <li><i class="fa-solid fa-circle"></i>Answers are checked against your files first</li>
-            <li><i class="fa-solid fa-circle"></i>Built-in guardrails reduce made-up answers</li>
-            <li><i class="fa-solid fa-circle"></i>Every claim links back to its source</li>
-          </ul>
-        </div>
-      </div>
-
     </div>
   </div>
 </section>
@@ -892,15 +643,10 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:36px
 
 <footer>
   <div class="footer-inner">
-    <a class="footer-brand" href="/" style="text-decoration:none">
-      <div class="logo-wrapper" style="padding: 6px 16px;">
-        <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora" style="width: 110px; height: auto;">
-      </div>
-    </a>
+    <div class="footer-brand"><span class="footer-logo-mark"></span>Nex<em>ora</em></div>
     <nav class="footer-links">
       <a href="#how">How it works</a>
       <a href="#features">Features</a>
-      <a href="#tools">Tools</a>
       <a href="#usecases">Who it's for</a>
       <a href="#faq">FAQ</a>
     </nav>
@@ -913,9 +659,7 @@ footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:36px
   <div class="modal-card">
     <button class="modal-close" onclick="closeLogin()"><i class="fa-solid fa-xmark"></i></button>
     <div class="modal-brand">
-      <div class="logo-wrapper" style="margin-bottom:12px; display:inline-flex; width:max-content; padding:8px 20px;">
-        <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora AI" style="width: 140px; height: auto;">
-      </div>
+      <div class="modal-logo-mark"><i class="fa-solid fa-circle-nodes"></i></div>
       <span class="modal-tagline">Welcome back to Nexora</span>
     </div>
     <h2 class="modal-heading">Sign in</h2>
@@ -947,12 +691,7 @@ function openLogin(){document.getElementById('loginModal').classList.add('open')
 function closeLogin(){document.getElementById('loginModal').classList.remove('open');document.body.style.overflow=''}
 document.getElementById('loginModal').addEventListener('click',function(e){if(e.target===this)closeLogin()});
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLogin()});
-window.addEventListener('load',function(){
-  {% if error or success %}openLogin();{% endif %}
-  if(window.location.search.includes('login=true') || window.location.hash === '#login'){
-    openLogin();
-  }
-});
+{% if error or success %}window.addEventListener('load',function(){openLogin()});{% endif %}
 
 /* ═══ FAQ accordion ═══ */
 document.querySelectorAll('.faq-item').forEach(function(item){

@@ -32,7 +32,7 @@
     <!-- Sora + DM Sans — same as login/register/logout -->
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 </head>
-<body class="theme-lavender">
+<body class="theme-aurora-gelato light-mode">
 
 <!-- Ambient layers -->
 <div class="mesh-gradient">
@@ -83,8 +83,8 @@
             <div class="upload-drag-area" onclick="document.getElementById('pdfFiles').click()">
                 <i class="fa-solid fa-cloud-arrow-up"></i>
                 <p>Click to add files</p>
-                <span>PDF, DOCX, TXT, CSV</span>
-                <input type="file" id="pdfFiles" multiple style="display:none" onchange="handleFileSelection(this)">
+                <span>PDF, TXT, DOC/DOCX, PPT/PPTX</span>
+                <input type="file" id="pdfFiles" accept=".pdf,.txt,.doc,.docx,.ppt,.pptx" multiple style="display:none" onchange="handleFileSelection(this)">
             </div>
 
             <div id="fileSelectionList" class="file-selection-list"></div>
@@ -173,6 +173,12 @@
                     </div>
                 </div>
 
+                <!-- User Guide & FAQ Button -->
+                <button id="guideBtn" class="explore-btn" onclick="showGuideInCenter()" title="System Guide & FAQ">
+                    <i class="fa-solid fa-circle-question header-icon"></i>
+                    <span>User Guide &amp; FAQ</span>
+                </button>
+
                 <button id="settingsBtn" class="header-icon-btn" onclick="toggleSettingsDrawer()" title="Session Settings">
                     <i class="fa-solid fa-sliders"></i>
                 </button>
@@ -202,6 +208,8 @@
 
         <!-- Embedded Feature Workspace -->
         <div id="featureWorkspace">
+
+
             <!-- Action Tracker Overlay (inline inside workspace) -->
             <div id="actionTrackerOverlay" onclick="if(event.target===this) ActionTracker.close()">
                 <div id="actionTrackerModal">
@@ -258,9 +266,97 @@
 
                     <!-- Body -->
                     <div class="at-body" id="atBody">
-                        <div class="at-empty">
-                            <i class="fa-solid fa-inbox"></i>
-                            <span>Click <strong>Extract Items</strong> to scan your documents for action items, deadlines, and decisions.</span>
+                        <div class="at-empty" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 20px; gap: 12px; color: var(--text-secondary);">
+                            <i class="fa-solid fa-circle-check" style="font-size: 32px; color: var(--accent); margin-bottom: 8px;"></i>
+                            <h3 style="margin: 0; font-family: var(--font-display); font-size: 1.1rem; color: var(--text-primary);">Action Items &amp; Decision Tracker</h3>
+                            <p style="margin: 0 0 12px; font-size: 0.88rem; max-width: 480px; line-height: 1.5;">
+                                Scans your documents to automatically extract and track action items, deadlines, and decision points in a Kanban board.
+                            </p>
+                            <button class="at-extract-btn" onclick="ActionTracker.extract(false)" style="background: var(--grad-button); color: var(--swal-btn-text); border: none; padding: 10px 24px; border-radius: 12px; font-family: var(--font-display); font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 12px var(--accent-glow); display: inline-flex; align-items: center; gap: 8px;">
+                                <i class="fa-solid fa-bolt"></i> Extract Action Items
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Guide & FAQ Overlay (inline inside workspace) -->
+            <div id="faqWorkspaceOverlay" style="display: none;">
+                <div id="faqWorkspaceModal" style="display: flex; flex-direction: column; padding: 32px; box-sizing: border-box; color: var(--text-secondary); font-family: var(--font-body), sans-serif; font-size: 0.92rem; line-height: 1.6; text-align: left;">
+                    <!-- Header -->
+                    <div id="faqWorkspaceHeader" style="display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 16px; flex-shrink: 0;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fa-solid fa-circle-question" style="font-size: 1.3rem; color: var(--accent);"></i>
+                            <h2 style="margin: 0; font-size: 1.25rem; font-family: var(--font-display); font-weight: 700; background: var(--grad-text); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">User Guide &amp; System FAQ</h2>
+                        </div>
+                    </div>
+                    <!-- Scrollable Body Content -->
+                    <div id="faqWorkspaceScrollBody" style="padding-right: 8px;">
+                        <div style="display: flex; flex-direction: column; gap: 24px;">
+                            <div>
+                                <h4 style="margin: 0 0 8px; font-family: var(--font-display); font-size: 0.98rem; color: var(--text-primary);"><i class="fa-solid fa-rocket" style="color: var(--accent); margin-right: 6px;"></i> Welcome to Nexora.AI</h4>
+                                <p style="margin: 0; font-size: 0.88rem;">
+                                    Nexora.AI is an advanced document intelligence and conversational RAG (Retrieval-Augmented Generation) platform. It allows teams to upload corporate files (PDFs, text files, documents) and explore them through unified semantic search, natural language QA, and a suite of visual analytical tools.
+                                </p>
+                            </div>
+                            
+                            <div style="border-top: 1px solid var(--border); padding-top: 16px;">
+                                <h4 style="margin: 0 0 10px; font-family: var(--font-display); font-size: 0.98rem; color: var(--text-primary);"><i class="fa-solid fa-map" style="color: var(--accent); margin-right: 6px;"></i> Step-by-Step Walkthrough</h4>
+                                <ol style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; font-size: 0.88rem;">
+                                    <li><strong>Upload Your Documents:</strong> Click the "Upload Files" area in the sidebar to upload PDFs or text documents. Once uploaded, the files are parsed and indexed semantically.</li>
+                                    <li><strong>Ask Questions (RAG QA):</strong> Use the primary chat companion interface to type questions. Nexora will search across all uploaded files, fetch the most relevant paragraphs, and generate an answer citing the sources.</li>
+                                    <li><strong>Inspect Citations:</strong> Click the highlighted source badge on any response to open the "Source Context Inspector" and read the exact source paragraphs.</li>
+                                    <li><strong>Explore Analytics Features:</strong> Click the "Explore Features" dropdown at the top to access specialized tools like NLP Analytics, Mind Map, Knowledge Graph, Cluster Universe, and Action Item Tracker.</li>
+                                </ol>
+                            </div>
+                            
+                            <div style="border-top: 1px solid var(--border); padding-top: 16px;">
+                                <h4 style="margin: 0 0 10px; font-family: var(--font-display); font-size: 0.98rem; color: var(--text-primary);"><i class="fa-solid fa-cubes" style="color: var(--accent); margin-right: 6px;"></i> Explore Features in Detail</h4>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px;">
+                                    <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
+                                        <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-flask-vial"></i> NLP Analytics Suite</strong>
+                                        <span style="font-size: 0.8rem; display: block;">Analyzes text to extract overall emotional sentiment, create word clouds of frequent keywords, discover main topics, identify keyphrases, extract named entities (people/places/dates), and calculate readability scores.</span>
+                                    </div>
+                                    <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
+                                        <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-brain"></i> Interactive Mind Map</strong>
+                                        <span style="font-size: 0.8rem; display: block;">Builds a hierarchical, branching tree structure of topics discovered in your documents. Clicking any branch expands it and opens a side pane showing detail summaries, keywords, and citations.</span>
+                                    </div>
+                                    <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
+                                        <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-diagram-project"></i> Knowledge Graph</strong>
+                                        <span style="font-size: 0.8rem; display: block;">Visualizes connections between concepts, entities, and source documents in a dynamic force-directed network. Helps pinpoint key relationships across separate files.</span>
+                                    </div>
+                                    <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
+                                        <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-circle-nodes"></i> Cluster Universe</strong>
+                                        <span style="font-size: 0.8rem; display: block;">Embeds your files into a 2D coordinate space based on semantic meaning. Nearby points represent documents with similar context, giving you a bird's-eye view of your entire dataset.</span>
+                                    </div>
+                                    <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
+                                        <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-circle-check"></i> Action Item &amp; Decision Tracker</strong>
+                                        <span style="font-size: 0.8rem; display: block;">Scans documents using AI to automatically identify hidden action items, deadlines, owners, and decisions, organizing them inside a fully operational Kanban board.</span>
+                                    </div>
+                                    <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
+                                        <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-chart-pie"></i> Executive Report</strong>
+                                        <span style="font-size: 0.8rem; display: block;">Compiles and generates a comprehensive, AI-written PDF or DOCX report summarising all findings, insights, and key metrics from the selected set of documents.</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="border-top: 1px solid var(--border); padding-top: 16px;">
+                                <h4 style="margin: 0 0 10px; font-family: var(--font-display); font-size: 0.98rem; color: var(--text-primary);"><i class="fa-solid fa-circle-info" style="color: var(--accent); margin-right: 6px;"></i> System FAQ</h4>
+                                <div style="display: flex; flex-direction: column; gap: 12px; font-size: 0.84rem;">
+                                    <div>
+                                        <strong style="color: var(--text-primary); display: block; margin-bottom: 2px;">Q: How does the AI search across my files?</strong>
+                                        <span>A: The system splits documents into paragraphs, embeds them into a semantic vector database, and matches your questions using dense cosine similarity to locate the most relevant sections before generating answers.</span>
+                                    </div>
+                                    <div>
+                                        <strong style="color: var(--text-primary); display: block; margin-bottom: 2px;">Q: Can I change colors or look?</strong>
+                                        <span>A: Yes! Click the gear icon in the top right to open "Session Settings". You can select from 6 themes (Lavender, Cyan, Sunset, Sherbet, Obsidian, Tropical) and toggle between dark and light appearance modes.</span>
+                                    </div>
+                                    <div>
+                                        <strong style="color: var(--text-primary); display: block; margin-bottom: 2px;">Q: How do I export my conversation?</strong>
+                                        <span>A: Use the floating "Export PDF" button in the chat area to download a beautifully formatted transcript of your session.</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -323,7 +419,7 @@
         </button>
     </div>
     <div class="drawer-body">
-        <div class="setting-group">
+        <div class="setting-group" style="display: none;">
             <label for="settingsModel">Groq LLM Model</label>
             <select id="settingsModel">
                 <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Default)</option>
@@ -332,12 +428,12 @@
                 <option value="gemma2-9b-it">Gemma 2 9B</option>
             </select>
         </div>
-        <div class="setting-group">
+        <div class="setting-group" style="display: none;">
             <label for="settingsTemperature">Temperature (<span id="tempVal">0.1</span>)</label>
             <input type="range" id="settingsTemperature" min="0" max="1" step="0.1" value="0.1"
                    oninput="document.getElementById('tempVal').innerText=this.value">
         </div>
-        <div class="setting-group">
+        <div class="setting-group" style="display: none;">
             <label for="settingsPrompt">System Prompt Override</label>
             <textarea id="settingsPrompt" rows="6" placeholder="Provide system guidelines for the RAG agent…"></textarea>
         </div>
@@ -347,6 +443,7 @@
         <div class="setting-group">
             <label for="themeSelector">Color Theme</label>
             <select id="themeSelector" onchange="handleThemeChange(this.value)" title="Choose Color Theme">
+                <option value="aurora-gelato">Aurora Gelato Theme</option>
                 <option value="lavender">Lavender Theme</option>
                 <option value="cyan">Cyan Theme</option>
                 <option value="sunset">Sunset Theme</option>
@@ -500,7 +597,7 @@
 
     /* ---- Theme / Mode ---- */
     function changeTheme(theme){
-        document.body.classList.remove('theme-lavender', 'theme-cyan', 'theme-sunset', 'theme-sherbet', 'theme-obsidian', 'theme-tropical');
+        document.body.classList.remove('theme-aurora-gelato', 'theme-lavender', 'theme-cyan', 'theme-sunset', 'theme-sherbet', 'theme-obsidian', 'theme-tropical');
         document.body.classList.add(`theme-${theme}`);
         localStorage.setItem("theme", theme);
         
@@ -523,7 +620,9 @@
     function updateGreetingEmoji(theme) {
         const emojiEl = document.getElementById("greetingEmoji");
         if (emojiEl) {
-            if (theme === "lavender") {
+            if (theme === "aurora-gelato") {
+                emojiEl.innerText = "🍦";
+            } else if (theme === "lavender") {
                 emojiEl.innerText = "☀️";
             } else if (theme === "cyan") {
                 emojiEl.innerText = "🌊";
@@ -580,6 +679,31 @@
         const list = document.getElementById("fileSelectionList");
         list.innerHTML = "";
         if(input.files.length > 0){
+            const allowedExtensions = /(\.pdf|\.txt|\.doc|\.docx|\.ppt|\.pptx)$/i;
+            const invalidFiles = [];
+            for(let file of input.files){
+                if(!allowedExtensions.exec(file.name)){
+                    invalidFiles.push(file.name);
+                }
+            }
+            if(invalidFiles.length > 0){
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Unsupported File Type',
+                    text: `Spreadsheets or unsupported files found: ${invalidFiles.join(', ')}. Only PDF, TXT, DOC/DOCX, and PPT/PPTX files are allowed.`,
+                    confirmButtonColor: '#B18FCF',
+                    background: '#0e0e0e',
+                    color: '#f0f0f0',
+                    confirmButtonText: 'Okay',
+                    customClass: {
+                        popup: 'nexora-swal-popup',
+                        title: 'nexora-swal-title',
+                        confirmButton: 'nexora-swal-btn'
+                    }
+                });
+                input.value = "";
+                return;
+            }
             for(let file of input.files){
                 const item = document.createElement("div");
                 item.className = "file-selection-item";
@@ -681,6 +805,7 @@
 
     /* ---- New Chat ---- */
     function createNewChat(){
+        try { backToChatbot(); } catch(e){}
         session_id = null; messagesData = []; isGenerating = false; stopTypingEffect();
         document.getElementById("messages").innerHTML = `
             <div class="greeting-splash" id="greetingSplash">
@@ -728,7 +853,7 @@
 
         const submitBtn = document.querySelector(".upload-real-btn");
         const originalHTML = submitBtn.innerHTML;
-        submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing…`;
+        submitBtn.innerHTML = `<span class="nexora-spinner inline"></span> Processing…`;
         submitBtn.disabled = true;
         document.getElementById("uploadStatus").innerText = "Parsing, chunking, and embedding documents…";
 
@@ -749,7 +874,7 @@
                     if(splash){ splash.style.display="none";
                         document.getElementById("messages").innerHTML = `
                         <div class="message bot">
-                            <i class="fa-solid fa-robot message-avatar"></i>
+                            <div class="message-avatar"><i class="fa-solid fa-robot"></i></div>
                             <div class="message-content">
                                 I have processed and indexed your files into the vector database. Ask me any questions based on their content!
                             </div>
@@ -926,6 +1051,17 @@
         dropdown.classList.toggle("open");
     }
 
+
+
+    function showGuideInCenter() {
+        openFeatureInWorkspace('User Guide & FAQ', () => {
+            const overlay = document.getElementById("faqWorkspaceOverlay");
+            if (overlay) {
+                overlay.style.display = "block";
+            }
+        });
+    }
+
     let _isTransitioningBack = false;
 
     function openFeatureInWorkspace(featureName, openFunc) {
@@ -942,6 +1078,8 @@
         try { ClusterUniverse.close(); } catch(e){}
         try { ActionTracker.close(); } catch(e){}
         try { closeReportModal(); } catch(e){}
+        const faqOverlay = document.getElementById("faqWorkspaceOverlay");
+        if (faqOverlay) faqOverlay.style.display = "none";
 
         // 3. Set the active feature title in breadcrumb
         document.getElementById("activeFeatureName").innerText = featureName;
@@ -976,11 +1114,12 @@
                     "#featureWorkspace #kgHeader, " +
                     "#featureWorkspace #mmHeader, " +
                     "#featureWorkspace .report-modal-header, " +
+                    "#featureWorkspace #faqWorkspaceHeader, " +
                     "#featureWorkspace .at-header"
                 );
                 let activeHeader = null;
                 for (let h of headers) {
-                    const parentModal = h.closest("#nlpOverlay, #cuOverlay, #kgModal, #mmOverlay, #nexoraReportModal, #actionTrackerOverlay");
+                    const parentModal = h.closest("#nlpOverlay, #cuOverlay, #kgModal, #mmOverlay, #nexoraReportModal, #actionTrackerOverlay, #faqWorkspaceOverlay");
                     if (parentModal) {
                         const style = window.getComputedStyle(parentModal);
                         if (style.display !== "none" && style.opacity !== "0" && style.visibility !== "hidden") {
@@ -1018,6 +1157,10 @@
         try { ClusterUniverse.close(); } catch(e){}
         try { ActionTracker.close(); } catch(e){}
         try { closeReportModal(); } catch(e){}
+
+        // Hide FAQ overlay
+        const faqOverlay = document.getElementById("faqWorkspaceOverlay");
+        if (faqOverlay) faqOverlay.style.display = "none";
 
         // 2. Move breadcrumb back to its original parent before #featureWorkspace
         const breadcrumbBar = document.getElementById("breadcrumbBar");
@@ -1067,7 +1210,7 @@
         div.className = `message ${type}`;
         const avatarIcon = type === "user" ? "fa-user" : "fa-robot";
         div.innerHTML = `
-            <i class="fa-solid ${avatarIcon} message-avatar"></i>
+            <div class="message-avatar"><i class="fa-solid ${avatarIcon}"></i></div>
             <div class="message-content">${content}</div>`;
         messages.appendChild(div);
         messages.scrollTop = messages.scrollHeight;
@@ -1199,7 +1342,7 @@
         addMessage(question, "user");
         input.value = "";
 
-        const botDiv = addMessage(`<span class="typing-loading"><i class="fa-solid fa-spinner fa-spin"></i> Reasoning…</span>`, "bot");
+        const botDiv = addMessage(`<span class="typing-loading"><span class="nexora-spinner inline"></span> Reasoning…</span>`, "bot");
         const botContentDiv = botDiv.querySelector(".message-content");
 
         const selected_docs = [];
@@ -1310,7 +1453,7 @@
         if(isGenerating) return;
         session_id = chatSessionId;
         const messagesDiv = document.getElementById("messages");
-        messagesDiv.innerHTML = `<div class="loading-messages"><i class="fa-solid fa-spinner fa-spin"></i> Loading chat session…</div>`;
+        messagesDiv.innerHTML = `<div class="loading-messages"><span class="nexora-spinner inline"></span> Loading chat session…</div>`;
         document.getElementById("starterSuggestions").style.display = "none";
         try{
             const response = await fetch(`/load_chat/${chatSessionId}`);
@@ -1460,9 +1603,55 @@
             const style = getComputedStyle(document.body);
             this.accentColor = (style.getPropertyValue('--accent') || '#B18FCF').trim();
             this.accentGlowColor = (style.getPropertyValue('--accent-glow-soft') || 'rgba(177, 143, 207, 0.12)').trim();
-            this.textColor = (style.getPropertyValue('--text-muted') || 'rgba(243, 232, 255, 0.35)').trim();
+            this.textColor = (style.getPropertyValue('--text-secondary') || 'rgba(243, 232, 255, 0.65)').trim();
             this.parsedAccent = this.parseColor(this.accentColor);
             this.mode = document.body.classList.contains('light-mode') ? 'light' : 'dark';
+        }
+
+        getThemeGradientStops() {
+            const isLight = document.body.classList.contains('light-mode');
+            
+            // Determine active theme
+            let theme = 'aurora-gelato';
+            if (document.body.classList.contains('theme-lavender')) theme = 'lavender';
+            else if (document.body.classList.contains('theme-cyan')) theme = 'cyan';
+            else if (document.body.classList.contains('theme-sunset')) theme = 'sunset';
+            else if (document.body.classList.contains('theme-sherbet')) theme = 'sherbet';
+            else if (document.body.classList.contains('theme-obsidian')) theme = 'obsidian';
+            else if (document.body.classList.contains('theme-tropical')) theme = 'tropical';
+            
+            const gradients = {
+                'aurora-gelato': {
+                    dark: ['#9b7bf0', '#e84f9b', '#ff5a4e', '#ffa73b'],
+                    light: ['#9b7bf0', '#e84f9b', '#ff5a4e', '#ffa73b']
+                },
+                lavender: {
+                    dark: ['#9b7bf0', '#e84f9b', '#ff5a4e', '#ffa73b'],
+                    light: ['#6a3d99', '#8b5fbf', '#b18fcf', '#d4b8e8']
+                },
+                cyan: {
+                    dark: ['#06b6d4', '#0ea5e9', '#3b82f6', '#6366f1'],
+                    light: ['#0c2d3d', '#0891b2', '#0284c7', '#2563eb']
+                },
+                sunset: {
+                    dark: ['#f97316', '#f43f5e', '#ec4899', '#d946ef'],
+                    light: ['#3d1a0c', '#7c2d12', '#ea580c', '#dc2626']
+                },
+                sherbet: {
+                    dark: ['#f43f5e', '#ff7e5f', '#feb47b', '#fcd34d'],
+                    light: ['#4c0519', '#881337', '#be123c', '#e11d48']
+                },
+                obsidian: {
+                    dark: ['#c5a059', '#f59e0b', '#b91c1c', '#7f1d1d'],
+                    light: ['#18181b', '#27272a', '#78350f', '#c5a059']
+                },
+                tropical: {
+                    dark: ['#10b981', '#06b6d4', '#0ea5e9', '#14b8a6'],
+                    light: ['#064e3b', '#0f766e', '#0369a1', '#0f172a']
+                }
+            };
+            
+            return gradients[theme][isLight ? 'light' : 'dark'];
         }
         
         parseColor(colorStr) {
@@ -1570,13 +1759,13 @@
             const w = this.canvas.width;
             const h = this.canvas.height;
             
-            // Opacity calibrations
-            const gridOpacity = isLight ? 0.045 : 0.03;
-            const gridTickOpacity = isLight ? 0.14 : 0.09;
-            const synapseOpacity = isLight ? 0.22 : 0.14;
-            const nodeGlowOpacity = isLight ? 0.15 : 0.1;
-            const nodeCoreOpacity = isLight ? 0.48 : 0.35;
-            const packetOpacity = isLight ? 0.75 : 0.9;
+            // Opacity calibrations (increased for high maturity/visibility)
+            const gridOpacity = isLight ? 0.07 : 0.05;
+            const gridTickOpacity = isLight ? 0.22 : 0.16;
+            const synapseOpacity = isLight ? 0.32 : 0.25;
+            const nodeGlowOpacity = isLight ? 0.28 : 0.2;
+            const nodeCoreOpacity = isLight ? 0.7 : 0.6;
+            const packetOpacity = isLight ? 0.85 : 0.95;
             
             // 1. Draw Grid
             this.ctx.strokeStyle = this.rgba(accent, gridOpacity);
@@ -1612,8 +1801,19 @@
             this.waves.forEach((wave, idx) => {
                 wave.offset += wave.speed;
                 this.ctx.beginPath();
-                this.ctx.strokeStyle = idx === 0 ? this.rgba(accent, isLight ? 0.22 : 0.14) : this.rgba(accent, isLight ? 0.12 : 0.07);
-                this.ctx.lineWidth = idx === 0 ? 1.8 : 1.2;
+                
+                // Construct Web3 horizontal theme gradient for waveforms
+                const stops = this.getThemeGradientStops();
+                const waveGrad = this.ctx.createLinearGradient(0, 0, w, 0);
+                const alpha = idx === 0 ? (isLight ? 0.35 : 0.26) : (isLight ? 0.20 : 0.13);
+                
+                stops.forEach((color, i) => {
+                    const parsed = this.parseColor(color);
+                    waveGrad.addColorStop(i / (stops.length - 1), this.rgba(parsed, alpha));
+                });
+                
+                this.ctx.strokeStyle = waveGrad;
+                this.ctx.lineWidth = idx === 0 ? 2.2 : 1.4;
                 
                 let started = false;
                 const step = 40;
@@ -1638,7 +1838,7 @@
             
             if (barW > 120 && barH > 40) {
                 // Draw thin base axis line
-                this.ctx.strokeStyle = this.rgba(accent, isLight ? 0.2 : 0.12);
+                this.ctx.strokeStyle = this.rgba(accent, isLight ? 0.3 : 0.22);
                 this.ctx.lineWidth = 1;
                 this.ctx.beginPath();
                 this.ctx.moveTo(barX, barY);
@@ -1666,17 +1866,23 @@
                     const bx = barX + colSpacing/2 + i * (colWidth + colSpacing);
                     const by = barY - currentHeight;
                     
-                    // Gradient fill
-                    const grad = this.ctx.createLinearGradient(bx, by, bx + colWidth, barY);
-                    grad.addColorStop(0, this.rgba(accent, isLight ? 0.48 : 0.35));
-                    grad.addColorStop(1, this.rgba(accent, isLight ? 0.12 : 0.05));
+                    // Gradient fill using dynamic theme stops
+                    const grad = this.ctx.createLinearGradient(bx, by, bx, barY);
+                    const stops = this.getThemeGradientStops();
+                    stops.forEach((color, idx) => {
+                        const parsed = this.parseColor(color);
+                        const ratio = idx / (stops.length - 1);
+                        const alpha = (1 - ratio) * (isLight ? 0.68 : 0.58) + ratio * (isLight ? 0.20 : 0.10);
+                        grad.addColorStop(ratio, this.rgba(parsed, alpha));
+                    });
                     
                     this.ctx.fillStyle = grad;
                     this.ctx.fillRect(bx, by, colWidth, currentHeight);
                     
-                    // Outline stroke
-                    this.ctx.strokeStyle = this.rgba(accent, isLight ? 0.58 : 0.42);
-                    this.ctx.lineWidth = 0.8;
+                    // Outline stroke using first stop of the theme gradient
+                    const strokeColor = this.parseColor(stops[0]);
+                    this.ctx.strokeStyle = this.rgba(strokeColor, isLight ? 0.72 : 0.60);
+                    this.ctx.lineWidth = 1.0;
                     this.ctx.strokeRect(bx, by, colWidth, currentHeight);
                 }
             }
@@ -1777,11 +1983,11 @@
         loadUserDocuments();
         
         // Initialize Theme Selection
-        const savedTheme = localStorage.getItem("theme") || "lavender";
+        const savedTheme = localStorage.getItem("theme") || "aurora-gelato";
         changeTheme(savedTheme);
         
         // Initialize Light/Dark Mode
-        const savedMode = localStorage.getItem("mode") || "dark";
+        const savedMode = localStorage.getItem("mode") || "light";
         changeAppearanceMode(savedMode);
 
         // Initialize Analytics Background Canvas

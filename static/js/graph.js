@@ -133,14 +133,6 @@ const KnowledgeGraph = (() => {
         color: var(--text-secondary); font-size: .88rem;
         background: var(--bg-glass-deep);
       }
-      #kgLoader .kg-spinner {
-        width: 40px; height: 40px;
-        border: 3px solid var(--accent-glow-soft);
-        border-top-color: var(--accent);
-        border-radius: 50%;
-        animation: kgSpin .8s linear infinite;
-      }
-      @keyframes kgSpin { to { transform: rotate(360deg); } }
       #kgLoader.hidden { display: none; }
 
       #kgTooltip {
@@ -250,8 +242,18 @@ const KnowledgeGraph = (() => {
         </div>
 
         <div id="kgSvgWrap">
-          <div id="kgLoader"><div class="kg-spinner"></div><span>Extracting knowledge graph…</span></div>
+          <div id="kgLoader" class="hidden"><span class="nexora-spinner large"></span><span>Extracting knowledge graph…</span></div>
           <div id="kgEmpty"><i class="fa-solid fa-circle-nodes"></i><span>No graph data for selected documents.</span></div>
+          <div id="kgStateMsg" style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 20px; gap: 12px; color: var(--text-secondary); background: var(--bg-glass-deep); z-index: 10;">
+             <i class="fa-solid fa-diagram-project" style="font-size: 32px; color: var(--accent); margin-bottom: 8px;"></i>
+             <h3 style="margin: 0; font-family: var(--font-display); font-size: 1.1rem; color: var(--text-primary);">Knowledge Graph</h3>
+             <p style="margin: 0 0 12px; font-size: 0.88rem; max-width: 480px; line-height: 1.5;">
+                 Extracts and displays a network of connected concepts, entities, and documents to show how information is linked.
+             </p>
+             <button onclick="KnowledgeGraph.generateGraph()" style="background: var(--grad-button); color: var(--swal-btn-text); border: none; padding: 10px 24px; border-radius: 12px; font-family: var(--font-display); font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 12px var(--accent-glow); display: inline-flex; align-items: center; gap: 8px;">
+                 <i class="fa-solid fa-diagram-project"></i> Generate Graph
+             </button>
+          </div>
         </div>
 
         <div id="kgZoomControls">
@@ -283,9 +285,11 @@ const KnowledgeGraph = (() => {
   async function _fetchAndRender() {
     const loader  = document.getElementById("kgLoader");
     const empty   = document.getElementById("kgEmpty");
+    const stateMsg = document.getElementById("kgStateMsg");
     const svgWrap = document.getElementById("kgSvgWrap");
     if (!loader || !svgWrap) return;
 
+    if (stateMsg) stateMsg.style.display = "none";
     // Reset UI to loading state
     loader.classList.remove("hidden");
     empty.classList.remove("show");
@@ -515,6 +519,17 @@ const KnowledgeGraph = (() => {
     modal.classList.add("open");
     isOpen = true;
 
+    const stateMsg = document.getElementById("kgStateMsg");
+    if (stateMsg) stateMsg.style.display = "flex";
+    const loader = document.getElementById("kgLoader");
+    if (loader) loader.classList.add("hidden");
+    const empty = document.getElementById("kgEmpty");
+    if (empty) empty.classList.remove("show");
+  }
+
+  async function generateGraph() {
+    const stateMsg = document.getElementById("kgStateMsg");
+    if (stateMsg) stateMsg.style.display = "none";
     await _fetchAndRender();
   }
 
@@ -585,6 +600,6 @@ const KnowledgeGraph = (() => {
     _injectModal();
   });
 
-  return { open, close, invalidate, toggleType, zoom, resetZoom };
+  return { open, close, invalidate, toggleType, zoom, resetZoom, generateGraph };
 
 })();

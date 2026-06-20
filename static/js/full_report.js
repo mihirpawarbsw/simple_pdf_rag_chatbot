@@ -34,7 +34,7 @@
       <span class="report-modal-icon"><i class="fa-solid fa-file-chart-column"></i></span>
       <div>
         <h2 class="report-modal-title">Generate Full Report</h2>
-        <p class="report-modal-sub">AI-powered report from your selected knowledge documents</p>
+        <p class="report-modal-sub">Generates a comprehensive, formatted executive document summarizing the key findings, metrics, and details of your files.</p>
       </div>
       <button class="report-close-btn" onclick="closeReportModal()" title="Close">
         <i class="fa-solid fa-xmark"></i>
@@ -58,7 +58,7 @@
       <span class="report-doc-count" id="reportDocCount"></span>
     </div>
     <div class="report-doc-list" id="reportDocList">
-      <div class="report-doc-loading"><i class="fa-solid fa-spinner fa-spin"></i> Loading documents…</div>
+      <div class="report-doc-loading"><span class="nexora-spinner inline"></span> Loading documents…</div>
     </div>
 
     <!-- Select all / none -->

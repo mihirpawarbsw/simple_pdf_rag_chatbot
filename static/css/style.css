@@ -19,6 +19,88 @@
 }
 
 /* ==========================================
+   0. THEME: AURORA GELATO (Dark Mode)
+   ========================================== */
+body.theme-aurora-gelato {
+    --bg-base: #0B0A11;                   /* Very deep indigo-dark */
+    --bg-sidebar: #161424;                /* Deep indigo sidebar */
+    --border-sidebar: rgba(155, 123, 240, 0.25);
+    
+    --bg-glass: rgba(255, 255, 255, 0.03);
+    --bg-glass-deep: rgba(11, 10, 17, 0.90);
+    --border: rgba(155, 123, 240, 0.15);
+    --border-hover: rgba(155, 123, 240, 0.35);
+    --text-primary: #FFF8F2;              /* Cream / Warm White contrast */
+    --text-secondary: rgba(255, 248, 242, 0.65);
+    --text-muted: rgba(255, 248, 242, 0.35);
+    --shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+
+    --accent: #9B7BF0;                    /* Lavender */
+    --accent-light: #E84F9B;              /* Pink */
+    --accent-deep: #FF5A4E;               /* Coral */
+    --accent-glow: rgba(155, 123, 240, 0.35);
+    --accent-glow-soft: rgba(155, 123, 240, 0.12);
+    --accent-bg: rgba(155, 123, 240, 0.06);
+    --accent-text: #FFF8F2;
+
+    --grad-primary: linear-gradient(100deg, #9B7BF0 0%, #E84F9B 38%, #FF5A4E 68%, #FFA73B 100%);
+    --grad-button: linear-gradient(100deg, #9B7BF0 0%, #E84F9B 38%, #FF5A4E 68%, #FFA73B 100%);
+    --grad-button-hover: linear-gradient(100deg, #a78bfa 0%, #f472b6 38%, #f87171 68%, #fbbf24 100%);
+    --grad-text: linear-gradient(100deg, #9B7BF0 0%, #E84F9B 38%, #FF5A4E 68%, #FFA73B 100%);
+    --sidebar-border-glow: linear-gradient(180deg, #9B7BF0, #E84F9B, #FF5A4E);
+    --blob-1-color: rgba(155, 123, 240, 0.18);
+    --blob-2-color: rgba(232, 79, 155, 0.12);
+    --blob-3-color: rgba(255, 90, 78, 0.08);
+
+    --swal-bg: rgba(11, 10, 17, 0.98);
+    --swal-text: rgba(255, 248, 242, 0.7);
+    --swal-border: rgba(155, 123, 240, 0.25);
+    --swal-btn-bg: linear-gradient(135deg, #ffffff 0%, #FFF8F2 100%);
+    --swal-btn-text: #0B0A11;
+}
+
+/* ==========================================
+   0L. THEME: AURORA GELATO (Light Mode)
+   ========================================== */
+body.theme-aurora-gelato.light-mode {
+    --bg-base: #FFF8F2;                   /* Cream */
+    --bg-sidebar: #FBEFEA;                /* Gelato tint / Cream-2 */
+    --border-sidebar: rgba(36, 31, 61, 0.15); /* Indigo opacity */
+
+    --bg-glass: rgba(255, 255, 255, 0.65);
+    --bg-glass-deep: rgba(255, 248, 242, 0.95);
+    --border: rgba(36, 31, 61, 0.10);     /* Indigo line */
+    --border-hover: rgba(36, 31, 61, 0.20);
+    --text-primary: #241F3D;              /* Indigo */
+    --text-secondary: #4B4570;            /* Indigo-2 */
+    --text-muted: #857FA0;                /* Indigo-3 */
+    --shadow: 0 12px 40px rgba(36, 31, 61, 0.06);
+
+    --accent: #9B7BF0;                    /* Lavender */
+    --accent-light: #E84F9B;              /* Pink */
+    --accent-deep: #241F3D;               /* Indigo */
+    --accent-glow: rgba(155, 123, 240, 0.25);
+    --accent-glow-soft: rgba(155, 123, 240, 0.08);
+    --accent-bg: rgba(155, 123, 240, 0.06);
+    --accent-text: #9B7BF0;
+
+    --grad-primary: linear-gradient(100deg, #9B7BF0 0%, #E84F9B 38%, #FF5A4E 68%, #FFA73B 100%);
+    --grad-button: linear-gradient(100deg, #9B7BF0 0%, #E84F9B 38%, #FF5A4E 68%, #FFA73B 100%);
+    --grad-button-hover: linear-gradient(100deg, #a78bfa 0%, #f472b6 38%, #f87171 68%, #fbbf24 100%);
+    --grad-text: linear-gradient(100deg, #9B7BF0 0%, #E84F9B 38%, #FF5A4E 68%, #FFA73B 100%);
+    --sidebar-border-glow: linear-gradient(180deg, #9B7BF0, #E84F9B, #FF5A4E);
+    --blob-1-color: rgba(155, 123, 240, 0.08);
+    --blob-2-color: rgba(232, 79, 155, 0.06);
+    --blob-3-color: rgba(255, 90, 78, 0.04);
+
+    --swal-bg: rgba(255, 255, 255, 0.98);
+    --swal-text: #4B4570;
+    --swal-border: rgba(36, 31, 61, 0.15);
+    --swal-btn-bg: linear-gradient(100deg, #9B7BF0 0%, #E84F9B 38%, #FF5A4E 68%, #FFA73B 100%);
+    --swal-btn-text: #ffffff;
+}
+
+/* ==========================================
    1. THEME: LAVENDER (Dark Mode - Default)
    ========================================== */
 body, body.theme-lavender {
@@ -43,10 +125,10 @@ body, body.theme-lavender {
     --accent-bg: rgba(177, 143, 207, 0.06);
     --accent-text: #D4B8E8;
 
-    --grad-primary: linear-gradient(135deg, #ffffff 0%, #C9A8E0 100%);
-    --grad-button: linear-gradient(135deg, #ffffff 0%, #C9A8E0 100%);
-    --grad-button-hover: linear-gradient(135deg, #ffffff 0%, #B18FCF 100%);
-    --grad-text: linear-gradient(135deg, #ffffff 0%, #C9A8E0 100%);
+    --grad-primary: linear-gradient(100deg, #9b7bf0 0%, #e84f9b 38%, #ff5a4e 68%, #ffa73b 100%);
+    --grad-button: linear-gradient(100deg, #9b7bf0 0%, #e84f9b 38%, #ff5a4e 68%, #ffa73b 100%);
+    --grad-button-hover: linear-gradient(100deg, #b08aff 0%, #f462a6 38%, #ff7066 68%, #ffb654 100%);
+    --grad-text: linear-gradient(100deg, #9b7bf0 0%, #e84f9b 38%, #ff5a4e 68%, #ffa73b 100%);
     --sidebar-border-glow: linear-gradient(180deg, #6366f1, #B18FCF, #ec4899);
     --blob-1-color: rgba(177, 143, 207, 0.18);
     --blob-2-color: rgba(99, 102, 241, 0.12);
@@ -84,10 +166,10 @@ body.light-mode, body.theme-lavender.light-mode {
     --accent-bg: rgba(139, 95, 191, 0.06);
     --accent-text: #8B5FBF;
 
-    --grad-primary: linear-gradient(135deg, #1a0a2e 0%, #8B5FBF 100%);
-    --grad-button: linear-gradient(135deg, #1a0a2e 0%, #8B5FBF 100%);
-    --grad-button-hover: linear-gradient(135deg, #261042 0%, #764baf 100%);
-    --grad-text: linear-gradient(135deg, #1a0a2e 0%, #8B5FBF 100%);
+    --grad-primary: linear-gradient(100deg, #6a3d99 0%, #8b5fbf 38%, #b18fcf 68%, #d4b8e8 100%);
+    --grad-button: linear-gradient(100deg, #8b5fbf 0%, #a855f7 38%, #d946ef 68%, #f43f5e 100%);
+    --grad-button-hover: linear-gradient(100deg, #7c3aed 0%, #9333ea 38%, #c084fc 68%, #e11d48 100%);
+    --grad-text: linear-gradient(100deg, #6a3d99 0%, #8b5fbf 38%, #b18fcf 68%, #ec4899 100%);
     --sidebar-border-glow: linear-gradient(180deg, #8b5fbf, #b18fcf, #ec4899);
     --blob-1-color: rgba(177, 143, 207, 0.08);
     --blob-2-color: rgba(99, 102, 241, 0.06);
@@ -125,10 +207,10 @@ body.theme-cyan {
     --accent-bg: rgba(6, 182, 212, 0.06);
     --accent-text: #67e8f9;
 
-    --grad-primary: linear-gradient(135deg, #ffffff 0%, #67e8f9 100%);
-    --grad-button: linear-gradient(135deg, #ffffff 0%, #67e8f9 100%);
-    --grad-button-hover: linear-gradient(135deg, #ffffff 0%, #06b6d4 100%);
-    --grad-text: linear-gradient(135deg, #ffffff 0%, #67e8f9 100%);
+    --grad-primary: linear-gradient(100deg, #06b6d4 0%, #0ea5e9 38%, #3b82f6 68%, #6366f1 100%);
+    --grad-button: linear-gradient(100deg, #06b6d4 0%, #0ea5e9 38%, #3b82f6 68%, #6366f1 100%);
+    --grad-button-hover: linear-gradient(100deg, #22d3ee 0%, #38bdf8 38%, #60a5fa 68%, #818cf8 100%);
+    --grad-text: linear-gradient(100deg, #06b6d4 0%, #0ea5e9 38%, #3b82f6 68%, #6366f1 100%);
     --sidebar-border-glow: linear-gradient(180deg, #06b6d4, #0891b2, #f472b6);
     --blob-1-color: rgba(6, 182, 212, 0.18);
     --blob-2-color: rgba(8, 145, 178, 0.12);
@@ -166,10 +248,10 @@ body.theme-cyan.light-mode {
     --accent-bg: rgba(8, 145, 178, 0.06);
     --accent-text: #0891b2;
 
-    --grad-primary: linear-gradient(135deg, #0c2d3d 0%, #0891b2 100%);
-    --grad-button: linear-gradient(135deg, #0c2d3d 0%, #0891b2 100%);
-    --grad-button-hover: linear-gradient(135deg, #0a2533 0%, #06728c 100%);
-    --grad-text: linear-gradient(135deg, #0c2d3d 0%, #0891b2 100%);
+    --grad-primary: linear-gradient(100deg, #0c2d3d 0%, #0891b2 38%, #0284c7 68%, #2563eb 100%);
+    --grad-button: linear-gradient(100deg, #0c2d3d 0%, #0891b2 38%, #0284c7 68%, #2563eb 100%);
+    --grad-button-hover: linear-gradient(100deg, #154d66 0%, #0d9488 38%, #0369a1 68%, #1d4ed8 100%);
+    --grad-text: linear-gradient(100deg, #0c2d3d 0%, #0891b2 38%, #0284c7 68%, #2563eb 100%);
     --sidebar-border-glow: linear-gradient(180deg, #0891b2, #06b6d4, #f472b6);
     --blob-1-color: rgba(6, 182, 212, 0.08);
     --blob-2-color: rgba(8, 145, 178, 0.06);
@@ -207,10 +289,10 @@ body.theme-sunset {
     --accent-bg: rgba(249, 115, 22, 0.06);
     --accent-text: #fb923c;
 
-    --grad-primary: linear-gradient(135deg, #ffffff 0%, #fb923c 100%);
-    --grad-button: linear-gradient(135deg, #ffffff 0%, #fb923c 100%);
-    --grad-button-hover: linear-gradient(135deg, #ffffff 0%, #f97316 100%);
-    --grad-text: linear-gradient(135deg, #ffffff 0%, #fb923c 100%);
+    --grad-primary: linear-gradient(100deg, #f97316 0%, #f43f5e 38%, #ec4899 68%, #d946ef 100%);
+    --grad-button: linear-gradient(100deg, #f97316 0%, #f43f5e 38%, #ec4899 68%, #d946ef 100%);
+    --grad-button-hover: linear-gradient(100deg, #fdba74 0%, #fb7185 38%, #f472b6 68%, #e879f9 100%);
+    --grad-text: linear-gradient(100deg, #f97316 0%, #f43f5e 38%, #ec4899 68%, #d946ef 100%);
     --sidebar-border-glow: linear-gradient(180deg, #dc2626, #f97316, #fb923c);
     --blob-1-color: rgba(249, 115, 22, 0.18);
     --blob-2-color: rgba(220, 38, 38, 0.12);
@@ -248,10 +330,10 @@ body.theme-sunset.light-mode {
     --accent-bg: rgba(220, 38, 38, 0.06);
     --accent-text: #d97706;
 
-    --grad-primary: linear-gradient(135deg, #3d1a0c 0%, #f97316 100%);
-    --grad-button: linear-gradient(135deg, #3d1a0c 0%, #f97316 100%);
-    --grad-button-hover: linear-gradient(135deg, #2b1106 0%, #d97706 100%);
-    --grad-text: linear-gradient(135deg, #3d1a0c 0%, #f97316 100%);
+    --grad-primary: linear-gradient(100deg, #3d1a0c 0%, #7c2d12 38%, #ea580c 68%, #dc2626 100%);
+    --grad-button: linear-gradient(100deg, #3d1a0c 0%, #7c2d12 38%, #ea580c 68%, #dc2626 100%);
+    --grad-button-hover: linear-gradient(100deg, #5c2c16 0%, #9a3412 38%, #f97316 68%, #b91c1c 100%);
+    --grad-text: linear-gradient(100deg, #3d1a0c 0%, #7c2d12 38%, #ea580c 68%, #dc2626 100%);
     --sidebar-border-glow: linear-gradient(180deg, #d97706, #f97316, #dc2626);
     --blob-1-color: rgba(249, 115, 22, 0.08);
     --blob-2-color: rgba(220, 38, 38, 0.06);
@@ -289,10 +371,10 @@ body.theme-sherbet {
     --accent-bg: rgba(244, 63, 94, 0.06);
     --accent-text: #fb8c00; /* Vibrant Orange */
 
-    --grad-primary: linear-gradient(135deg, #ffffff 0%, #fcd34d 100%);
-    --grad-button: linear-gradient(135deg, #f43f5e 0%, #fb8c00 50%, #fcd34d 100%);
-    --grad-button-hover: linear-gradient(135deg, #e11d48 0%, #e65100 50%, #f59e0b 100%);
-    --grad-text: linear-gradient(135deg, #f43f5e 0%, #fcd34d 100%);
+    --grad-primary: linear-gradient(100deg, #f43f5e 0%, #ff7e5f 38%, #feb47b 68%, #fcd34d 100%);
+    --grad-button: linear-gradient(100deg, #f43f5e 0%, #ff7e5f 38%, #feb47b 68%, #fcd34d 100%);
+    --grad-button-hover: linear-gradient(100deg, #ff6b8b 0%, #ff957d 38%, #ffcba2 68%, #ffe082 100%);
+    --grad-text: linear-gradient(100deg, #f43f5e 0%, #ff7e5f 38%, #feb47b 68%, #fcd34d 100%);
     --sidebar-border-glow: linear-gradient(180deg, #f43f5e, #fb8c00, #ffeb3b);
     --blob-1-color: rgba(244, 63, 94, 0.18);
     --blob-2-color: rgba(251, 140, 0, 0.12);
@@ -330,10 +412,10 @@ body.theme-sherbet.light-mode {
     --accent-bg: rgba(225, 29, 72, 0.06);
     --accent-text: #b45309;
 
-    --grad-primary: linear-gradient(135deg, #4c0519 0%, #e11d48 100%);
-    --grad-button: linear-gradient(135deg, #4c0519 0%, #e11d48 100%);
-    --grad-button-hover: linear-gradient(135deg, #370311 0%, #be123c 100%);
-    --grad-text: linear-gradient(135deg, #4c0519 0%, #e11d48 100%);
+    --grad-primary: linear-gradient(100deg, #4c0519 0%, #881337 38%, #be123c 68%, #e11d48 100%);
+    --grad-button: linear-gradient(100deg, #4c0519 0%, #881337 38%, #be123c 68%, #e11d48 100%);
+    --grad-button-hover: linear-gradient(100deg, #700c28 0%, #9f1239 38%, #e11d48 68%, #f43f5e 100%);
+    --grad-text: linear-gradient(100deg, #4c0519 0%, #881337 38%, #be123c 68%, #e11d48 100%);
     --sidebar-border-glow: linear-gradient(180deg, #e11d48, #d97706, #b45309);
     --blob-1-color: rgba(244, 63, 94, 0.08);
     --blob-2-color: rgba(251, 140, 0, 0.06);
@@ -373,10 +455,10 @@ body.theme-obsidian {
     --accent-bg: rgba(223, 186, 107, 0.06);
     --accent-text: #e11d48; /* Crimson Red accent text */
 
-    --grad-primary: linear-gradient(135deg, #ffffff 0%, #dfba6b 100%);
-    --grad-button: linear-gradient(135deg, #dc2626 0%, #dfba6b 100%); /* Crimson to Champagne Gold */
-    --grad-button-hover: linear-gradient(135deg, #b91c1c 0%, #c5a059 100%);
-    --grad-text: linear-gradient(135deg, #ffffff 0%, #dfba6b 100%);
+    --grad-primary: linear-gradient(100deg, #c5a059 0%, #f59e0b 38%, #b91c1c 68%, #7f1d1d 100%);
+    --grad-button: linear-gradient(100deg, #c5a059 0%, #f59e0b 38%, #b91c1c 68%, #7f1d1d 100%);
+    --grad-button-hover: linear-gradient(100deg, #dfba6b 0%, #fbbf24 38%, #dc2626 68%, #991b1b 100%);
+    --grad-text: linear-gradient(100deg, #c5a059 0%, #f59e0b 38%, #b91c1c 68%, #7f1d1d 100%);
     --sidebar-border-glow: linear-gradient(180deg, #dc2626, #dfba6b, #b91c1c);
     --blob-1-color: rgba(223, 186, 107, 0.15);
     --blob-2-color: rgba(220, 38, 38, 0.10);
@@ -414,10 +496,10 @@ body.theme-obsidian.light-mode {
     --accent-bg: rgba(197, 160, 89, 0.06);
     --accent-text: #991b1b;
 
-    --grad-primary: linear-gradient(135deg, #0c0c0e 0%, #c5a059 100%);
-    --grad-button: linear-gradient(135deg, #0c0c0e 0%, #c5a059 100%);
-    --grad-button-hover: linear-gradient(135deg, #000000 0%, #a88543 100%);
-    --grad-text: linear-gradient(135deg, #0c0c0e 0%, #c5a059 100%);
+    --grad-primary: linear-gradient(100deg, #18181b 0%, #27272a 38%, #78350f 68%, #c5a059 100%);
+    --grad-button: linear-gradient(100deg, #18181b 0%, #27272a 38%, #78350f 68%, #c5a059 100%);
+    --grad-button-hover: linear-gradient(100deg, #27272a 0%, #3f3f46 38%, #92400e 68%, #dfba6b 100%);
+    --grad-text: linear-gradient(100deg, #18181b 0%, #27272a 38%, #78350f 68%, #c5a059 100%);
     --sidebar-border-glow: linear-gradient(180deg, #c5a059, #dc2626, #dfba6b);
     --blob-1-color: rgba(197, 160, 89, 0.08);
     --blob-2-color: rgba(220, 38, 38, 0.06);
@@ -455,10 +537,10 @@ body.theme-tropical {
     --accent-bg: rgba(255, 213, 79, 0.06);
     --accent-text: #00838F; /* Cyan */
 
-    --grad-primary: linear-gradient(135deg, #ffffff 0%, #FFD54F 100%);
-    --grad-button: linear-gradient(135deg, #00695C 0%, #FFD54F 100%); /* Teal to Sunny Yellow */
-    --grad-button-hover: linear-gradient(135deg, #004d40 0%, #ffa000 100%);
-    --grad-text: linear-gradient(135deg, #ffffff 0%, #FFD54F 100%);
+    --grad-primary: linear-gradient(100deg, #10b981 0%, #06b6d4 38%, #0ea5e9 68%, #14b8a6 100%);
+    --grad-button: linear-gradient(100deg, #10b981 0%, #06b6d4 38%, #0ea5e9 68%, #14b8a6 100%);
+    --grad-button-hover: linear-gradient(100deg, #34d399 0%, #22d3ee 38%, #38bdf8 68%, #2dd4bf 100%);
+    --grad-text: linear-gradient(100deg, #10b981 0%, #06b6d4 38%, #0ea5e9 68%, #14b8a6 100%);
     --sidebar-border-glow: linear-gradient(180deg, #00695C, #FFD54F, #00838F);
     --blob-1-color: rgba(0, 105, 92, 0.18);
     --blob-2-color: rgba(255, 213, 79, 0.12);
@@ -496,10 +578,10 @@ body.theme-tropical.light-mode {
     --accent-bg: rgba(0, 105, 92, 0.06);
     --accent-text: #00695C;
 
-    --grad-primary: linear-gradient(135deg, #004d40 0%, #00838F 100%);
-    --grad-button: linear-gradient(135deg, #004d40 0%, #00838F 100%);
-    --grad-button-hover: linear-gradient(135deg, #002d25 0%, #006064 100%);
-    --grad-text: linear-gradient(135deg, #004d40 0%, #00838F 100%);
+    --grad-primary: linear-gradient(100deg, #064e3b 0%, #0f766e 38%, #0369a1 68%, #0f172a 100%);
+    --grad-button: linear-gradient(100deg, #064e3b 0%, #0f766e 38%, #0369a1 68%, #0f172a 100%);
+    --grad-button-hover: linear-gradient(100deg, #047857 0%, #0d9488 38%, #0284c7 68%, #1e293b 100%);
+    --grad-text: linear-gradient(100deg, #064e3b 0%, #0f766e 38%, #0369a1 68%, #0f172a 100%);
     --sidebar-border-glow: linear-gradient(180deg, #00695C, #FFD54F, #00838F);
     --blob-1-color: rgba(0, 105, 92, 0.08);
     --blob-2-color: rgba(255, 213, 79, 0.06);
@@ -611,6 +693,11 @@ body.light-mode .blob { opacity: 0.07; }
     0%   { transform: translate(0,0) scale(1); }
     50%  { transform: translate(40px,-50px) scale(1.1); }
     100% { transform: translate(-20px,20px) scale(0.9); }
+}
+@keyframes gradFlow {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 .container {
@@ -782,6 +869,8 @@ body.light-mode .logo img {
     background: var(--grad-button) !important;
     color: var(--swal-btn-text) !important;
     border-color: transparent;
+    background-size: 200% auto !important;
+    animation: gradFlow 8s linear infinite !important;
 }
 .new-chat-btn i {
     background: none !important;
@@ -794,6 +883,8 @@ body.light-mode .logo img {
     background: var(--grad-button-hover) !important;
     transform: translateY(-2px);
     box-shadow: 0 8px 24px var(--accent-glow);
+    background-size: 200% auto !important;
+    animation: gradFlow 3s linear infinite !important;
 }
 
 /* ==========================================
@@ -865,10 +956,14 @@ body.light-mode .upload-drag-area:hover {
     font-size: 12.5px; font-weight: 700;
     margin-top: 10px; cursor: pointer;
     display: flex; align-items: center; justify-content: center; gap: 7px;
+    background-size: 200% auto !important;
+    animation: gradFlow 8s linear infinite !important;
 }
 .upload-real-btn:hover {
     transform: translateY(-1px);
     box-shadow: 0 6px 20px var(--accent-glow);
+    background-size: 200% auto !important;
+    animation: gradFlow 3s linear infinite !important;
 }
 .upload-real-btn i {
     font-size: 13px;
@@ -1205,7 +1300,7 @@ body.light-mode .toolbar-btn:hover {
     display: flex; flex-direction: column; gap: 20px;
 }
 .message {
-    display: flex; align-items: flex-start; gap: 12px; max-width: 82%;
+    display: flex; align-items: center; gap: 12px; max-width: 82%;
     animation: fadeInSlide 0.4s ease;
 }
 .message.bot  { align-self: flex-start; }
@@ -1216,8 +1311,15 @@ body.light-mode .toolbar-btn:hover {
     border: 1px solid var(--border);
     background: var(--bg-glass);
     display: flex; align-items: center; justify-content: center;
-    font-size: 14px; flex-shrink: 0; line-height: 34px; text-align: center;
+    font-size: 14px; flex-shrink: 0;
     color: var(--text-secondary);
+}
+.message-avatar i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
 }
 .message.bot .message-avatar {
     background: var(--accent-bg);
@@ -1326,9 +1428,11 @@ body.light-mode .message-content th { color: var(--accent-deep); }
 .greeting-title .user-name {
     font-weight: 600;
     background: var(--grad-text);
+    background-size: 200% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    animation: gradFlow 8s linear infinite;
 }
 
 .greeting-sub {
@@ -1477,19 +1581,19 @@ body.light-mode .citation-pill:hover {
    CHAT INPUT AREA
    ========================================== */
 .chat-input-area {
-    height: 60px; padding: 0 36px;
+    height: 52px; padding: 0 36px;
     background: var(--bg-glass-deep);
     border-top: 1px solid var(--border);
     display: flex; align-items: center; gap: 11px;
     flex-shrink: 0; z-index: 10;
 }
 .chat-input {
-    flex: 1; height: 40px; border-radius: 12px;
+    flex: 1; height: 36px; border-radius: 10px;
     border: 1px solid var(--border);
     background: rgba(255,255,255,0.04);
     color: var(--text-primary);
     font-family: var(--font-body);
-    padding: 0 18px; font-size: 14px; outline: none;
+    padding: 0 14px; font-size: 13.5px; outline: none;
 }
 .chat-input::placeholder { color: var(--text-muted); }
 .chat-input:focus {
@@ -1504,9 +1608,9 @@ body.light-mode .chat-input {
 
 /* Response Style Selector in Chat Input Area */
 .chat-input-area select {
-    height: 40px;
-    padding: 0 16px;
-    border-radius: 12px;
+    height: 36px;
+    padding: 0 12px;
+    border-radius: 10px;
     border: 1px solid var(--border);
     background: rgba(255,255,255,0.04);
     color: var(--text-primary);
@@ -1542,10 +1646,10 @@ body.light-mode .chat-input-area select {
 
 /* Send & Dictation buttons */
 .send-btn, .mic-btn {
-    width: 40px; height: 40px; border-radius: 50%;
+    width: 36px; height: 36px; border-radius: 50%;
     border: 1px solid var(--border);
     display: flex; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 14px;
+    cursor: pointer; font-size: 13.5px;
 }
 
 /* Floating send button with radial glow hover */
@@ -1691,10 +1795,14 @@ body.light-mode .setting-group textarea {
     font-family: var(--font-display); font-size: 14px; font-weight: 700;
     cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
     margin-top: auto;
+    background-size: 200% auto !important;
+    animation: gradFlow 8s linear infinite !important;
 }
 .save-settings-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 24px var(--accent-glow);
+    background-size: 200% auto !important;
+    animation: gradFlow 3s linear infinite !important;
 }
 
 /* ==========================================
@@ -2156,12 +2264,12 @@ body.light-mode .features-dropdown .toolbar-btn:hover {
     font-size: 13px;
 }
 
-/* ── Modal Overrides when embedded inside featureWorkspace ── */
 #featureWorkspace #nlpOverlay,
 #featureWorkspace #cuOverlay,
 #featureWorkspace #kgModal,
 #featureWorkspace #mmOverlay,
 #featureWorkspace #nexoraReportModal,
+#featureWorkspace #faqWorkspaceOverlay,
 #featureWorkspace #actionTrackerOverlay {
     position: absolute !important;
     inset: 0 !important;
@@ -2183,6 +2291,7 @@ body.light-mode .features-dropdown .toolbar-btn:hover {
 #featureWorkspace #cuOverlay.cu-active,
 #featureWorkspace #kgModal.open,
 #featureWorkspace #mmOverlay.mm-active,
+#featureWorkspace #faqWorkspaceOverlay.open,
 #featureWorkspace #actionTrackerOverlay.open {
     display: flex !important;
     align-items: stretch !important;
@@ -2194,6 +2303,7 @@ body.light-mode .features-dropdown .toolbar-btn:hover {
 #featureWorkspace #kgPanel,
 #featureWorkspace #mmModal,
 #featureWorkspace .report-modal-card,
+#featureWorkspace #faqWorkspaceModal,
 #featureWorkspace #actionTrackerModal {
     position: absolute !important;
     inset: 0 !important;
@@ -2216,8 +2326,38 @@ body.light-mode .features-dropdown .toolbar-btn:hover {
 #featureWorkspace #cuBody,
 #featureWorkspace #mmCanvasWrap,
 #featureWorkspace #kgSvgWrap,
+#featureWorkspace #faqWorkspaceScrollBody,
 #featureWorkspace .at-body {
     flex: 1;
     overflow-y: auto;
 }
 
+/* ==========================================
+   UNIFORM LOADERS (CSS Spinners matching Knowledge Graph)
+   ========================================== */
+.nexora-spinner {
+    display: inline-block;
+    vertical-align: middle;
+    border-radius: 50%;
+    animation: nexoraSpin 0.8s linear infinite;
+    box-sizing: border-box;
+}
+
+.nexora-spinner.inline {
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--accent-glow-soft);
+    border-top-color: var(--accent);
+    margin-right: 6px;
+}
+
+.nexora-spinner.large {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--accent-glow-soft);
+    border-top-color: var(--accent);
+}
+
+@keyframes nexoraSpin {
+    to { transform: rotate(360deg); }
+}

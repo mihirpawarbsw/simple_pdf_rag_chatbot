@@ -72,9 +72,15 @@ const MindMap = (() => {
             </div>
 
             <!-- State overlay -->
-            <div id="mmState" class="mm-state">
-              <i class="fa-solid fa-brain mm-state-icon"></i>
-              <p>Generate a mind map to explore your documents visually.</p>
+            <div id="mmState" class="mm-state" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 20px; gap: 12px; color: var(--text-secondary);">
+              <i class="fa-solid fa-brain mm-state-icon" style="font-size: 32px; color: var(--accent); margin-bottom: 8px; animation: pulse 2s infinite;"></i>
+              <h3 style="margin: 0; font-family: var(--font-display); font-size: 1.1rem; color: var(--text-primary);">Interactive Mind Map</h3>
+              <p style="margin: 0 0 12px; font-size: 0.88rem; max-width: 480px; line-height: 1.5;">
+                Generates a visual, clickable tree layout to help you explore and drill down into document topics step-by-step.
+              </p>
+              <button onclick="MindMap.generate()" style="background: var(--grad-button); color: var(--swal-btn-text); border: none; padding: 10px 24px; border-radius: 12px; font-family: var(--font-display); font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 12px var(--accent-glow); display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Mind Map
+              </button>
             </div>
 
             <!-- Side detail panel -->
@@ -91,7 +97,7 @@ const MindMap = (() => {
                 <i class="fa-solid fa-magnifying-glass-plus"></i> Deep Dive
               </button>
               <div id="mmDrillLoader" style="display:none">
-                <i class="fa-solid fa-spinner fa-spin"></i> Exploring…
+                <span class="nexora-spinner inline"></span> Exploring…
               </div>
             </div>
           </div>
@@ -115,7 +121,11 @@ const MindMap = (() => {
         const s = document.getElementById("mmState");
         if (!s) return;
         s.style.display = "flex";
-        s.innerHTML = `<i class="fa-solid ${icon} mm-state-icon"></i><p>${html}</p>`;
+        if (icon && icon.includes("fa-spinner")) {
+            s.innerHTML = `<span class="nexora-spinner large" style="margin-bottom: 8px;"></span><p>${html}</p>`;
+        } else {
+            s.innerHTML = `<i class="fa-solid ${icon} mm-state-icon"></i><p>${html}</p>`;
+        }
     }
 
     function _clearState() {
@@ -443,7 +453,7 @@ const MindMap = (() => {
         _sessionId = sid;
 
         const btn = document.getElementById("mmGenBtn");
-        if (btn) { btn.disabled = true; btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Building…`; }
+        if (btn) { btn.disabled = true; btn.innerHTML = `<span class="nexora-spinner inline"></span> Building…`; }
         _setState("Building your mind map… this may take 30–60 seconds.", "fa-spinner fa-spin");
         _tree = null; _selectedId = null; _expandedIds = new Set();
         _closePanel();

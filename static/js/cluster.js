@@ -295,9 +295,15 @@ const ClusterUniverse = (() => {
                 </div>
             </div>
             <div id="cuBody">
-                <div class="cu-state" id="cuStateMsg">
-                    <i class="fa-solid fa-circle-nodes"></i>
-                    <span>Click <strong>Re-cluster</strong> to analyse your documents.</span>
+                <div class="cu-state" id="cuStateMsg" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 20px; gap: 12px; color: var(--text-secondary);">
+                    <i class="fa-solid fa-circle-nodes" style="font-size: 32px; color: var(--accent); margin-bottom: 8px;"></i>
+                    <h3 style="margin: 0; font-family: var(--font-display); font-size: 1.1rem; color: var(--text-primary);">Cluster Universe</h3>
+                    <p style="margin: 0 0 12px; font-size: 0.88rem; max-width: 480px; line-height: 1.5;">
+                        Groups your documents into visual coordinate clouds based on semantic similarity to find related content.
+                    </p>
+                    <button onclick="ClusterUniverse.load(true)" style="background: var(--grad-button); color: var(--swal-btn-text); border: none; padding: 10px 24px; border-radius: 12px; font-family: var(--font-display); font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 12px var(--accent-glow); display: inline-flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-rotate"></i> Analyze Clusters
+                    </button>
                 </div>
                 <div id="cuGrid" style="display:none"></div>
             </div>
@@ -384,9 +390,9 @@ const ClusterUniverse = (() => {
         _lastFetchKey = cacheKey;
 
         const btn = document.getElementById("cuRefreshBtn");
-        if (btn) { btn.disabled = true; btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Clustering…`; }
+        if (btn) { btn.disabled = true; btn.innerHTML = `<span class="nexora-spinner inline"></span> Clustering…`; }
 
-        _setState(`<i class="fa-solid fa-spinner fa-spin"></i><span>Analysing documents and building clusters…</span>`);
+        _setState(`<span class="nexora-spinner large" style="margin-bottom: 8px;"></span><span>Analysing documents and building clusters…</span>`);
         _setStatBar(null);
 
         try {

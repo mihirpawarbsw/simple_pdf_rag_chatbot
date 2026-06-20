@@ -54,7 +54,7 @@ const ActionTracker = (() => {
         _isExtracting = true;
 
         const btn = $('atExtractBtn');
-        if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner at-spin"></i> Scanning…'; }
+        if (btn) { btn.disabled = true; btn.innerHTML = '<span class="nexora-spinner inline"></span> Scanning…'; }
 
         // Collect selected docs from the existing document filter checkboxes
         const checked = document.querySelectorAll('#documentCheckboxList input[type=checkbox]:checked');
@@ -159,17 +159,31 @@ const ActionTracker = (() => {
     function _showLoading() {
         $('atBody').innerHTML = `
             <div class="at-loading">
-                <i class="fa-solid fa-spinner at-spin"></i>
+                <span class="nexora-spinner large"></span>
                 <span>Loading items…</span>
             </div>`;
     }
 
     function _showEmpty(msg = 'No items found. Click <strong>Extract Items</strong> to scan your documents.') {
-        $('atBody').innerHTML = `
-            <div class="at-empty">
-                <i class="fa-solid fa-inbox"></i>
-                <span>${msg}</span>
-            </div>`;
+        if (msg.includes('No items found') || msg.includes('No items')) {
+            $('atBody').innerHTML = `
+                <div class="at-empty" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 20px; gap: 12px; color: var(--text-secondary);">
+                    <i class="fa-solid fa-circle-check" style="font-size: 32px; color: var(--accent); margin-bottom: 8px;"></i>
+                    <h3 style="margin: 0; font-family: var(--font-display); font-size: 1.1rem; color: var(--text-primary);">Action Items &amp; Decision Tracker</h3>
+                    <p style="margin: 0 0 12px; font-size: 0.88rem; max-width: 480px; line-height: 1.5;">
+                        Scans your documents to automatically extract and track action items, deadlines, and decision points in a Kanban board.
+                    </p>
+                    <button class="at-extract-btn" onclick="ActionTracker.extract(false)" style="background: var(--grad-button); color: var(--swal-btn-text); border: none; padding: 10px 24px; border-radius: 12px; font-family: var(--font-display); font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 12px var(--accent-glow); display: inline-flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-bolt"></i> Extract Action Items
+                    </button>
+                </div>`;
+        } else {
+            $('atBody').innerHTML = `
+                <div class="at-empty" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 20px; gap: 12px; color: var(--text-secondary);">
+                    <i class="fa-solid fa-inbox" style="font-size: 32px; color: var(--accent-glow-soft); margin-bottom: 8px;"></i>
+                    <span>${msg}</span>
+                </div>`;
+        }
     }
 
     function _updateStatBar(data) {

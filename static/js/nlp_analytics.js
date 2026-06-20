@@ -12,17 +12,55 @@
 const NLPAnalytics = (() => {
 
     // ── Palette ──────────────────────────────────────────────────────────
-    const COLORS = [
+    let COLORS = [
         "#b18fcf","#7ec8e3","#f4a261","#57cc99",
         "#e76f51","#a8dadc","#ffd166","#c77dff",
         "#06d6a0","#ef476f","#118ab2","#ffc43d",
     ];
-    const ENTITY_COLORS = {
+    let ENTITY_COLORS = {
         PERSON:   "#b18fcf", ORG:      "#7ec8e3",
         LOCATION: "#57cc99", DATE:     "#ffd166",
         PRODUCT:  "#f4a261", CONCEPT:  "#c77dff",
         OTHER:    "#a8a8a8",
     };
+
+    function _updateColorsForMode() {
+        const isLight = document.body.classList.contains("light-mode");
+        if (isLight) {
+            COLORS = [
+                "#7c3aed", // lavender/purple
+                "#0369a1", // blue
+                "#15803d", // green
+                "#c2410c", // orange
+                "#b45309", // amber/dark yellow
+                "#7e22ce", // purple deep
+                "#be123c", // red
+                "#0f766e", // teal
+                "#1d4ed8", // dark blue
+                "#b45309", // amber
+                "#9a3412", // rust
+                "#0369a1"  // slate blue
+            ];
+            ENTITY_COLORS = {
+                PERSON:   "#7c3aed", ORG:      "#0369a1",
+                LOCATION: "#15803d", DATE:     "#b45309",
+                PRODUCT:  "#c2410c", CONCEPT:  "#7e22ce",
+                OTHER:    "#475569",
+            };
+        } else {
+            COLORS = [
+                "#b18fcf","#7ec8e3","#f4a261","#57cc99",
+                "#e76f51","#a8dadc","#ffd166","#c77dff",
+                "#06d6a0","#ef476f","#118ab2","#ffc43d",
+            ];
+            ENTITY_COLORS = {
+                PERSON:   "#b18fcf", ORG:      "#7ec8e3",
+                LOCATION: "#57cc99", DATE:     "#ffd166",
+                PRODUCT:  "#f4a261", CONCEPT:  "#c77dff",
+                OTHER:    "#a8a8a8",
+            };
+        }
+    }
 
     let _injected   = false;
     let _activeTab  = "sentiment";
@@ -691,9 +729,43 @@ body.light-mode #nlpCloseBtn:hover {
           </div>
 
           <div id="nlpBody">
-            <div class="nlp-state" id="nlpState">
-              <i class="fa-solid fa-flask-vial"></i>
-              <span>Click <strong>Analyse</strong> to run NLP on your documents.</span>
+            <div class="nlp-state" id="nlpState" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0; gap: 8px; color: var(--text-secondary); width: 100%; height: 100%;">
+              <i class="fa-solid fa-flask-vial" style="margin-bottom: 2px; font-size: 24px; color: var(--accent);"></i>
+              <h3 style="margin: 0; font-family: var(--font-display); font-size: 1.0rem; color: var(--text-primary);">NLP Analytics Suite</h3>
+              <p style="margin: 0 0 8px; font-size: 0.78rem; max-width: 480px; line-height: 1.3;">
+                Analyze your documents to extract emotional tone, key terms, themes, entities, and readability complexity.
+              </p>
+              
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; width: 100%; max-width: 740px; text-align: left; margin-bottom: 12px;">
+                <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 8px 12px; border-radius: 10px;">
+                  <strong style="color: var(--accent); display: block; font-size: 0.78rem; margin-bottom: 2px;"><i class="fa-solid fa-face-smile"></i> Sentiment Analysis</strong>
+                  <span style="font-size: 0.7rem; color: var(--text-secondary); line-height: 1.3; display: block;">Measures emotional tone (positive/negative/neutral) of text.</span>
+                </div>
+                <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 8px 12px; border-radius: 10px;">
+                  <strong style="color: var(--accent); display: block; font-size: 0.78rem; margin-bottom: 2px;"><i class="fa-solid fa-cloud"></i> Word Cloud</strong>
+                  <span style="font-size: 0.7rem; color: var(--text-secondary); line-height: 1.3; display: block;">Highlights the most frequent words and key terms.</span>
+                </div>
+                <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 8px 12px; border-radius: 10px;">
+                  <strong style="color: var(--accent); display: block; font-size: 0.78rem; margin-bottom: 2px;"><i class="fa-solid fa-layer-group"></i> Topic Modeling</strong>
+                  <span style="font-size: 0.7rem; color: var(--text-secondary); line-height: 1.3; display: block;">Discovers the main themes and groups related concepts.</span>
+                </div>
+                <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 8px 12px; border-radius: 10px;">
+                  <strong style="color: var(--accent); display: block; font-size: 0.78rem; margin-bottom: 2px;"><i class="fa-solid fa-key"></i> Keyphrases</strong>
+                  <span style="font-size: 0.7rem; color: var(--text-secondary); line-height: 1.3; display: block;">Pulls out the most important keywords and search terms.</span>
+                </div>
+                <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 8px 12px; border-radius: 10px;">
+                  <strong style="color: var(--accent); display: block; font-size: 0.78rem; margin-bottom: 2px;"><i class="fa-solid fa-tag"></i> Named Entities</strong>
+                  <span style="font-size: 0.7rem; color: var(--text-secondary); line-height: 1.3; display: block;">Extracts names of people, companies, dates, and locations.</span>
+                </div>
+                <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 8px 12px; border-radius: 10px;">
+                  <strong style="color: var(--accent); display: block; font-size: 0.78rem; margin-bottom: 2px;"><i class="fa-solid fa-book-open"></i> Readability</strong>
+                  <span style="font-size: 0.7rem; color: var(--text-secondary); line-height: 1.3; display: block;">Calculates how easy or difficult text is to read.</span>
+                </div>
+              </div>
+              
+              <button onclick="NLPAnalytics.run()" style="background: var(--grad-button); color: var(--swal-btn-text); border: none; padding: 8px 20px; border-radius: 10px; font-family: var(--font-display); font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 12px var(--accent-glow); display: inline-flex; align-items: center; gap: 6px;">
+                <i class="fa-solid fa-rotate"></i> Run Full Analysis
+              </button>
             </div>
 
             <!-- Sentiment -->
@@ -788,7 +860,7 @@ body.light-mode #nlpCloseBtn:hover {
         // Track
         ctx.beginPath();
         ctx.arc(cx, cy, r, Math.PI * 0.75, Math.PI * 2.25);
-        ctx.strokeStyle = "rgba(255,255,255,0.07)";
+        ctx.strokeStyle = document.body.classList.contains("light-mode") ? "rgba(0,0,0,0.08)" : "rgba(255,255,255,0.07)";
         ctx.lineWidth = 14; ctx.lineCap = "round";
         ctx.stroke();
 
@@ -960,6 +1032,7 @@ body.light-mode #nlpCloseBtn:hover {
 
     // ── Render all ────────────────────────────────────────────────────────
     function _render(data) {
+        _updateColorsForMode();
         _clearState();
         _setStatBar(data.stats);
 
@@ -984,6 +1057,7 @@ body.light-mode #nlpCloseBtn:hover {
         document.querySelectorAll(".nlp-panel").forEach(p => p.classList.remove("active"));
         const panel = document.getElementById(`panel-${name}`);
         if (panel && _data) {
+            _updateColorsForMode();
             panel.classList.add("active");
             document.getElementById("nlpState").style.display = "none";
             // Redraw canvas-based panels on tab switch
@@ -996,8 +1070,8 @@ body.light-mode #nlpCloseBtn:hover {
     async function run() {
         const btn = document.getElementById("nlpRunBtn");
         btn.disabled = true;
-        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Analysing…`;
-        _setState(`<i class="fa-solid fa-spinner fa-spin"></i><span>Running NLP analysis on your documents…</span>`);
+        btn.innerHTML = `<span class="nexora-spinner inline"></span> Analysing…`;
+        _setState(`<span class="nexora-spinner large" style="margin-bottom: 8px;"></span><span>Running NLP analysis on your documents…</span>`);
         _setStatBar(null);
         _data = null;
 

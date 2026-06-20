@@ -392,20 +392,58 @@ body::after{
 }
 
 /* USE CASES */
-.usecases-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
-@media(max-width:760px){.usecases-grid{grid-template-columns:1fr}}
+.usecases-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+@media(max-width:980px){.usecases-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:680px){.usecases-grid{grid-template-columns:1fr}}
 .usecase-card{
   background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
   padding:32px 30px;text-align:left;
   transition:all .4s var(--ease);
 }
 .usecase-card:hover{transform:translateY(-6px);box-shadow:0 24px 50px rgba(45,42,110,.07), 0 0 0 1px var(--lavender);border-color:transparent}
-.usecase-label{
-  display:inline-flex;align-items:center;gap:8px;font-family:var(--ff-display);
-  font-size:12.5px;font-weight:700;color:var(--lavender);margin-bottom:16px;
+.usecase-icon{
+  width:44px;height:44px;border-radius:12px;margin-bottom:20px;
+  display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;
+  background:var(--grad);background-size:220% 220%;
+  box-shadow:0 6px 16px var(--glow-soft);
 }
-.usecase-card h3{font-family:var(--ff-display);font-size:20px;font-weight:700;margin-bottom:10px;letter-spacing:-.015em}
-.usecase-card p{font-size:14.5px;line-height:1.65;color:var(--ink-2)}
+.usecase-card h3{font-family:var(--ff-display);font-size:20px;font-weight:700;margin-bottom:8px;letter-spacing:-.015em;color:var(--ink)}
+.usecase-subtitle{
+  display:block;
+  font-size:13.5px;
+  font-weight:600;
+  color:var(--ink-3);
+  margin-bottom:18px;
+  line-height:1.4;
+}
+.usecase-list{
+  list-style:none;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin-top:8px;
+}
+.usecase-list li{
+  font-size:13.5px;
+  line-height:1.5;
+  color:var(--ink-2);
+  position:relative;
+  padding-left:14px;
+}
+.usecase-list li::before{
+  content:'';
+  position:absolute;
+  left:0;
+  top:8px;
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:var(--magenta);
+}
+.usecase-list li strong{
+  color:var(--ink);
+  font-weight:600;
+}
 
 /* FAQ */
 .faq-list{max-width:740px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
@@ -542,7 +580,7 @@ footer{background:var(--surface);border-top:1px solid var(--line);padding:40px 2
     <a href="#how" class="nav-link">How it works</a>
     <a href="#features" class="nav-link">Features</a>
     <a href="#tools" class="nav-link">Tools</a>
-    <a href="#usecases" class="nav-link">Who it's for</a>
+    <a href="#usecases" class="nav-link">Use Cases</a>
     <a href="#faq" class="nav-link">FAQ</a>
   </div>
   <div class="nav-right">
@@ -831,35 +869,110 @@ footer{background:var(--surface);border-top:1px solid var(--line);padding:40px 2
 
 <div class="synapse"></div>
 
-<!-- ═══ WHO IT'S FOR ═══ -->
+<!-- ═══ USE CASES ═══ -->
 <section class="scene" id="usecases">
   <div class="scene-inner">
     <div class="center gs-reveal">
-      <div class="scene-tag"><i class="fa-solid fa-people-group"></i>Who it's for</div>
-      <h2 class="scene-h2">Built for <em>real people,</em> not just engineers.</h2>
-      <p class="scene-sub">Whatever stacks of paperwork are slowing you down, Nexora turns them into quick answers.</p>
+      <div class="scene-tag"><i class="fa-solid fa-folder-tree"></i>Use Cases</div>
+      <h2 class="scene-h2">Built for every kind of document, <em>every kind of mind.</em></h2>
+      <p class="scene-sub">From contracts to case studies, Nexora turns whatever you throw at it into answers.</p>
     </div>
 
     <div class="usecases-grid">
+      <!-- 1. Legal & Compliance -->
       <div class="usecase-card gs-reveal">
-        <span class="usecase-label"><i class="fa-solid fa-scale-balanced"></i>For contracts & agreements</span>
-        <h3>Understand any contract in minutes</h3>
-        <p>Ask "what happens if I cancel early?" instead of reading forty pages of fine print yourself.</p>
+        <div class="usecase-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+        <h3>Legal & Compliance</h3>
+        <span class="usecase-subtitle">Legal teams — Read contracts at the speed of a question.</span>
+        <ul class="usecase-list">
+          <li><strong>Contract Review</strong> — Spot risky clauses, obligations, and deadlines before you sign anything.</li>
+          <li><strong>Due Diligence</strong> — Cross-reference hundreds of deal documents in minutes, not weeks.</li>
+          <li><strong>Compliance Audits</strong> — Ask your policy library if you're actually following your own rules.</li>
+        </ul>
       </div>
+
+      <!-- 2. Finance & Accounting -->
       <div class="usecase-card gs-reveal">
-        <span class="usecase-label"><i class="fa-solid fa-sack-dollar"></i>For bills & statements</span>
-        <h3>Make sense of your finances</h3>
-        <p>Upload statements and reports, then ask plain questions like "how much did we spend on marketing?"</p>
+        <div class="usecase-icon"><i class="fa-solid fa-chart-pie"></i></div>
+        <h3>Finance & Accounting</h3>
+        <span class="usecase-subtitle">Finance teams — Make your filings talk back.</span>
+        <ul class="usecase-list">
+          <li><strong>Statement Analysis</strong> — Turn quarterly reports into plain-English answers about cash flow and risk.</li>
+          <li><strong>Expense Reconciliation</strong> — Chat your way through stacks of receipts instead of scanning line by line.</li>
+          <li><strong>Investment Research</strong> — Query earnings calls, prospectuses, and filings like a personal analyst.</li>
+        </ul>
       </div>
+
+      <!-- 3. Research & Academia -->
       <div class="usecase-card gs-reveal">
-        <span class="usecase-label"><i class="fa-solid fa-building"></i>For work & team docs</span>
-        <h3>Stop digging through folders</h3>
-        <p>Keep handbooks, policies, and guides in one place and just ask instead of searching file by file.</p>
+        <div class="usecase-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+        <h3>Research & Academia</h3>
+        <span class="usecase-subtitle">Researchers — One question, a hundred papers, one answer.</span>
+        <ul class="usecase-list">
+          <li><strong>Literature Review</strong> — Ask dozens of papers the same question and get one synthesized answer.</li>
+          <li><strong>Thesis & Dissertation</strong> — Find every citation, quote, and contradiction across source material instantly.</li>
+          <li><strong>Grant Writing</strong> — Pull prior proposals and findings into new applications without re-reading.</li>
+        </ul>
       </div>
+
+      <!-- 4. Business & Operations -->
       <div class="usecase-card gs-reveal">
-        <span class="usecase-label"><i class="fa-solid fa-graduation-cap"></i>For study & research</span>
-        <h3>Read faster, remember more</h3>
-        <p>Drop in papers or textbooks and ask for summaries, definitions, or comparisons on the spot.</p>
+        <div class="usecase-icon"><i class="fa-solid fa-briefcase"></i></div>
+        <h3>Business & Operations</h3>
+        <span class="usecase-subtitle">Operations — Your SOPs, now searchable in plain English.</span>
+        <ul class="usecase-list">
+          <li><strong>Report Digestion</strong> — Catch every decision and action item buried in last quarter's reports.</li>
+          <li><strong>Onboarding & SOPs</strong> — Let new hires ask the handbook questions instead of hunting through folders.</li>
+          <li><strong>Vendor Review</strong> — Compare supplier contracts and terms side by side, instantly.</li>
+        </ul>
+      </div>
+
+      <!-- 5. Healthcare & Life Sciences -->
+      <div class="usecase-card gs-reveal">
+        <div class="usecase-icon"><i class="fa-solid fa-dna"></i></div>
+        <h3>Healthcare & Life Sciences</h3>
+        <span class="usecase-subtitle">Healthcare — Find the finding, skip the scrolling.</span>
+        <ul class="usecase-list">
+          <li><strong>Clinical Review</strong> — Surface key findings from patient records, studies, or trial reports fast.</li>
+          <li><strong>Research Synthesis</strong> — Ask a stack of journal articles what they actually agree on.</li>
+          <li><strong>Regulatory Filings</strong> — Search guidelines and past protocols to accelerate submission preparation.</li>
+        </ul>
+      </div>
+
+      <!-- 6. Education -->
+      <div class="usecase-card gs-reveal">
+        <div class="usecase-icon"><i class="fa-solid fa-chalkboard-user"></i></div>
+        <h3>Education</h3>
+        <span class="usecase-subtitle">Students & Educators — Turn your syllabus into a study partner.</span>
+        <ul class="usecase-list">
+          <li><strong>Study & Exam Prep</strong> — Turn textbooks and lecture notes into a tutor that quizzes you back.</li>
+          <li><strong>Curriculum Design</strong> — Mine past course materials for what worked and what to reuse.</li>
+          <li><strong>Interactive Manuals</strong> — Convert heavy academic or training guides into interactive companions.</li>
+        </ul>
+      </div>
+
+      <!-- 7. Real Estate & Property -->
+      <div class="usecase-card gs-reveal">
+        <div class="usecase-icon"><i class="fa-solid fa-building-user"></i></div>
+        <h3>Real Estate & Property</h3>
+        <span class="usecase-subtitle">Property teams — Analyze complex portfolios instantly.</span>
+        <ul class="usecase-list">
+          <li><strong>Lease Abstraction</strong> — Extract key lease terms, renewal dates, and payment obligations from agreements.</li>
+          <li><strong>Portfolio Querying</strong> — Inspect valuation reports, structural surveys, and maintenance logs in seconds.</li>
+          <li><strong>Zoning & Compliance</strong> — Get quick answers from local codes and municipal regulations.</li>
+        </ul>
+      </div>
+
+      <!-- 8. Personal Productivity -->
+      <div class="usecase-card gs-reveal">
+        <div class="usecase-icon"><i class="fa-solid fa-user-gear"></i></div>
+        <h3>Personal Productivity</h3>
+        <span class="usecase-subtitle">Productivity — Save hours of scrolling and copy-pasting daily.</span>
+        <ul class="usecase-list">
+          <li><strong>Tax & Finance</strong> — Ask your own bank and tax statements where your money actually went.</li>
+          <li><strong>Rapid Reading</strong> — Skim a 200-page report by asking questions instead of reading cover to cover.</li>
+          <li><strong>Project Archives</strong> — Search years of old files like they happened yesterday.</li>
+        </ul>
       </div>
     </div>
   </div>
@@ -925,7 +1038,7 @@ footer{background:var(--surface);border-top:1px solid var(--line);padding:40px 2
       <a href="#how">How it works</a>
       <a href="#features">Features</a>
       <a href="#tools">Tools</a>
-      <a href="#usecases">Who it's for</a>
+      <a href="#usecases">Use Cases</a>
       <a href="#faq">FAQ</a>
     </nav>
     <div class="footer-copy">© 2026 Nexora</div>
@@ -1245,7 +1358,7 @@ document.querySelectorAll('a[href^="#"]').forEach(function(link){
     .to(camera.position, { x: 0, y: 50, z: 100, ease: "power1.inOut" }, 0.5)
     .to(scrollRotation, { x: 0.3, y: Math.PI * 1.5, z: 0.2, ease: "power1.inOut" }, 0.5)
 
-    // 4. Scroll from "Tools" to "Who it's for" / "FAQ"
+    // 4. Scroll from "Tools" to "Use Cases" / "FAQ"
     .to(camera.position, { x: 40, y: -10, z: 200, ease: "power1.inOut" }, 0.75)
     .to(scrollRotation, { x: -0.1, y: Math.PI * 2.0, z: 0, ease: "power1.inOut" }, 0.75)
 

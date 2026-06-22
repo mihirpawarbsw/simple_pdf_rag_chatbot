@@ -1,4 +1,4 @@
-# Nexora.AI — Transforming Documents Into Intelligent Conversations!
+# Nexora.AI — Transforming Documents Into Intelligent Conversations!!
 
 Nexora.AI is a document-intelligence web application that lets users upload files (PDF, TXT, DOC/DOCX, PPT/PPTX), index them into a knowledge base, and "chat" with that knowledge base using natural language. Beyond chat, it bundles a suite of analysis tools — knowledge graphs, mind maps, clustering, NLP analytics, an action-item tracker, and one-click executive report generation — into a single workspace.
 

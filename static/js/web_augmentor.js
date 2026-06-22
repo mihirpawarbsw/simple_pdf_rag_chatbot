@@ -713,6 +713,9 @@ const WebAugmentor = (() => {
                     <button class="war-header-btn" id="warHistoryBtn" onclick="WebAugmentor._toggleTab('history')">
                         <i class="fa-solid fa-clock-rotate-left"></i> History
                     </button>
+                    <button class="war-header-btn primary" id="warRegenerateBtn" onclick="WebAugmentor.generate()" style="display:none">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Regenerate
+                    </button>
                     <button class="war-header-btn" id="warDownloadBtn" onclick="WebAugmentor.downloadPDF()" style="display:none">
                         <i class="fa-solid fa-file-arrow-down"></i> Download PDF
                     </button>
@@ -1007,9 +1010,11 @@ const WebAugmentor = (() => {
             content.appendChild(srcGrid);
         }
 
-        // Show download button
+        // Show download and regenerate buttons
         const dlBtn = document.getElementById("warDownloadBtn");
         if (dlBtn) dlBtn.style.display = "flex";
+        const regenBtn = document.getElementById("warRegenerateBtn");
+        if (regenBtn) regenBtn.style.display = "flex";
 
         // Show tabs
         document.getElementById("warTabsRow").style.display = "flex";
@@ -1150,6 +1155,8 @@ const WebAugmentor = (() => {
 
         const dlBtn = document.getElementById("warDownloadBtn");
         if (dlBtn) dlBtn.style.display = "none";
+        const regenBtn = document.getElementById("warRegenerateBtn");
+        if (regenBtn) regenBtn.style.display = "none";
 
         const genBtn = document.getElementById("warGenerateBtn");
         genBtn.disabled = true;
@@ -1201,6 +1208,11 @@ const WebAugmentor = (() => {
             _generating = false;
             genBtn.disabled = false;
             genBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Report`;
+            const regenBtn = document.getElementById("warRegenerateBtn");
+            if (regenBtn) {
+                regenBtn.disabled = false;
+                regenBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> Regenerate`;
+            }
         }
     }
 

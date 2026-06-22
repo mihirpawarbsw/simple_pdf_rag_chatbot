@@ -26,6 +26,7 @@
     <script src="{{ url_for('static', filename='js/action_tracker.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/cluster.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/mindmap.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/web_augmentor.js') }}" defer></script>
 
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -48,6 +49,8 @@
       #mmHeader,
       .report-modal-header,
       #faqWorkspaceHeader,
+      #warHeader,
+      #warModal
       .at-header {
         display: flex !important;
         align-items: center !important;
@@ -371,6 +374,10 @@
                             <i class="fa-solid fa-file-invoice"></i>
                             <span>Executive Report</span>
                         </button>
+                        <button class="toolbar-btn" onclick="openFeatureInWorkspace('TrendLens', () => WebAugmentor.open())" title="Web-Grounded Intelligence Report">
+                        <i class="fa-solid fa-globe"></i>
+                        <span>TrendLens</span>
+                        </button>
                     </div>
                 </div>
 
@@ -500,11 +507,7 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="faq-header-right">
-                            <button class="faq-close-btn" onclick="backToChatbot()" title="Close" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 18px; padding: 4px 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <i class="fa-solid fa-xmark"></i>
-                            </button>
-                        </div>
+
                     </div>
                     <!-- Scrollable Body Content -->
                     <div id="faqWorkspaceScrollBody" style="padding: 24px; box-sizing: border-box; overflow-y: auto; height: calc(100% - 72px); padding-right: 8px;">
@@ -553,12 +556,20 @@
                                         <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-file-invoice"></i> Executive Report</strong>
                                         <span style="font-size: 0.8rem; display: block;">Compiles and generates a comprehensive, AI-written PDF or DOCX report summarising all findings, insights, and key metrics from the selected set of documents.</span>
                                     </div>
+                                    <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
+                                        <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-earth-americas"></i> TrendLens</strong>
+                                        <span style="font-size: 0.8rem; display: block;">Compares your documents against live web intelligence—news, tweets, reviews, research, and trends—providing a "Doc vs. World" verification report that can be exported as a PDF.</span>
+                                    </div>
                                 </div>
                             </div>
                             
                             <div style="border-top: 1px solid var(--border); padding-top: 16px;">
                                 <h4 style="margin: 0 0 10px; font-family: var(--font-display); font-size: 0.98rem; color: var(--text-primary);"><i class="fa-solid fa-circle-info" style="color: var(--accent); margin-right: 6px;"></i> System FAQ</h4>
                                 <div style="display: flex; flex-direction: column; gap: 12px; font-size: 0.84rem;">
+                                    <div>
+                                        <strong style="color: var(--text-primary); display: block; margin-bottom: 2px;">Q: What is TrendLens and how does it work?</strong>
+                                        <span>A: TrendLens extracts key claims and topics from your uploaded documents and runs real-time web searches to check them against live internet resources. It compiles this evidence to show whether your documents are confirmed, contradicted, or outdated relative to current information.</span>
+                                    </div>
                                     <div>
                                         <strong style="color: var(--text-primary); display: block; margin-bottom: 2px;">Q: How does the AI search across my files?</strong>
                                         <span>A: The system splits documents into paragraphs, embeds them into a semantic vector database, and matches your questions using dense cosine similarity to locate the most relevant sections before generating answers.</span>

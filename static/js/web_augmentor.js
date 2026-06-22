@@ -1127,7 +1127,11 @@ const WebAugmentor = (() => {
     function close() {
         const overlay = document.getElementById("warOverlay");
         if (overlay) overlay.classList.remove("war-active");
-        if (typeof backToChatbot === "function") backToChatbot();
+        if (typeof window.originalBackToChatbot === "function") {
+            window.originalBackToChatbot();
+        } else if (typeof backToChatbot === "function") {
+            backToChatbot();
+        }
     }
 
     /** Run the full pipeline. */
@@ -1242,10 +1246,13 @@ const WebAugmentor = (() => {
 
     // Hook into global functions to ensure WebAugmentor closes when returning to chatbot or opening other features
     if (typeof window.backToChatbot === "function") {
-        const originalBackToChatbot = window.backToChatbot;
+        window.originalBackToChatbot = window.backToChatbot;
         window.backToChatbot = function() {
-            try { WebAugmentor.close(); } catch(e){}
-            originalBackToChatbot.apply(this, arguments);
+            try {
+                const overlay = document.getElementById("warOverlay");
+                if (overlay) overlay.classList.remove("war-active");
+            } catch(e){}
+            window.originalBackToChatbot.apply(this, arguments);
         };
     }
     if (typeof window.openFeatureInWorkspace === "function") {

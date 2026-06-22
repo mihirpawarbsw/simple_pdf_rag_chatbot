@@ -41,4 +41,5 @@ pydantic
 # Optional OCR
 pytesseract
 
-# SQLite is built into Python (no package needed)
+#new
+weasyprint

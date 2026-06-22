@@ -37,7 +37,7 @@ Both pages are **Jinja2 templates** (note the `{{ url_for('static', filename='..
 
 ---
 
-## 3. Project / Static File Structure
+## 3. Project / Static File Structure:-
 
 The templates reference the following static assets, implying this expected folder layout:
 

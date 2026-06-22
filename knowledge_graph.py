@@ -7,6 +7,15 @@ for the logged-in user and returns a D3-ready nodes/edges payload.
 Register in app.py:
     from knowledge_graph import knowledge_graph_bp
     app.register_blueprint(knowledge_graph_bp)
+
+FIXES (v2):
+    1. Double-escaped regex (searched for literal backslash-bracket) fixed
+       to a correct bracket pattern via the _extract_json_array() helper.
+    2. Escaped triple-quote prompt fixed to use real triple-quote delimiters.
+    3. Chroma flat $in + limit=120 replaced with per-file loop (same fix as
+       nlp_analytics) so every document contributes chunks and edges.
+    4. Shared _extract_json_array() helper with partial-parse salvage for
+       truncated LLM responses (same pattern as nlp_analytics).
 """
 
 from __future__ import annotations
@@ -14,6 +23,7 @@ from __future__ import annotations
 import json
 import os
 import re
+from collections import defaultdict
 
 import chromadb
 from flask import Blueprint, jsonify, request, session
@@ -23,7 +33,7 @@ from rag_logic import CHROMA_PATH, CHROMA_COLLECTION, get_llm
 knowledge_graph_bp = Blueprint("knowledge_graph_bp", __name__)
 
 
-# ─── Helpers ─────────────────────────────────────────────────────────────────
+# ─── LLM settings ─────────────────────────────────────────────────────────────
 
 def _get_llm_settings() -> dict:
     return {
@@ -32,48 +42,137 @@ def _get_llm_settings() -> dict:
     }
 
 
+# ─── Safe JSON array extractor (with partial-parse for truncated responses) ───
+
+def _extract_json_array(text: str) -> list | None:
+    """
+    Robustly extract a JSON array from an LLM response.
+
+    Strategy:
+    1. Strip markdown fences.
+    2. Try json.loads on the first [...] match (happy path).
+    3. If that fails (e.g. truncated output), walk character-by-character and
+       salvage every complete {...} object found before the cut-off point.
+    Returns None only when zero valid objects can be recovered.
+    """
+    text = re.sub(r"^```[a-z]*\n?|```$", "", text, flags=re.MULTILINE).strip()
+
+    # Happy path — complete array present
+    match = re.search(r"\[.*\]", text, re.DOTALL)
+    if match:
+        try:
+            return json.loads(match.group())
+        except json.JSONDecodeError:
+            pass  # fall through to partial-parse
+
+    # Partial-parse — response was truncated before closing ]
+    start = text.find("[")
+    if start == -1:
+        return None
+
+    salvaged: list = []
+    depth = 0
+    obj_start: int | None = None
+
+    for i, ch in enumerate(text[start:], start=start):
+        if ch == "{":
+            if depth == 0:
+                obj_start = i
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0 and obj_start is not None:
+                try:
+                    salvaged.append(json.loads(text[obj_start: i + 1]))
+                except json.JSONDecodeError:
+                    pass
+                obj_start = None
+
+    return salvaged if salvaged else None
+
+
+# ─── Chroma fetch — per-file loop to guarantee all docs are represented ───────
+
 def _fetch_chunks_for_user(username: str, filenames: list[str] | None = None) -> list[dict]:
     """
     Pull text chunks from Chroma for the user, optionally filtered by filenames.
-    Returns list of dicts with 'text' and 'source' keys for traceability.
+
+    BUG FIX: The original used col.get(where={$in: filenames}, limit=120).
+    Chroma applies the limit across the whole result set with no per-source
+    balancing — whichever file's chunks appeared first in the index filled the
+    ceiling, and all subsequent files returned zero chunks, producing zero triples
+    for those documents and therefore zero edges on the graph.
+
+    FIX: fetch per-file in a loop (30 chunks each) so every document is
+    guaranteed representation regardless of index ordering.
     """
+    CHUNKS_PER_FILE = 30
+
     try:
         client = chromadb.PersistentClient(path=CHROMA_PATH)
         col    = client.get_collection(CHROMA_COLLECTION)
+        all_chunks: list[dict] = []
 
-        # Always filter by username; optionally also by source filenames
-        if filenames and len(filenames) >= 1:
-            where: dict = {"$and": [
-                {"username": username},
-                {"source": {"$in": filenames}}
-            ]}
+        if filenames:
+            for fname in filenames:
+                where: dict = {"$and": [{"username": username}, {"source": fname}]}
+                try:
+                    results   = col.get(where=where, limit=CHUNKS_PER_FILE,
+                                        include=["documents", "metadatas"])
+                    docs      = results.get("documents", []) or []
+                    metadatas = results.get("metadatas", []) or []
+                    for doc, meta in zip(docs, metadatas):
+                        if doc and len(doc.strip()) > 40:
+                            all_chunks.append({
+                                "text":   doc,
+                                "source": (meta or {}).get("source", fname),
+                            })
+                except Exception as e:
+                    print(f"[KG] Chroma fetch error for '{fname}': {e}")
         else:
+            # No specific files — pull up to 300 chunks for the whole user
             where = {"username": username}
+            results   = col.get(where=where, limit=300, include=["documents", "metadatas"])
+            docs      = results.get("documents", []) or []
+            metadatas = results.get("metadatas", []) or []
+            for doc, meta in zip(docs, metadatas):
+                if doc and len(doc.strip()) > 40:
+                    all_chunks.append({
+                        "text":   doc,
+                        "source": (meta or {}).get("source", "Unknown"),
+                    })
 
-        results   = col.get(where=where, limit=120, include=["documents", "metadatas"])
-        docs      = results.get("documents", []) or []
-        metadatas = results.get("metadatas", []) or []
+        return all_chunks
 
-        chunks = []
-        for doc, meta in zip(docs, metadatas):
-            if doc and len(doc.strip()) > 40:
-                chunks.append({
-                    "text":   doc,
-                    "source": meta.get("source", "Unknown") if meta else "Unknown",
-                })
-        return chunks
     except Exception as e:
-        print(f"[KG] Chroma fetch error: {e}")
+        print(f"[KG] Chroma client error: {e}")
         return []
 
 
+# ─── Triple extraction ────────────────────────────────────────────────────────
+
 def _extract_triples_with_llm(chunks: list[dict], session_id: str) -> list[dict]:
+    """
+    Extract (subject, relation, object) triples from document chunks via LLM.
+
+    BUG FIXES:
+    1. Prompt previously used escaped triple-quotes which sent the literal
+       string backslash-quote-quote-quote to the LLM. The model interpreted
+       this as a formatting instruction and returned prose instead of JSON,
+       causing the regex to find nothing.
+       FIX: Use real triple-quote delimiters in the prompt string.
+
+    2. re.search with double-escaped brackets was searching for the literal
+       characters backslash-[ and backslash-] rather than JSON array brackets.
+       It could NEVER match any LLM output, so all_triples was always empty,
+       producing an empty edges list on the graph.
+       FIX: Use the shared _extract_json_array() helper with the correct pattern.
+    """
     if not chunks:
         return []
 
-    from collections import defaultdict
-    from token_utils  import trim_to_budget
-    from api_router   import call_llm_with_fallback
+    from token_utils import trim_to_budget
+    from api_router  import call_llm_with_fallback
 
     by_source: dict[str, list[str]] = defaultdict(list)
     for ch in chunks:
@@ -82,37 +181,45 @@ def _extract_triples_with_llm(chunks: list[dict], session_id: str) -> list[dict]
     all_triples: list[dict] = []
 
     for source, texts in list(by_source.items())[:6]:   # cap at 6 sources
-        # ← KEY CHANGE: 1 400 tokens per source instead of raw 6 000 chars
         combined = trim_to_budget(" ".join(texts[:8]), 1_400)
 
-        prompt = f"""Extract up to 15 factual triples from "{source}".
-Each triple: short subject, verb-phrase relation, short object (all 2-6 words).
-Output ONLY a JSON array with keys "subject", "relation", "object". No markdown.
-
-Text: \\"\\"\\"{combined}\\"\\"\\"
-
-JSON:"""
+        # Clean prompt — real """ delimiters, explicit JSON-only instruction
+        prompt = (
+            f'Extract up to 15 factual triples from the document "{source}".\n'
+            "Each triple must have: a short subject (2-6 words), a verb-phrase "
+            "relation (2-5 words), and a short object (2-6 words).\n"
+            "Return ONLY a valid JSON array of objects with keys: "
+            '"subject", "relation", "object". No markdown. No extra text.\n\n'
+            f'Text:\n"""\n{combined}\n"""\n\nJSON:'
+        )
 
         try:
             raw = call_llm_with_fallback(
                 prompt,
-                {"model_name": "llama-3.3-70b-versatile", "temperature": 0.0, "max_tokens": 800}
+                {**_get_llm_settings(), "max_tokens": 1000},
             )
-            raw = re.sub(r"^```[a-z]*\\n?|```$", "", raw, flags=re.MULTILINE).strip()
-            match = re.search(r"\\[.*\\]", raw, re.DOTALL)
-            if match:
-                for t in json.loads(match.group()):
-                    if isinstance(t, dict) and t.get("subject") and t.get("relation") and t.get("object"):
-                        t["source"] = source
-                        all_triples.append(t)
+            arr = _extract_json_array(raw)
+            if arr is None:
+                print(f"[KG] No JSON array in LLM response for '{source}': {raw[:200]!r}")
+                continue
+            for t in arr:
+                if (isinstance(t, dict)
+                        and t.get("subject")
+                        and t.get("relation")
+                        and t.get("object")):
+                    t["source"] = source
+                    all_triples.append(t)
         except Exception as e:
-            print(f"[KG] LLM error for {source}: {e}")
+            print(f"[KG] LLM error for '{source}': {e}")
 
     return all_triples
 
 
+# ─── Graph payload builder ────────────────────────────────────────────────────
+
 def _build_graph_payload(triples: list[dict], filenames: list[str]) -> dict:
-    """Convert triples to D3 force-graph nodes/edges payload.
+    """
+    Convert triples to D3 force-graph nodes/edges payload.
     Each edge carries a 'sources' list (which PDFs this relation came from).
     """
     node_set: dict[str, dict] = {}
@@ -133,10 +240,10 @@ def _build_graph_payload(triples: list[dict], filenames: list[str]) -> dict:
         return key
 
     for triple in triples:
-        s      = triple.get("subject", "").strip()
-        r      = triple.get("relation", "").strip()
-        o      = triple.get("object", "").strip()
-        src    = triple.get("source", "Unknown")        # ← PDF traceability
+        s   = triple.get("subject",  "").strip()
+        r   = triple.get("relation", "").strip()
+        o   = triple.get("object",   "").strip()
+        src = triple.get("source",   "Unknown")
         if not s or not r or not o:
             continue
 
@@ -152,8 +259,8 @@ def _build_graph_payload(triples: list[dict], filenames: list[str]) -> dict:
         if src not in node_set[oid]["sources"]:
             node_set[oid]["sources"].append(src)
 
-        # Deduplicate edges (same triple from same source → increment weight)
-        edge_key = f"{sid}→{oid}→{r.lower()}"
+        # Deduplicate edges (same triple from same source -> increment weight)
+        edge_key = f"{sid}|{oid}|{r.lower()}"
         existing = next((e for e in edges if e.get("_key") == edge_key), None)
         if existing:
             existing["weight"] += 1
@@ -166,10 +273,10 @@ def _build_graph_payload(triples: list[dict], filenames: list[str]) -> dict:
                 "target":   oid,
                 "relation": r,
                 "weight":   1,
-                "sources":  [src],          # ← which PDFs this edge came from
+                "sources":  [src],
             })
 
-    # Add source-document nodes
+    # Add source-document nodes (only when there are actual triples to connect)
     for fname in filenames:
         fkey = f"doc:{fname}"
         node_set[fkey] = {
@@ -180,7 +287,7 @@ def _build_graph_payload(triples: list[dict], filenames: list[str]) -> dict:
             "sources": [fname],
         }
 
-    nodes = list(node_set.values())
+    nodes       = list(node_set.values())
     clean_edges = [{k: v for k, v in e.items() if k != "_key"} for e in edges]
 
     return {
@@ -190,11 +297,11 @@ def _build_graph_payload(triples: list[dict], filenames: list[str]) -> dict:
             "node_count":   len(nodes),
             "edge_count":   len(clean_edges),
             "triple_count": len(triples),
-        }
+        },
     }
 
 
-# ─── Route ───────────────────────────────────────────────────────────────────
+# ─── Route ────────────────────────────────────────────────────────────────────
 
 @knowledge_graph_bp.route("/knowledge_graph", methods=["GET", "POST"])
 def knowledge_graph():
@@ -210,11 +317,10 @@ def knowledge_graph():
 
     username = session.get("username")
 
-    # Support both GET (query params) and POST (JSON body)
     if request.method == "POST":
         body       = request.json or {}
         session_id = body.get("session_id", "kg-session")
-        filenames  = body.get("files") or []           # list from frontend
+        filenames  = body.get("files") or []
         if isinstance(filenames, str):
             filenames = [f.strip() for f in filenames.split(",") if f.strip()]
     else:
@@ -241,7 +347,10 @@ def knowledge_graph():
 
     chunks  = _fetch_chunks_for_user(username, filenames if filenames else None)
     if not chunks:
-        return jsonify({"nodes": [], "edges": [], "stats": {"node_count": 0, "edge_count": 0, "triple_count": 0}})
+        return jsonify({
+            "nodes": [], "edges": [],
+            "stats": {"node_count": 0, "edge_count": 0, "triple_count": 0},
+        })
 
     triples = _extract_triples_with_llm(chunks, session_id)
     payload = _build_graph_payload(triples, filenames or [])

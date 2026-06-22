@@ -61,32 +61,105 @@ _STOPWORDS = {
 }
 
 
-# ─── Chroma fetch (identical pattern to knowledge_graph.py) ──────────────────
+# ─── Safe JSON extraction helpers ────────────────────────────────────────────
+
+def _extract_json_object(text: str) -> dict | None:
+    """Safely extract first JSON object from LLM text. Returns None on failure."""
+    text = re.sub(r"^```[a-z]*\n?|```$", "", text, flags=re.MULTILINE).strip()
+    match = re.search(r"\{.*\}", text, re.DOTALL)
+    if not match:
+        return None
+    try:
+        return json.loads(match.group())
+    except json.JSONDecodeError:
+        return None
+
+
+def _extract_json_array(text: str) -> list | None:
+    """
+    Safely extract first JSON array from LLM text.
+    If the array is truncated (LLM hit max_tokens mid-output), salvages all
+    complete objects before the cut-off rather than returning None.
+    Returns None only when zero valid objects are found.
+    """
+    text = re.sub(r"^```[a-z]*\n?|```$", "", text, flags=re.MULTILINE).strip()
+
+    # ── Happy path: complete array ────────────────────────────────────────────
+    match = re.search(r"\[.*\]", text, re.DOTALL)
+    if match:
+        try:
+            return json.loads(match.group())
+        except json.JSONDecodeError:
+            pass  # fall through to partial-parse below
+
+    # ── Partial-parse: response was truncated before closing ] ────────────────
+    # Find where the array starts, then extract every complete {...} object.
+    start = text.find("[")
+    if start == -1:
+        return None
+
+    salvaged: list = []
+    depth = 0
+    obj_start: int | None = None
+
+    for i, ch in enumerate(text[start:], start=start):
+        if ch == "{":
+            if depth == 0:
+                obj_start = i
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0 and obj_start is not None:
+                fragment = text[obj_start : i + 1]
+                try:
+                    salvaged.append(json.loads(fragment))
+                except json.JSONDecodeError:
+                    pass
+                obj_start = None
+
+    return salvaged if salvaged else None
+
+
+# ─── Chroma fetch ─────────────────────────────────────────────────────────────
 
 def _fetch_chunks(username: str, filenames: list[str] | None) -> list[dict]:
+    """
+    Fetch chunks from Chroma for the given user + filenames.
+    Fetches per-file in a loop so every document is guaranteed representation
+    (a single $in query with a flat limit silently drops later files).
+    """
+    CHUNKS_PER_FILE = 30
     try:
         client = chromadb.PersistentClient(path=CHROMA_PATH)
         col    = client.get_collection(CHROMA_COLLECTION)
+        all_chunks: list[dict] = []
 
         if filenames:
-            where: dict = {"$and": [
-                {"username": username},
-                {"source":   {"$in": filenames}},
-            ]}
+            for fname in filenames:
+                where: dict = {"$and": [{"username": username}, {"source": fname}]}
+                try:
+                    results   = col.get(where=where, limit=CHUNKS_PER_FILE,
+                                        include=["documents", "metadatas"])
+                    docs      = results.get("documents", []) or []
+                    metadatas = results.get("metadatas", []) or []
+                    for d, m in zip(docs, metadatas):
+                        if d and len(d.strip()) > 40:
+                            all_chunks.append({"text": d,
+                                               "source": (m or {}).get("source", fname)})
+                except Exception as e:
+                    print(f"[NLP] Chroma fetch error for '{fname}': {e}")
         else:
             where = {"username": username}
+            results   = col.get(where=where, limit=300, include=["documents", "metadatas"])
+            docs      = results.get("documents", []) or []
+            metadatas = results.get("metadatas", []) or []
+            for d, m in zip(docs, metadatas):
+                if d and len(d.strip()) > 40:
+                    all_chunks.append({"text": d, "source": (m or {}).get("source", "Unknown")})
 
-        results   = col.get(where=where, limit=120, include=["documents", "metadatas"])
-        docs      = results.get("documents", []) or []
-        metadatas = results.get("metadatas", []) or []
-
-        return [
-            {"text": d, "source": (m or {}).get("source", "Unknown")}
-            for d, m in zip(docs, metadatas)
-            if d and len(d.strip()) > 40
-        ]
+        return all_chunks
     except Exception as e:
-        print(f"[NLP] Chroma fetch error: {e}")
+        print(f"[NLP] Chroma client error: {e}")
         return []
 
 
@@ -121,19 +194,22 @@ def _analyse_sentiment(chunks: list[dict], session_id: str) -> dict:
     breakdown, scores = [], []
 
     for source, texts in list(by_source.items())[:8]:
-        combined = trim_to_budget(" ".join(texts[:4]), 1_000)  # 1k tok/source
-        prompt = f"""Sentiment of this excerpt from "{source}".
-Return ONLY JSON: {{"label":"Positive"|"Negative"|"Neutral"|"Mixed","score":0.0-1.0,"reason":"one sentence"}}
-
-Text: \\"\\"\\"{combined}\\"\\"\\"
-
-JSON:"""
+        combined = trim_to_budget(" ".join(texts[:4]), 1_000)
+        prompt = (
+            f'Analyze the sentiment of this excerpt from "{source}".\n'
+            'Return ONLY a JSON object with keys: '
+            '"label" (one of Positive/Negative/Neutral/Mixed), '
+            '"score" (float 0.0-1.0), "reason" (one sentence).\n'
+            'No markdown. No extra text.\n\n'
+            f'Text:\n"""\n{combined}\n"""\n\nJSON:'
+        )
         try:
-            raw = call_llm_with_fallback(prompt, {**_LLM_SETTINGS, "max_tokens": 80})
-            raw = re.sub(r"^```[a-z]*\\n?|```$", "", raw, flags=re.MULTILINE).strip()
-            obj = json.loads(re.search(r"\\{.*\\}", raw, re.DOTALL).group())
-            breakdown.append({"source": source, "label": obj.get("label","Neutral"),
-                              "score": float(obj.get("score", 0.5)), "reason": obj.get("reason","")})
+            raw = call_llm_with_fallback(prompt, {**_LLM_SETTINGS, "max_tokens": 120})
+            obj = _extract_json_object(raw)
+            if obj is None:
+                raise ValueError(f"No JSON object in response: {raw[:200]!r}")
+            breakdown.append({"source": source, "label": obj.get("label", "Neutral"),
+                              "score": float(obj.get("score", 0.5)), "reason": obj.get("reason", "")})
             scores.append(float(obj.get("score", 0.5)))
         except Exception as e:
             print(f"[NLP/Sentiment] {source}: {e}")
@@ -183,19 +259,20 @@ def _build_wordcloud(chunks: list[dict]) -> list[dict]:
 # ─── 3. Topic Modelling ───────────────────────────────────────────────────────
 def _model_topics(chunks: list[dict], session_id: str) -> list[dict]:
     combined = trim_to_budget(" ".join(c["text"] for c in chunks[:12]), 2_000)
-    prompt = f"""Identify 5 latent topics.
-For each: label (2-4 words), keywords (6 terms), weight (0.0-1.0, sum≈1.0).
-Output ONLY a valid JSON array. No markdown.
-
-Text: \\"\\"\\"{combined}\\"\\"\\"
-
-JSON:"""
+    prompt = (
+        "Identify 5 latent topics from the text below.\n"
+        "For each topic provide: label (2-4 words), keywords (list of 6 terms), "
+        "weight (float 0.0-1.0, all weights must sum to approximately 1.0).\n"
+        "Return ONLY a valid JSON array of objects. No markdown. No extra text.\n\n"
+        f'Text:\n"""\n{combined}\n"""\n\nJSON:'
+    )
     try:
-        raw = call_llm_with_fallback(prompt, {**_LLM_SETTINGS, "max_tokens": 500})
-        raw = re.sub(r"^```[a-z]*\\n?|```$", "", raw, flags=re.MULTILINE).strip()
-        arr = json.loads(re.search(r"\\[.*\\]", raw, re.DOTALL).group())
+        raw = call_llm_with_fallback(prompt, {**_LLM_SETTINGS, "max_tokens": 700})
+        arr = _extract_json_array(raw)
+        if arr is None:
+            raise ValueError(f"No JSON array in response: {raw[:200]!r}")
         return [{"id": i, "label": t.get("label", f"Topic {i}"),
-                 "keywords": t.get("keywords",[]), "weight": round(float(t.get("weight", 0.2)), 3)}
+                 "keywords": t.get("keywords", []), "weight": round(float(t.get("weight", 0.2)), 3)}
                 for i, t in enumerate(arr) if isinstance(t, dict)]
     except Exception as e:
         print(f"[NLP/Topics] {e}")
@@ -212,19 +289,23 @@ def _extract_keyphrases(chunks: list[dict], session_id: str) -> list[dict]:
     all_phrases: list[dict] = []
     for source, texts in list(by_source.items())[:6]:
         combined = trim_to_budget(" ".join(texts[:4]), 900)
-        prompt = f"""Top 8 keyphrases from "{source}".
-Return ONLY JSON array: [{{"phrase":"...","score":0.0-1.0}}]. No markdown.
-
-Text: \\"\\"\\"{combined}\\"\\"\\"
-
-JSON:"""
+        prompt = (
+            f'Extract the top 8 keyphrases from the document "{source}".\n'
+            'Return ONLY a valid JSON array of objects with keys: '
+            '"phrase" (string) and "score" (float 0.0-1.0). '
+            'No markdown. No extra text.\n\n'
+            f'Text:\n"""\n{combined}\n"""\n\nJSON:'
+        )
         try:
-            raw = call_llm_with_fallback(prompt, {**_LLM_SETTINGS, "max_tokens": 300})
-            raw = re.sub(r"^```[a-z]*\\n?|```$", "", raw, flags=re.MULTILINE).strip()
-            arr = json.loads(re.search(r"\\[.*\\]", raw, re.DOTALL).group())
+            raw = call_llm_with_fallback(prompt, {**_LLM_SETTINGS, "max_tokens": 400})
+            arr = _extract_json_array(raw)
+            if arr is None:
+                raise ValueError(f"No JSON array in response: {raw[:200]!r}")
             for p in arr:
                 if isinstance(p, dict) and p.get("phrase"):
-                    all_phrases.append({"phrase": p["phrase"], "score": float(p.get("score", 0.5)), "source": source})
+                    all_phrases.append({"phrase": p["phrase"],
+                                        "score":  float(p.get("score", 0.5)),
+                                        "source": source})
         except Exception as e:
             print(f"[NLP/Keyphrases] {source}: {e}")
 
@@ -246,18 +327,19 @@ Return ONLY a valid JSON array of objects with keys:
   "type"  : entity type (one of the above)
   "count" : approximate mention count (integer)
 
-No markdown.
+No markdown. No preamble. No explanation.
 
 Text:
 \"\"\"{combined}\"\"\"
 
 JSON:"""
     try:
-        llm  = get_llm(session_id, _LLM_SETTINGS)
+        llm  = get_llm(session_id, {**_LLM_SETTINGS, "max_tokens": 2000})
         raw  = llm.invoke(prompt).content.strip()
-        raw  = re.sub(r"^```[a-z]*\n?|```$", "", raw, flags=re.MULTILINE).strip()
-        arr  = json.loads(re.search(r"\[.*\]", raw, re.DOTALL).group())
-        valid_types = {"PERSON","ORG","LOCATION","DATE","PRODUCT","CONCEPT","OTHER"}
+        arr  = _extract_json_array(raw)
+        if arr is None:
+            raise ValueError(f"No JSON array in NER response: {raw[:200]!r}")
+        valid_types = {"PERSON", "ORG", "LOCATION", "DATE", "PRODUCT", "CONCEPT", "OTHER"}
         return [
             {
                 "text":  e.get("text", ""),

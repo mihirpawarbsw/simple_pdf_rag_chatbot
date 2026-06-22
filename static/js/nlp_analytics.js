@@ -692,11 +692,16 @@ body.light-mode #nlpCloseBtn:hover {
         <div id="nlpModal">
 
           <div id="nlpHeader">
-            <h2>
+            <div class="nlp-header-left">
               <i class="fa-solid fa-flask-vial"></i>
-              NLP Analytics
-              <span id="nlpStatBar"></span>
-            </h2>
+              <div>
+                <h2>
+                  NLP Analytics Suite
+                  <span id="nlpStatBar"></span>
+                </h2>
+                <span class="hdr-subtitle">Performs advanced natural language tasks including Entity Extraction, Sentiment Analysis, and Summarization.</span>
+              </div>
+            </div>
             <div class="nlp-hdr-right">
               <button id="nlpRunBtn" onclick="NLPAnalytics.run()">
                 <i class="fa-solid fa-rotate"></i> Analyse

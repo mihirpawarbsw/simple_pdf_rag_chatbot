@@ -280,15 +280,17 @@ const ClusterUniverse = (() => {
         overlay.innerHTML = `
         <div id="cuModal">
             <div id="cuHeader">
-                <div style="flex: 1;">
-                    <h2 style="margin: 0; font-size: 1.1rem; font-weight: 700; background: var(--grad-text); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: .02em; display: flex; align-items: center; gap: 8px;">
-                        <i class="fa-solid fa-circle-nodes"></i>
-                        Cluster Universe
-                        <span id="cuStatBar"></span>
-                    </h2>
-                    <span style="font-size: 0.72rem; font-style: italic; color: var(--text-secondary); display: block; margin-top: 2px; font-family: var(--font-body), sans-serif; font-weight: normal;">
-                        Maps documents in a 2D coordinate space based on semantic embedding similarity.
-                    </span>
+                <div class="cu-header-left">
+                    <i class="fa-solid fa-circle-nodes"></i>
+                    <div>
+                        <h2 style="margin: 0;">
+                            Cluster Universe
+                            <span id="cuStatBar"></span>
+                        </h2>
+                        <span class="hdr-subtitle">
+                            Maps documents in a 2D coordinate space based on semantic embedding similarity.
+                        </span>
+                    </div>
                 </div>
                 <div class="cu-header-right">
                     <button id="cuRefreshBtn" onclick="ClusterUniverse.load(true)">

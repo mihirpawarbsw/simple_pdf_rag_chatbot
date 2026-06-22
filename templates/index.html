@@ -33,6 +33,209 @@
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
     <!-- Three.js for neural background -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Unified Feature Layout Styles -->
+    <style>
+      /* Base typography uniformity */
+      #featureWorkspace {
+        font-family: var(--font-body, 'DM Sans', sans-serif) !important;
+      }
+
+      /* Unified Header Spacing and Sizing */
+      #nlpHeader,
+      #cuHeader,
+      #kgHeader,
+      #mmHeader,
+      .report-modal-header,
+      #faqWorkspaceHeader,
+      .at-header {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 12px !important;
+        padding: 18px 24px 16px !important;
+        border-bottom: 1px solid var(--border) !important;
+        background: transparent !important;
+        flex-shrink: 0 !important;
+        height: auto !important;
+        box-sizing: border-box !important;
+        margin: 0 !important;
+        font-family: var(--font-display, 'Sora', sans-serif) !important;
+      }
+
+      /* Header left side: wraps icon, title, subtitle with vertical gradient border & glow shadow separator */
+      .nlp-header-left,
+      .cu-header-left,
+      .kg-header-left,
+      .mm-header-left,
+      .report-modal-header-left,
+      .faq-header-left,
+      .at-header-left {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        border-left: 2px solid transparent !important;
+        border-image: linear-gradient(to bottom, #b18fcf, #7ec8e3) 1 !important;
+        padding-left: 14px !important;
+        filter: drop-shadow(-4px 0 6px rgba(177, 143, 207, 0.22)) !important;
+      }
+
+      /* Header right side: wraps controls/stats/close buttons to align to the far right */
+      .nlp-hdr-right,
+      .cu-header-right,
+      .kg-header-right,
+      .mm-header-right,
+      .report-modal-header-right,
+      .faq-header-right,
+      .at-header-right {
+        margin-left: auto !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+        flex-wrap: wrap !important;
+      }
+
+      /* Title uniform styling */
+      #nlpHeader h2,
+      #cuHeader h2,
+      #kgHeader h3,
+      #mmHeader h3,
+      .report-modal-header .report-modal-title,
+      #faqWorkspaceHeader h2,
+      .at-header h2 {
+        margin: 0 !important;
+        font-size: 17px !important;
+        font-weight: 700 !important;
+        background: var(--grad-text, linear-gradient(90deg,#b18fcf,#7ec8e3)) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
+        letter-spacing: .02em !important;
+        font-family: var(--font-display, 'Sora', sans-serif) !important;
+        line-height: 1.2 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+      }
+
+      /* Subtitle uniform styling */
+      #nlpHeader .hdr-subtitle,
+      #cuHeader .hdr-subtitle,
+      #kgHeader .hdr-subtitle,
+      #mmHeader .hdr-subtitle,
+      .report-modal-header p.report-modal-sub,
+      #faqWorkspaceHeader .hdr-subtitle,
+      .at-header span.hdr-subtitle {
+        font-size: 0.72rem !important;
+        font-style: italic !important;
+        color: var(--text-secondary, #9aa0b4) !important;
+        display: block !important;
+        margin-top: 2px !important;
+        font-weight: normal !important;
+        font-family: var(--font-body, 'DM Sans', sans-serif) !important;
+        line-height: 1.2 !important;
+      }
+
+      /* Header primary icon uniform styling */
+      .nlp-header-left i,
+      .cu-header-left i,
+      .kg-header-left i,
+      .mm-header-left i,
+      .report-modal-header-left i,
+      .faq-header-left i,
+      .at-header-left i {
+        color: var(--accent, #b18fcf) !important;
+        font-size: 20px !important;
+        flex-shrink: 0 !important;
+        margin: 0 !important;
+      }
+
+      /* Breadcrumb Bar overrides for inline placement inside active header */
+      .breadcrumb-bar {
+        display: flex; /* DO NOT force display !important here so JS style.display='none' can hide it */
+        align-items: center !important;
+        gap: 6px !important;
+        height: auto !important;
+        padding: 0 !important;
+        border: none !important;
+        border-bottom: none !important;
+        background: transparent !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        flex-shrink: 0 !important;
+        margin-right: 8px !important;
+        align-self: center !important;
+        font-size: 12px !important;
+        width: auto !important;
+        min-width: 0 !important;
+        box-shadow: none !important;
+        font-style: normal !important;
+      }
+
+      .breadcrumb-bar * {
+        font-style: normal !important;
+      }
+
+      .breadcrumb-bar .back-btn {
+        background: transparent !important;
+        border: none !important;
+        cursor: pointer !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        color: var(--text-secondary) !important;
+        font-weight: 600 !important;
+        font-size: 12px !important;
+        padding: 4px 8px !important;
+        border-radius: 6px !important;
+        transition: all 0.2s ease !important;
+        white-space: nowrap !important;
+      }
+
+      .breadcrumb-bar .back-btn:hover {
+        color: var(--accent) !important;
+        background: var(--accent-bg, rgba(177, 143, 207, 0.08)) !important;
+      }
+
+      .breadcrumb-bar .breadcrumb-separator {
+        color: var(--text-muted) !important;
+        font-size: 12px !important;
+        user-select: none !important;
+      }
+
+      .breadcrumb-bar .breadcrumb-active {
+        color: var(--text-muted) !important;
+        font-weight: 500 !important;
+        font-size: 12px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        max-width: 120px !important;
+      }
+
+      .faq-close-btn:hover {
+        color: var(--accent) !important;
+        background: var(--accent-bg, rgba(177, 143, 207, 0.08)) !important;
+      }
+
+      /* Modal card padding overrides */
+      #featureWorkspace #nlpModal,
+      #featureWorkspace #cuModal,
+      #featureWorkspace #kgPanel,
+      #featureWorkspace #mmModal,
+      #featureWorkspace .report-modal-card,
+      #featureWorkspace #faqWorkspaceModal,
+      #featureWorkspace #actionTrackerModal {
+        padding: 0 !important;
+      }
+
+      /* Inner padding for non-visualization models body content */
+      #featureWorkspace .report-modal-card > *:not(.report-modal-header) {
+        margin-left: 24px !important;
+        margin-right: 24px !important;
+      }
+    </style>
+
 </head>
 <body class="theme-aurora-gelato light-mode">
 
@@ -217,7 +420,7 @@
                             <i class="fa-solid fa-circle-check"></i>
                             <div>
                                 <h2 style="margin: 0; line-height: 1.2;">Action Items &amp; Decision Tracker</h2>
-                                <span style="font-size: 0.72rem; font-style: italic; color: var(--text-secondary); display: block; margin-top: 2px;">
+                                <span class="hdr-subtitle">
                                     Scans your documents to automatically extract and track action items, deadlines, and decision points in a Kanban board.
                                 </span>
                             </div>
@@ -285,16 +488,26 @@
 
             <!-- User Guide & FAQ Overlay (inline inside workspace) -->
             <div id="faqWorkspaceOverlay" style="display: none;">
-                <div id="faqWorkspaceModal" style="display: flex; flex-direction: column; padding: 32px; box-sizing: border-box; color: var(--text-secondary); font-family: var(--font-body), sans-serif; font-size: 0.92rem; line-height: 1.6; text-align: left;">
+                <div id="faqWorkspaceModal" style="display: flex; flex-direction: column; padding: 0; box-sizing: border-box; color: var(--text-secondary); font-family: var(--font-body), sans-serif; font-size: 0.92rem; line-height: 1.6; text-align: left;">
                     <!-- Header -->
-                    <div id="faqWorkspaceHeader" style="display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 16px; flex-shrink: 0;">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <i class="fa-solid fa-circle-question" style="font-size: 1.3rem; color: var(--accent);"></i>
-                            <h2 style="margin: 0; font-size: 1.25rem; font-family: var(--font-display); font-weight: 700; background: var(--grad-text); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">User Guide &amp; System FAQ</h2>
+                    <div id="faqWorkspaceHeader">
+                        <div class="faq-header-left">
+                            <i class="fa-solid fa-circle-question"></i>
+                            <div>
+                                <h2 style="margin: 0; line-height: 1.2;">User Guide &amp; System FAQ</h2>
+                                <span class="hdr-subtitle">
+                                    Find guides, troubleshooting steps, and answers to frequently asked questions about Nexora.AI.
+                                </span>
+                            </div>
+                        </div>
+                        <div class="faq-header-right">
+                            <button class="faq-close-btn" onclick="backToChatbot()" title="Close" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 18px; padding: 4px 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
                         </div>
                     </div>
                     <!-- Scrollable Body Content -->
-                    <div id="faqWorkspaceScrollBody" style="padding-right: 8px;">
+                    <div id="faqWorkspaceScrollBody" style="padding: 24px; box-sizing: border-box; overflow-y: auto; height: calc(100% - 72px); padding-right: 8px;">
                         <div style="display: flex; flex-direction: column; gap: 24px;">
                             <div>
                                 <h4 style="margin: 0 0 8px; font-family: var(--font-display); font-size: 0.98rem; color: var(--text-primary);"><i class="fa-solid fa-rocket" style="color: var(--accent); margin-right: 6px;"></i> Welcome to Nexora.AI</h4>
@@ -1133,7 +1346,7 @@
                 }
                 
                 if (activeHeader) {
-                    activeHeader.parentNode.insertBefore(breadcrumbBar, activeHeader.nextSibling);
+                    activeHeader.insertBefore(breadcrumbBar, activeHeader.firstChild);
                     breadcrumbBar.style.display = "flex";
                 } else {
                     const workspace = document.getElementById("featureWorkspace");

@@ -31,14 +31,18 @@
 
     <!-- Header -->
     <div class="report-modal-header">
-      <span class="report-modal-icon"><i class="fa-solid fa-file-invoice"></i></span>
-      <div>
-        <h2 class="report-modal-title">Generate Full Report</h2>
-        <p class="report-modal-sub" style="font-style: italic; font-size: 0.72rem; color: var(--text-secondary);">Generates a comprehensive, formatted executive document summarizing the key findings, metrics, and details of your files.</p>
+      <div class="report-modal-header-left">
+        <i class="fa-solid fa-file-invoice"></i>
+        <div>
+          <h2 class="report-modal-title" style="margin: 0;">Generate Full Report</h2>
+          <p class="report-modal-sub" style="margin-bottom: 0;">Generates a comprehensive, formatted executive document summarizing the key findings, metrics, and details of your files.</p>
+        </div>
       </div>
-      <button class="report-close-btn" onclick="closeReportModal()" title="Close">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
+      <div class="report-modal-header-right">
+        <button class="report-close-btn" onclick="closeReportModal()" title="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
     </div>
 
     <!-- Format selector -->

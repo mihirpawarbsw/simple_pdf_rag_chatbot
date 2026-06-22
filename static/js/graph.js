@@ -217,20 +217,22 @@ const KnowledgeGraph = (() => {
     modal.innerHTML = `
       <div id="kgPanel">
         <div id="kgHeader">
-          <i class="fa-solid fa-diagram-project kg-icon"></i>
-          <div style="flex: 1;">
-            <h3 style="margin: 0; font-size: 1.1rem; font-weight: 700; background: var(--grad-text); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: .02em;">Knowledge Graph</h3>
-            <span style="font-size: 0.72rem; font-style: italic; color: var(--text-secondary); display: block; margin-top: 2px;">
-              Visualizes conceptual nodes and semantic connections extracted from the documents.
-            </span>
+          <div class="kg-header-left">
+            <i class="fa-solid fa-diagram-project kg-icon"></i>
+            <div>
+              <h3 style="margin: 0;">Knowledge Graph</h3>
+              <span class="hdr-subtitle">Visualizes conceptual nodes and semantic connections extracted from the documents.</span>
+            </div>
           </div>
-          <div id="kgStats" style="margin-right: 12px;">
-            <span><b id="kgStatNodes">0</b> nodes</span>
-            <span><b id="kgStatEdges">0</b> edges</span>
+          <div class="kg-header-right">
+            <div id="kgStats">
+              <span><b id="kgStatNodes">0</b> nodes</span>
+              <span><b id="kgStatEdges">0</b> edges</span>
+            </div>
+            <button id="kgCloseBtn" onclick="KnowledgeGraph.close()" title="Close">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
           </div>
-          <button id="kgCloseBtn" onclick="KnowledgeGraph.close()" title="Close">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
         </div>
 
         <div id="kgLegend">

@@ -673,26 +673,47 @@ body.light-mode::before { opacity: 0.08; }
 }
 body.light-mode .blob { opacity: 0.07; }
 
-.blob1 { width: 500px; height: 500px; background: var(--blob-1-color); top:-150px; left:-100px; }
-.blob2 { width: 420px; height: 420px; background: var(--blob-2-color); bottom:-150px; right:-100px; animation-delay: 3s; }
-.blob3 { width: 300px; height: 300px; background: var(--blob-3-color); top:40%; left:45%; animation-delay: 6s; }
-
-.bg-image {
-    position: fixed; inset: 0;
+.nebula {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(130px);
+    z-index: 0;
+    pointer-events: none;
+    animation: nebDrift 28s ease-in-out infinite alternate;
+}
+.neb-1 {
+    width: 760px;
+    height: 760px;
+    background: radial-gradient(circle, var(--blob-1-color) 0%, transparent 70%);
+    top: -200px;
+    left: -200px;
+}
+.neb-2 {
+    width: 640px;
+    height: 640px;
+    background: radial-gradient(circle, var(--blob-2-color) 0%, transparent 70%);
+    top: 30%;
+    right: -200px;
+    animation-delay: 7s;
+}
+.neb-3 {
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, var(--blob-3-color) 0%, transparent 70%);
+    bottom: -200px;
+    left: 30%;
+    animation-delay: 13s;
+}
+#canvas-container {
+    position: fixed;
+    inset: 0;
     z-index: 0;
     pointer-events: none;
 }
-
-#analytics-canvas {
-    width: 100%;
-    height: 100%;
-    display: block;
-}
-
-@keyframes blobMove {
+@keyframes nebDrift {
     0%   { transform: translate(0,0) scale(1); }
-    50%  { transform: translate(40px,-50px) scale(1.1); }
-    100% { transform: translate(-20px,20px) scale(0.9); }
+    50%  { transform: translate(80px,-40px) scale(1.05); }
+    100% { transform: translate(-40px,60px) scale(0.95); }
 }
 @keyframes gradFlow {
     0%   { background-position: 0% 50%; }

@@ -51,6 +51,7 @@ const MindMap = (() => {
               <i class="fa-solid fa-brain mmHeaderIcon"></i>
               <div>
                 <h2 id="mmTitle">Mind Map</h2>
+                <div style="font-size: 0.74rem; font-style: italic; color: var(--text-secondary); margin-bottom: 2px;">Generates a hierarchical interactive tree layout of topics and subtopics for visual exploration.</div>
                 <div id="mmSubtitle">Click <strong>Generate</strong> to build from your documents</div>
               </div>
             </div>

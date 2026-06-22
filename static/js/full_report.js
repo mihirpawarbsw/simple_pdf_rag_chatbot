@@ -31,10 +31,10 @@
 
     <!-- Header -->
     <div class="report-modal-header">
-      <span class="report-modal-icon"><i class="fa-solid fa-file-chart-column"></i></span>
+      <span class="report-modal-icon"><i class="fa-solid fa-file-invoice"></i></span>
       <div>
         <h2 class="report-modal-title">Generate Full Report</h2>
-        <p class="report-modal-sub">Generates a comprehensive, formatted executive document summarizing the key findings, metrics, and details of your files.</p>
+        <p class="report-modal-sub" style="font-style: italic; font-size: 0.72rem; color: var(--text-secondary);">Generates a comprehensive, formatted executive document summarizing the key findings, metrics, and details of your files.</p>
       </div>
       <button class="report-close-btn" onclick="closeReportModal()" title="Close">
         <i class="fa-solid fa-xmark"></i>

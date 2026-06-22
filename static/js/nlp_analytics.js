@@ -770,6 +770,9 @@ body.light-mode #nlpCloseBtn:hover {
 
             <!-- Sentiment -->
             <div class="nlp-panel" id="panel-sentiment">
+              <p style="font-size: 0.75rem; font-style: italic; color: var(--text-secondary); margin-bottom: 14px; margin-top: -4px;">
+                Measures the emotional tone of the text (positive, negative, or neutral) and shows sentiment distribution across sentences.
+              </p>
               <div class="sent-overall">
                 <div class="sent-dial">
                   <canvas id="sentDialCanvas" width="260" height="260"></canvas>
@@ -788,26 +791,41 @@ body.light-mode #nlpCloseBtn:hover {
 
             <!-- Word Cloud -->
             <div class="nlp-panel" id="panel-wordcloud">
+              <p style="font-size: 0.75rem; font-style: italic; color: var(--text-secondary); margin-bottom: 14px; margin-top: -4px;">
+                Highlights the most frequently occurring keywords and terms; larger words indicate higher frequency.
+              </p>
               <canvas id="wcCanvas"></canvas>
             </div>
 
             <!-- Topics -->
             <div class="nlp-panel" id="panel-topics">
+              <p style="font-size: 0.75rem; font-style: italic; color: var(--text-secondary); margin-bottom: 14px; margin-top: -4px;">
+                Groups related concepts together using unsupervised clustering to discover the main themes of the document.
+              </p>
               <div class="topic-grid" id="topicGrid"></div>
             </div>
 
             <!-- Keyphrases -->
             <div class="nlp-panel" id="panel-keyphrases">
+              <p style="font-size: 0.75rem; font-style: italic; color: var(--text-secondary); margin-bottom: 14px; margin-top: -4px;">
+                Pulls out the most critical multi-word keyphrases and semantic search terms from the content.
+              </p>
               <div class="kp-list" id="kpList"></div>
             </div>
 
             <!-- Entities -->
             <div class="nlp-panel" id="panel-entities">
+              <p style="font-size: 0.75rem; font-style: italic; color: var(--text-secondary); margin-bottom: 14px; margin-top: -4px;">
+                Extracts and classifies named entities such as people, organizations, locations, quantities, and dates.
+              </p>
               <div id="nerContainer"></div>
             </div>
 
             <!-- Readability -->
             <div class="nlp-panel" id="panel-readability">
+              <p style="font-size: 0.75rem; font-style: italic; color: var(--text-secondary); margin-bottom: 14px; margin-top: -4px;">
+                Calculates document complexity and grade level using word-to-sentence ratios and readability formulas.
+              </p>
               <div class="read-grid" id="readGrid"></div>
               <div class="read-gauge-wrap">
                 <div class="read-gauge-label">
@@ -1013,17 +1031,18 @@ body.light-mode #nlpCloseBtn:hover {
         const grid = document.getElementById("readGrid");
         grid.innerHTML = "";
         const cards = [
-            { val: data.score,            lbl: "Flesch Score"        },
-            { val: data.grade,            lbl: "Reading Grade"       },
-            { val: data.avg_sentence_len, lbl: "Avg Sentence Length" },
-            { val: data.total_words?.toLocaleString(), lbl: "Total Words" },
-            { val: data.total_sentences,  lbl: "Total Sentences"     },
+            { val: data.score,            lbl: "Flesch Score",        desc: "Measures reading ease from 0-100 (higher means easier)" },
+            { val: data.grade,            lbl: "Reading Grade",       desc: "Estimated US school grade level required to understand" },
+            { val: data.avg_sentence_len, lbl: "Avg Sentence Length", desc: "Average word count per sentence in text" },
+            { val: data.total_words?.toLocaleString(), lbl: "Total Words", desc: "Total count of words processed in selection" },
+            { val: data.total_sentences,  lbl: "Total Sentences",     desc: "Total count of sentences detected in text" },
         ];
         cards.forEach(c => {
             grid.insertAdjacentHTML("beforeend", `
             <div class="read-card">
               <div class="read-val">${c.val ?? "—"}</div>
               <div class="read-lbl">${c.lbl}</div>
+              <div style="font-size: 0.68rem; font-style: italic; color: var(--text-secondary); margin-top: 4px; line-height: 1.2;">${c.desc}</div>
             </div>`);
         });
         const pct = Math.min(100, Math.max(0, data.score || 50));

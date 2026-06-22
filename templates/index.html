@@ -31,18 +31,16 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Sora + DM Sans — same as login/register/logout -->
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+    <!-- Three.js for neural background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body class="theme-aurora-gelato light-mode">
 
 <!-- Ambient layers -->
-<div class="mesh-gradient">
-    <div class="blob blob1"></div>
-    <div class="blob blob2"></div>
-    <div class="blob blob3"></div>
-</div>
-<div class="bg-image">
-    <canvas id="analytics-canvas"></canvas>
-</div>
+<div class="nebula neb-1"></div>
+<div class="nebula neb-2"></div>
+<div class="nebula neb-3"></div>
+<div id="canvas-container"></div>
 
 <div class="container">
 
@@ -167,7 +165,7 @@
                             <span>Action Tracker</span>
                         </button>
                         <button class="toolbar-btn report-trigger-btn" onclick="openFeatureInWorkspace('Executive Report', () => openReportModal())" title="Generate Full Report from Documents">
-                            <i class="fa-solid fa-chart-pie"></i>
+                            <i class="fa-solid fa-file-invoice"></i>
                             <span>Executive Report</span>
                         </button>
                     </div>
@@ -217,7 +215,12 @@
                     <div class="at-header">
                         <div class="at-header-left">
                             <i class="fa-solid fa-circle-check"></i>
-                            <h2>Action Items &amp; Decision Tracker</h2>
+                            <div>
+                                <h2 style="margin: 0; line-height: 1.2;">Action Items &amp; Decision Tracker</h2>
+                                <span style="font-size: 0.72rem; font-style: italic; color: var(--text-secondary); display: block; margin-top: 2px;">
+                                    Scans your documents to automatically extract and track action items, deadlines, and decision points in a Kanban board.
+                                </span>
+                            </div>
                         </div>
                         <div class="at-header-right">
                             <button id="atExtractBtn" class="at-extract-btn" onclick="ActionTracker.extract(false)">
@@ -334,7 +337,7 @@
                                         <span style="font-size: 0.8rem; display: block;">Scans documents using AI to automatically identify hidden action items, deadlines, owners, and decisions, organizing them inside a fully operational Kanban board.</span>
                                     </div>
                                     <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
-                                        <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-chart-pie"></i> Executive Report</strong>
+                                        <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-file-invoice"></i> Executive Report</strong>
                                         <span style="font-size: 0.8rem; display: block;">Compiles and generates a comprehensive, AI-written PDF or DOCX report summarising all findings, insights, and key metrics from the selected set of documents.</span>
                                     </div>
                                 </div>
@@ -1569,411 +1572,233 @@
         recognition.onerror= () => micBtn.classList.remove("recording");
     }
 
-    /* ---- Analytics Canvas Background ---- */
+    /* ---- Analytics 3D Neural Background ---- */
     class AnalyticsBackground {
-        constructor(canvasId) {
-            this.canvas = document.getElementById(canvasId);
-            if (!this.canvas) return;
-            this.ctx = this.canvas.getContext('2d');
+        constructor(containerId) {
+            this.container = document.getElementById(containerId);
+            if (!this.container) return;
+
+            // Scene Setup
+            this.scene = new THREE.Scene();
             
-            this.nodes = [];
-            this.packets = [];
-            this.layerNodes = [];
-            this.barTargets = [0.72, 0.48, 0.92, 0.62, 0.82, 0.55, 0.78, 0.45];
-            this.barValues = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1];
+            const width = this.container.clientWidth || window.innerWidth;
+            const height = this.container.clientHeight || window.innerHeight;
             
-            this.gridSize = 90;
-            this.accentColor = '#B18FCF';
-            this.accentGlowColor = 'rgba(177, 143, 207, 0.12)';
-            this.textColor = 'rgba(243, 232, 255, 0.35)';
-            this.mode = 'dark';
-            this.time = 0;
-            
-            this.resize();
-            window.addEventListener('resize', () => {
-                this.resize();
-                this.initElements();
+            this.camera = new THREE.PerspectiveCamera(50, width / height, 1, 1000);
+            this.camera.position.z = 270;
+
+            this.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            this.renderer.setSize(width, height);
+            this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            this.container.appendChild(this.renderer.domElement);
+
+            // Group to apply global rotation / mouse drift
+            this.networkGroup = new THREE.Group();
+            this.scene.add(this.networkGroup);
+
+            // Initialize Particles (Neurons)
+            this.particleCount = 130;
+            this.positions = new Float32Array(this.particleCount * 3);
+            this.velocities = [];
+
+            // Generate particles inside a brain-like ellipsoid structure
+            for (let i = 0; i < this.particleCount; i++) {
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos((Math.random() * 2) - 1);
+                
+                // Ellipsoid radii matching brain geometry (wider in Z/X, shorter in Y)
+                const rx = (75 + Math.random() * 45);
+                const ry = (55 + Math.random() * 35);
+                const rz = (70 + Math.random() * 45);
+                
+                this.positions[i * 3] = rx * Math.sin(phi) * Math.cos(theta);
+                this.positions[i * 3 + 1] = ry * Math.sin(phi) * Math.sin(theta);
+                this.positions[i * 3 + 2] = rz * Math.cos(phi);
+                
+                this.velocities.push({
+                    x: (Math.random() - 0.5) * 0.12,
+                    y: (Math.random() - 0.5) * 0.12,
+                    z: (Math.random() - 0.5) * 0.12
+                });
+            }
+
+            this.geometry = new THREE.BufferGeometry();
+            this.geometry.setAttribute('position', new THREE.BufferAttribute(this.positions, 3));
+
+            // Line segments linking nodes
+            this.maxConnections = this.particleCount * 4;
+            this.linePositions = new Float32Array(this.maxConnections * 6);
+            this.lineGeometry = new THREE.BufferGeometry();
+            this.lineGeometry.setAttribute('position', new THREE.BufferAttribute(this.linePositions, 3));
+
+            // Initial materials (placeholders, will be updated by updateColors)
+            this.pointsMaterial = new THREE.PointsMaterial({
+                size: 14,
+                transparent: true,
+                opacity: 0.85,
+                depthWrite: false
             });
-            
-            this.initElements();
+
+            this.lineMaterial = new THREE.LineBasicMaterial({
+                transparent: true,
+                opacity: 0.32
+            });
+
+            this.points = new THREE.Points(this.geometry, this.pointsMaterial);
+            this.networkGroup.add(this.points);
+
+            this.lines = new THREE.LineSegments(this.lineGeometry, this.lineMaterial);
+            this.networkGroup.add(this.lines);
+
+            // Interaction / Parallax variables
+            this.mouseX = 0;
+            this.mouseY = 0;
+            this.targetX = 0;
+            this.targetY = 0;
+
+            window.addEventListener('mousemove', (e) => {
+                this.targetX = (e.clientX - window.innerWidth / 2) * 0.08;
+                this.targetY = (e.clientY - window.innerHeight / 2) * 0.08;
+            });
+
+            this.autoRotationY = 0;
+            this.autoRotationX = 0;
+
+            this.updateColors();
+
+            window.addEventListener('resize', () => {
+                const w = this.container.clientWidth || window.innerWidth;
+                const h = this.container.clientHeight || window.innerHeight;
+                this.camera.aspect = w / h;
+                this.camera.updateProjectionMatrix();
+                this.renderer.setSize(w, h);
+            });
+
             this.animate();
         }
-        
+
         updateColors() {
             const style = getComputedStyle(document.body);
-            this.accentColor = (style.getPropertyValue('--accent') || '#B18FCF').trim();
-            this.accentGlowColor = (style.getPropertyValue('--accent-glow-soft') || 'rgba(177, 143, 207, 0.12)').trim();
-            this.textColor = (style.getPropertyValue('--text-secondary') || 'rgba(243, 232, 255, 0.65)').trim();
-            this.parsedAccent = this.parseColor(this.accentColor);
-            this.mode = document.body.classList.contains('light-mode') ? 'light' : 'dark';
+            const accent = (style.getPropertyValue('--accent') || '#B18FCF').trim();
+            
+            // Convert to color string that canvas gradient helper understands
+            let colorStr = accent;
+            if (!colorStr.startsWith('#') && !colorStr.startsWith('rgb')) {
+                colorStr = '#B18FCF';
+            }
+
+            if (this.lineMaterial) {
+                this.lineMaterial.color.set(colorStr);
+            }
+
+            if (this.pointsMaterial) {
+                const canvas = document.createElement('canvas');
+                canvas.width = 32;
+                canvas.height = 32;
+                const ctx = canvas.getContext('2d');
+                
+                // Solid core dot
+                ctx.fillStyle = colorStr;
+                ctx.beginPath();
+                ctx.arc(16, 16, 3, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Soft outer radial glow
+                let rgbAccent = colorStr;
+                if (colorStr.startsWith('#')) {
+                    const hex = colorStr.replace('#', '');
+                    let r = 177, g = 143, b = 207;
+                    if (hex.length === 3) {
+                        r = parseInt(hex[0] + hex[0], 16);
+                        g = parseInt(hex[1] + hex[1], 16);
+                        b = parseInt(hex[2] + hex[2], 16);
+                    } else if (hex.length >= 6) {
+                        r = parseInt(hex.substring(0, 2), 16);
+                        g = parseInt(hex.substring(2, 4), 16);
+                        b = parseInt(hex.substring(4, 6), 16);
+                    }
+                    rgbAccent = `rgba(${r}, ${g}, ${b}`;
+                } else if (colorStr.startsWith('rgb')) {
+                    rgbAccent = colorStr.substring(0, colorStr.lastIndexOf(')'));
+                }
+                
+                const grad = ctx.createRadialGradient(16, 16, 3, 16, 16, 16);
+                grad.addColorStop(0, rgbAccent.includes('rgba') ? `${rgbAccent}, 0.45)` : `${rgbAccent.replace('rgb', 'rgba')}, 0.45)`);
+                grad.addColorStop(1, rgbAccent.includes('rgba') ? `${rgbAccent}, 0)` : `${rgbAccent.replace('rgb', 'rgba')}, 0)`);
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(16, 16, 16, 0, Math.PI * 2);
+                ctx.fill();
+                
+                const texture = new THREE.CanvasTexture(canvas);
+                const oldTexture = this.pointsMaterial.map;
+                this.pointsMaterial.map = texture;
+                this.pointsMaterial.needsUpdate = true;
+                if (oldTexture) oldTexture.dispose();
+            }
         }
 
-        getThemeGradientStops() {
-            const isLight = document.body.classList.contains('light-mode');
-            
-            // Determine active theme
-            let theme = 'aurora-gelato';
-            if (document.body.classList.contains('theme-lavender')) theme = 'lavender';
-            else if (document.body.classList.contains('theme-cyan')) theme = 'cyan';
-            else if (document.body.classList.contains('theme-sunset')) theme = 'sunset';
-            else if (document.body.classList.contains('theme-sherbet')) theme = 'sherbet';
-            else if (document.body.classList.contains('theme-obsidian')) theme = 'obsidian';
-            else if (document.body.classList.contains('theme-tropical')) theme = 'tropical';
-            
-            const gradients = {
-                'aurora-gelato': {
-                    dark: ['#9b7bf0', '#e84f9b', '#ff5a4e', '#ffa73b'],
-                    light: ['#9b7bf0', '#e84f9b', '#ff5a4e', '#ffa73b']
-                },
-                lavender: {
-                    dark: ['#9b7bf0', '#e84f9b', '#ff5a4e', '#ffa73b'],
-                    light: ['#6a3d99', '#8b5fbf', '#b18fcf', '#d4b8e8']
-                },
-                cyan: {
-                    dark: ['#06b6d4', '#0ea5e9', '#3b82f6', '#6366f1'],
-                    light: ['#0c2d3d', '#0891b2', '#0284c7', '#2563eb']
-                },
-                sunset: {
-                    dark: ['#f97316', '#f43f5e', '#ec4899', '#d946ef'],
-                    light: ['#3d1a0c', '#7c2d12', '#ea580c', '#dc2626']
-                },
-                sherbet: {
-                    dark: ['#f43f5e', '#ff7e5f', '#feb47b', '#fcd34d'],
-                    light: ['#4c0519', '#881337', '#be123c', '#e11d48']
-                },
-                obsidian: {
-                    dark: ['#c5a059', '#f59e0b', '#b91c1c', '#7f1d1d'],
-                    light: ['#18181b', '#27272a', '#78350f', '#c5a059']
-                },
-                tropical: {
-                    dark: ['#10b981', '#06b6d4', '#0ea5e9', '#14b8a6'],
-                    light: ['#064e3b', '#0f766e', '#0369a1', '#0f172a']
-                }
-            };
-            
-            return gradients[theme][isLight ? 'light' : 'dark'];
-        }
-        
-        parseColor(colorStr) {
-            colorStr = colorStr.trim();
-            if (colorStr.startsWith('rgb')) {
-                const match = colorStr.match(/\d+/g);
-                if (match && match.length >= 3) {
-                    return {
-                        r: parseInt(match[0], 10),
-                        g: parseInt(match[1], 10),
-                        b: parseInt(match[2], 10)
-                    };
-                }
-            }
-            if (colorStr.startsWith('#')) {
-                const hex = colorStr.replace('#', '');
-                if (hex.length === 3) {
-                    const r = parseInt(hex[0] + hex[0], 16);
-                    const g = parseInt(hex[1] + hex[1], 16);
-                    const b = parseInt(hex[2] + hex[2], 16);
-                    return { r, g, b };
-                } else if (hex.length >= 6) {
-                    const r = parseInt(hex.substring(0, 2), 16);
-                    const g = parseInt(hex.substring(2, 4), 16);
-                    const b = parseInt(hex.substring(4, 6), 16);
-                    return { r, g, b };
-                }
-            }
-            return { r: 177, g: 143, b: 207 };
-        }
-        
-        rgba(colorObj, alpha) {
-            return `rgba(${colorObj.r}, ${colorObj.g}, ${colorObj.b}, ${alpha})`;
-        }
-        
-        resize() {
-            const rect = this.canvas.parentElement.getBoundingClientRect();
-            this.canvas.width = rect.width || window.innerWidth;
-            this.canvas.height = rect.height || window.innerHeight;
-        }
-        
-        initElements() {
-            this.updateColors();
-            const w = this.canvas.width;
-            const h = this.canvas.height;
-            
-            // 1. Moving Neurons (drifting network nodes)
-            this.nodes = [];
-            const nodeCount = Math.min(24, Math.floor((w * h) / 70000) + 10);
-            for (let i = 0; i < nodeCount; i++) {
-                this.nodes.push({
-                    x: Math.random() * w,
-                    y: Math.random() * h,
-                    vx: (Math.random() - 0.5) * 0.32,
-                    vy: (Math.random() - 0.5) * 0.32,
-                    radius: Math.random() * 2 + 1.5,
-                    pulse: Math.random() * Math.PI
-                });
-            }
-            
-            // 2. Synaptic Moving Packets
-            this.packets = [];
-            const packetCount = Math.min(10, Math.floor(nodeCount / 2));
-            for (let i = 0; i < packetCount; i++) {
-                this.packets.push({
-                    currentNode: this.nodes[Math.floor(Math.random() * this.nodes.length)],
-                    nextNode: null,
-                    progress: 0,
-                    speed: 0.007 + Math.random() * 0.008
-                });
-            }
-            
-            // 3. Moving Column Charts target values (8 bars)
-            this.barTargets = [0.72, 0.48, 0.92, 0.62, 0.82, 0.55, 0.78, 0.45];
-            this.barValues = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1];
-            
-            // 4. Analytic Waveforms (2 curves)
-            this.waves = [];
-            for (let i = 0; i < 2; i++) {
-                this.waves.push({
-                    offset: Math.random() * 1000,
-                    speed: 0.0004 + i * 0.0002,
-                    amplitude: 30 + Math.random() * 20,
-                    yPos: h * (0.35 + i * 0.25)
-                });
-            }
-        }
-        
         animate() {
             requestAnimationFrame(() => this.animate());
-            this.render();
-        }
-        
-        render() {
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            this.time += 0.005;
-            
-            if (Math.random() < 0.006) {
-                this.updateColors();
-            }
-            
-            const accent = this.parsedAccent || { r: 177, g: 143, b: 207 };
-            const isLight = this.mode === 'light';
-            
-            const w = this.canvas.width;
-            const h = this.canvas.height;
-            
-            // Opacity calibrations (increased for high maturity/visibility)
-            const gridOpacity = isLight ? 0.07 : 0.05;
-            const gridTickOpacity = isLight ? 0.22 : 0.16;
-            const synapseOpacity = isLight ? 0.32 : 0.25;
-            const nodeGlowOpacity = isLight ? 0.28 : 0.2;
-            const nodeCoreOpacity = isLight ? 0.7 : 0.6;
-            const packetOpacity = isLight ? 0.85 : 0.95;
-            
-            // 1. Draw Grid
-            this.ctx.strokeStyle = this.rgba(accent, gridOpacity);
-            this.ctx.lineWidth = 0.8;
-            for (let x = 0; x < w; x += this.gridSize) {
-                this.ctx.beginPath();
-                this.ctx.moveTo(x, 0);
-                this.ctx.lineTo(x, h);
-                this.ctx.stroke();
-            }
-            for (let y = 0; y < h; y += this.gridSize) {
-                this.ctx.beginPath();
-                this.ctx.moveTo(0, y);
-                this.ctx.lineTo(w, y);
-                this.ctx.stroke();
-            }
-            
-            // Draw grid intersection ticks (+)
-            this.ctx.strokeStyle = this.rgba(accent, gridTickOpacity);
-            this.ctx.lineWidth = 1;
-            for (let x = this.gridSize; x < w; x += this.gridSize) {
-                for (let y = this.gridSize; y < h; y += this.gridSize) {
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(x - 3.5, y);
-                    this.ctx.lineTo(x + 3.5, y);
-                    this.ctx.moveTo(x, y - 3.5);
-                    this.ctx.lineTo(x, y + 3.5);
-                    this.ctx.stroke();
+
+            const pos = this.geometry.attributes.position.array;
+            const linePos = this.lineGeometry.attributes.position.array;
+            let lineIdx = 0;
+
+            // 1. Move Neurons randomly within boundaries
+            for (let i = 0; i < this.particleCount; i++) {
+                pos[i * 3] += this.velocities[i].x;
+                pos[i * 3 + 1] += this.velocities[i].y;
+                pos[i * 3 + 2] += this.velocities[i].z;
+
+                // Keep them within ellipsoid bounds
+                const distSq = (pos[i * 3] / 125)**2 + (pos[i * 3 + 1] / 95)**2 + (pos[i * 3 + 2] / 125)**2;
+                if (distSq > 1.25) {
+                    this.velocities[i].x *= -1;
+                    this.velocities[i].y *= -1;
+                    this.velocities[i].z *= -1;
                 }
             }
-            
-            // 2. Draw Analytic Waveforms
-            this.waves.forEach((wave, idx) => {
-                wave.offset += wave.speed;
-                this.ctx.beginPath();
-                
-                // Construct Web3 horizontal theme gradient for waveforms
-                const stops = this.getThemeGradientStops();
-                const waveGrad = this.ctx.createLinearGradient(0, 0, w, 0);
-                const alpha = idx === 0 ? (isLight ? 0.35 : 0.26) : (isLight ? 0.20 : 0.13);
-                
-                stops.forEach((color, i) => {
-                    const parsed = this.parseColor(color);
-                    waveGrad.addColorStop(i / (stops.length - 1), this.rgba(parsed, alpha));
-                });
-                
-                this.ctx.strokeStyle = waveGrad;
-                this.ctx.lineWidth = idx === 0 ? 2.2 : 1.4;
-                
-                let started = false;
-                const step = 40;
-                for (let x = 0; x <= w + step; x += step) {
-                    const angle = (x * 0.0018) + wave.offset;
-                    const y = wave.yPos + Math.sin(angle) * wave.amplitude + Math.cos(angle * 0.5) * (wave.amplitude * 0.4);
-                    if (!started) {
-                        this.ctx.moveTo(x, y);
-                        started = true;
-                    } else {
-                        this.ctx.lineTo(x, y);
-                    }
-                }
-                this.ctx.stroke();
-            });
-            
-            // 3. Draw Moving Column Charts (Bottom Right)
-            const barX = w * 0.65;
-            const barY = h * 0.85;
-            const barW = w * 0.22;
-            const barH = h * 0.18;
-            
-            if (barW > 120 && barH > 40) {
-                // Draw thin base axis line
-                this.ctx.strokeStyle = this.rgba(accent, isLight ? 0.3 : 0.22);
-                this.ctx.lineWidth = 1;
-                this.ctx.beginPath();
-                this.ctx.moveTo(barX, barY);
-                this.ctx.lineTo(barX + barW, barY);
-                this.ctx.stroke();
-                
-                this.ctx.font = '8px monospace';
-                this.ctx.fillStyle = this.textColor;
-                this.ctx.fillText('LIVE DATA STREAM', barX, barY - barH - 8);
-                
-                // Draw 8 bars
-                const colCount = 8;
-                const colWidth = (barW / colCount) * 0.6;
-                const colSpacing = (barW / colCount) * 0.4;
-                
-                for (let i = 0; i < colCount; i++) {
-                    const target = this.barTargets[i];
-                    // Continuous oscillation wobble
-                    const wobble = Math.sin(this.time * 2.5 + i * 1.2) * 0.12;
-                    const finalVal = Math.min(1.0, Math.max(0.1, target + wobble));
-                    
-                    this.barValues[i] += (finalVal - this.barValues[i]) * 0.1;
-                    const currentHeight = this.barValues[i] * barH;
-                    
-                    const bx = barX + colSpacing/2 + i * (colWidth + colSpacing);
-                    const by = barY - currentHeight;
-                    
-                    // Gradient fill using dynamic theme stops
-                    const grad = this.ctx.createLinearGradient(bx, by, bx, barY);
-                    const stops = this.getThemeGradientStops();
-                    stops.forEach((color, idx) => {
-                        const parsed = this.parseColor(color);
-                        const ratio = idx / (stops.length - 1);
-                        const alpha = (1 - ratio) * (isLight ? 0.68 : 0.58) + ratio * (isLight ? 0.20 : 0.10);
-                        grad.addColorStop(ratio, this.rgba(parsed, alpha));
-                    });
-                    
-                    this.ctx.fillStyle = grad;
-                    this.ctx.fillRect(bx, by, colWidth, currentHeight);
-                    
-                    // Outline stroke using first stop of the theme gradient
-                    const strokeColor = this.parseColor(stops[0]);
-                    this.ctx.strokeStyle = this.rgba(strokeColor, isLight ? 0.72 : 0.60);
-                    this.ctx.lineWidth = 1.0;
-                    this.ctx.strokeRect(bx, by, colWidth, currentHeight);
-                }
-            }
-            
-            // 4. Draw moving neurons (drifting network nodes)
-            this.nodes.forEach(node => {
-                node.x += node.vx;
-                node.y += node.vy;
-                node.pulse += 0.008;
-                
-                if (node.x < 0 || node.x > w) node.vx *= -1;
-                if (node.y < 0 || node.y > h) node.vy *= -1;
-                
-                const pulseRadius = node.radius + Math.sin(node.pulse) * 1.2;
-                this.ctx.beginPath();
-                this.ctx.arc(node.x, node.y, pulseRadius, 0, Math.PI * 2);
-                this.ctx.fillStyle = this.rgba(accent, nodeGlowOpacity);
-                this.ctx.fill();
-                
-                this.ctx.beginPath();
-                this.ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
-                this.ctx.fillStyle = this.rgba(accent, nodeCoreOpacity);
-                this.ctx.fill();
-            });
-            
-            // Draw synapses (connection lines)
-            this.ctx.lineWidth = 0.9;
-            for (let i = 0; i < this.nodes.length; i++) {
-                for (let j = i + 1; j < this.nodes.length; j++) {
-                    const dx = this.nodes[i].x - this.nodes[j].x;
-                    const dy = this.nodes[i].y - this.nodes[j].y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 150) {
-                        const alpha = (1 - (dist / 150)) * synapseOpacity;
-                        this.ctx.strokeStyle = this.rgba(accent, alpha);
-                        this.ctx.beginPath();
-                        this.ctx.moveTo(this.nodes[i].x, this.nodes[i].y);
-                        this.ctx.lineTo(this.nodes[j].x, this.nodes[j].y);
-                        this.ctx.stroke();
+            this.geometry.attributes.position.needsUpdate = true;
+
+            // 2. Build Connections between close neurons
+            for (let i = 0; i < this.particleCount; i++) {
+                const x1 = pos[i * 3];
+                const y1 = pos[i * 3 + 1];
+                const z1 = pos[i * 3 + 2];
+
+                for (let j = i + 1; j < this.particleCount; j++) {
+                    const x2 = pos[j * 3];
+                    const y2 = pos[j * 3 + 1];
+                    const z2 = pos[j * 3 + 2];
+
+                    const dist = Math.sqrt((x2 - x1)**2 + (y2 - y1)**2 + (z2 - z1)**2);
+
+                    if (dist < 48 && lineIdx < this.maxConnections) {
+                        linePos[lineIdx * 6] = x1;
+                        linePos[lineIdx * 6 + 1] = y1;
+                        linePos[lineIdx * 6 + 2] = z1;
+                        linePos[lineIdx * 6 + 3] = x2;
+                        linePos[lineIdx * 6 + 4] = y2;
+                        linePos[lineIdx * 6 + 5] = z2;
+                        lineIdx++;
                     }
                 }
             }
-            
-            // 5. Draw moving signal packets
-            this.packets.forEach(packet => {
-                if (!packet.currentNode) {
-                    packet.currentNode = this.nodes[Math.floor(Math.random() * this.nodes.length)];
-                }
-                
-                if (!packet.nextNode) {
-                    const neighbors = [];
-                    this.nodes.forEach(n => {
-                        if (n !== packet.currentNode) {
-                            const dx = n.x - packet.currentNode.x;
-                            const dy = n.y - packet.currentNode.y;
-                            const dist = Math.sqrt(dx * dx + dy * dy);
-                            if (dist < 150) {
-                                neighbors.push(n);
-                            }
-                        }
-                    });
-                    
-                    if (neighbors.length > 0) {
-                        packet.nextNode = neighbors[Math.floor(Math.random() * neighbors.length)];
-                        packet.progress = 0;
-                    } else {
-                        packet.currentNode = this.nodes[Math.floor(Math.random() * this.nodes.length)];
-                    }
-                }
-                
-                if (packet.nextNode) {
-                    packet.progress += packet.speed;
-                    const px = packet.currentNode.x + (packet.nextNode.x - packet.currentNode.x) * packet.progress;
-                    const py = packet.currentNode.y + (packet.nextNode.y - packet.currentNode.y) * packet.progress;
-                    
-                    this.ctx.beginPath();
-                    this.ctx.arc(px, py, 2.5, 0, Math.PI * 2);
-                    this.ctx.fillStyle = this.rgba(accent, packetOpacity);
-                    this.ctx.fill();
-                    
-                    this.ctx.beginPath();
-                    this.ctx.arc(px, py, 5.5, 0, Math.PI * 2);
-                    this.ctx.fillStyle = this.rgba(accent, packetOpacity * 0.35);
-                    this.ctx.fill();
-                    
-                    if (packet.progress >= 1) {
-                        packet.currentNode = packet.nextNode;
-                        packet.nextNode = null;
-                    }
-                }
-            });
+            this.lineGeometry.setDrawRange(0, lineIdx * 2);
+            this.lineGeometry.attributes.position.needsUpdate = true;
+
+            // 3. Apply Parallax and Auto-drift
+            this.mouseX += (this.targetX - this.mouseX) * 0.05;
+            this.mouseY += (this.targetY - this.mouseY) * 0.05;
+
+            this.autoRotationY += 0.0004;
+            this.autoRotationX += 0.0002;
+
+            this.networkGroup.rotation.x = this.autoRotationX + (this.mouseY * 0.004);
+            this.networkGroup.rotation.y = this.autoRotationY + (this.mouseX * 0.004);
+
+            this.renderer.render(this.scene, this.camera);
         }
     }
 
@@ -1991,7 +1816,7 @@
         changeAppearanceMode(savedMode);
 
         // Initialize Analytics Background Canvas
-        window.analyticsBg = new AnalyticsBackground('analytics-canvas');
+        window.analyticsBg = new AnalyticsBackground('canvas-container');
     };
 </script>
 </body>

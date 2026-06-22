@@ -271,9 +271,9 @@
                 <i class="fa-solid fa-plus"></i>
                 <span class="sidebar-text">New Chat</span>
             </button>
-            <button class="sidebar-btn upload-trigger-btn" onclick="toggleUploadPanel()" title="Knowledge Base">
+            <button class="sidebar-btn upload-trigger-btn" onclick="toggleUploadPanel()" title="Upload Documents">
                 <i class="fa-solid fa-folder-open"></i>
-                <span class="sidebar-text">Knowledge Base</span>
+                <span class="sidebar-text">Upload Documents</span>
             </button>
         </div>
 
@@ -586,7 +586,7 @@
                 <div class="greeting-emoji" id="greetingEmoji">☀️</div>
                 <h2 class="greeting-title">{{ greeting }}, <span class="user-name">{{ username }}</span></h2>
                 <p class="greeting-sub">Welcome to Nexora.AI</p>
-                <p class="greeting-tagline">Upload enterprise documentation or dataset files to query them semantically in real-time. Check session settings to customise models and instructions.</p>
+                <p class="greeting-tagline">Upload enterprise documentation or dataset files to unlock semantic QA, dynamic clustering, interactive knowledge graphs, mind maps, and automated action trackers.</p>
             </div>
         </div>
 
@@ -1028,7 +1028,7 @@
                 <div class="greeting-emoji" id="greetingEmoji">☀️</div>
                 <h2 class="greeting-title">{{ greeting }}, <span class="user-name">{{ username }}</span></h2>
                 <p class="greeting-sub">Welcome to Nexora.AI</p>
-                <p class="greeting-tagline">Upload enterprise documentation or dataset files to query them semantically in real-time. Check session settings to customise models and instructions.</p>
+                <p class="greeting-tagline">Upload enterprise documentation or dataset files to unlock semantic QA, dynamic clustering, interactive knowledge graphs, mind maps, and automated action trackers.</p>
             </div>`;
         updateGreetingEmoji(localStorage.getItem("theme") || "lavender");
         document.getElementById("starterSuggestions").style.display = "flex";
@@ -1693,7 +1693,7 @@
                         <div class="greeting-emoji" id="greetingEmoji">☀️</div>
                         <h2 class="greeting-title">{{ greeting }}, <span class="user-name">{{ username }}</span></h2>
                         <p class="greeting-sub">Welcome to Nexora.AI</p>
-                        <p class="greeting-tagline">Upload enterprise documentation or dataset files to query them semantically in real-time. Check session settings to customise models and instructions.</p>
+                        <p class="greeting-tagline">Upload enterprise documentation or dataset files to unlock semantic QA, dynamic clustering, interactive knowledge graphs, mind maps, and automated action trackers.</p>
                     </div>`;
                 updateGreetingEmoji(localStorage.getItem("theme") || "lavender");
                 document.getElementById("starterSuggestions").style.display = "flex";
@@ -1814,24 +1814,16 @@
             this.positions = new Float32Array(this.particleCount * 3);
             this.velocities = [];
 
-            // Generate particles inside a brain-like ellipsoid structure
+            // Generate particles spread randomly across the entire page (wide volume)
             for (let i = 0; i < this.particleCount; i++) {
-                const theta = Math.random() * Math.PI * 2;
-                const phi = Math.acos((Math.random() * 2) - 1);
-                
-                // Ellipsoid radii matching brain geometry (wider in Z/X, shorter in Y)
-                const rx = (75 + Math.random() * 45);
-                const ry = (55 + Math.random() * 35);
-                const rz = (70 + Math.random() * 45);
-                
-                this.positions[i * 3] = rx * Math.sin(phi) * Math.cos(theta);
-                this.positions[i * 3 + 1] = ry * Math.sin(phi) * Math.sin(theta);
-                this.positions[i * 3 + 2] = rz * Math.cos(phi);
+                this.positions[i * 3] = (Math.random() - 0.5) * 520;  // X: -260 to 260
+                this.positions[i * 3 + 1] = (Math.random() - 0.5) * 340; // Y: -170 to 170
+                this.positions[i * 3 + 2] = (Math.random() - 0.5) * 200; // Z: -100 to 100
                 
                 this.velocities.push({
-                    x: (Math.random() - 0.5) * 0.12,
-                    y: (Math.random() - 0.5) * 0.12,
-                    z: (Math.random() - 0.5) * 0.12
+                    x: (Math.random() - 0.5) * 0.1,
+                    y: (Math.random() - 0.5) * 0.1,
+                    z: (Math.random() - 0.5) * 0.1
                 });
             }
 
@@ -1964,12 +1956,18 @@
                 pos[i * 3 + 1] += this.velocities[i].y;
                 pos[i * 3 + 2] += this.velocities[i].z;
 
-                // Keep them within ellipsoid bounds
-                const distSq = (pos[i * 3] / 125)**2 + (pos[i * 3 + 1] / 95)**2 + (pos[i * 3 + 2] / 125)**2;
-                if (distSq > 1.25) {
+                // Keep them within box bounds
+                if (Math.abs(pos[i * 3]) > 260) {
                     this.velocities[i].x *= -1;
+                    pos[i * 3] = Math.sign(pos[i * 3]) * 260;
+                }
+                if (Math.abs(pos[i * 3 + 1]) > 170) {
                     this.velocities[i].y *= -1;
+                    pos[i * 3 + 1] = Math.sign(pos[i * 3 + 1]) * 170;
+                }
+                if (Math.abs(pos[i * 3 + 2]) > 100) {
                     this.velocities[i].z *= -1;
+                    pos[i * 3 + 2] = Math.sign(pos[i * 3 + 2]) * 100;
                 }
             }
             this.geometry.attributes.position.needsUpdate = true;
@@ -1987,7 +1985,7 @@
 
                     const dist = Math.sqrt((x2 - x1)**2 + (y2 - y1)**2 + (z2 - z1)**2);
 
-                    if (dist < 48 && lineIdx < this.maxConnections) {
+                    if (dist < 75 && lineIdx < this.maxConnections) {
                         linePos[lineIdx * 6] = x1;
                         linePos[lineIdx * 6 + 1] = y1;
                         linePos[lineIdx * 6 + 2] = z1;

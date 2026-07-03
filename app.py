@@ -68,6 +68,9 @@ from cluster_universe import cluster_bp
 from nlp_analytics import nlp_analytics_bp
 from mindmap import mindmap_bp
 from web_augmentor import web_augmentor_bp
+from timeline_weave import timeline_weave_bp
+from visual_pulse import visual_pulse_bp
+from pulse_grid import pulse_grid_bp
 
 # ─── Token budget + API key rotation ─────────────────────────────────────────
 from token_utils import build_context_string
@@ -84,6 +87,9 @@ app.register_blueprint(cluster_bp)
 app.register_blueprint(nlp_analytics_bp)
 app.register_blueprint(mindmap_bp)
 app.register_blueprint(web_augmentor_bp)
+app.register_blueprint(timeline_weave_bp)
+app.register_blueprint(visual_pulse_bp)
+app.register_blueprint(pulse_grid_bp)
 
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "super_secret_key_nexora_123")
 

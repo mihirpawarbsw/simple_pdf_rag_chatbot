@@ -27,13 +27,15 @@
     <script src="{{ url_for('static', filename='js/cluster.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/mindmap.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/web_augmentor.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/timeline_weave.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/visual_pulse.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/pulse_grid.js') }}" defer></script>
 
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Sora + DM Sans — same as login/register/logout -->
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
-    <!-- Three.js for neural background -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
 
     <!-- Unified Feature Layout Styles -->
     <style>
@@ -50,7 +52,9 @@
       .report-modal-header,
       #faqWorkspaceHeader,
       #warHeader,
-      #warModal
+      #tlwHeader,
+      #vpHeader,
+      #pgHeader,
       .at-header {
         display: flex !important;
         align-items: center !important;
@@ -73,6 +77,9 @@
       .mm-header-left,
       .report-modal-header-left,
       .faq-header-left,
+      .tlw-header-left,
+      .vp-header-left,
+      .pg-header-left,
       .at-header-left {
         display: flex !important;
         align-items: center !important;
@@ -90,6 +97,9 @@
       .mm-header-right,
       .report-modal-header-right,
       .faq-header-right,
+      .tlw-header-right,
+      .vp-header-right,
+      .pg-header-right,
       .at-header-right {
         margin-left: auto !important;
         display: flex !important;
@@ -105,6 +115,9 @@
       #mmHeader h3,
       .report-modal-header .report-modal-title,
       #faqWorkspaceHeader h2,
+      #tlwHeader h3,
+      #vpHeader h3,
+      #pgHeader h3,
       .at-header h2 {
         margin: 0 !important;
         font-size: 17px !important;
@@ -128,6 +141,9 @@
       #mmHeader .hdr-subtitle,
       .report-modal-header p.report-modal-sub,
       #faqWorkspaceHeader .hdr-subtitle,
+      #tlwHeader .hdr-subtitle,
+      #vpHeader .hdr-subtitle,
+      #pgHeader .hdr-subtitle,
       .at-header span.hdr-subtitle {
         font-size: 0.72rem !important;
         font-style: italic !important;
@@ -146,11 +162,36 @@
       .mm-header-left i,
       .report-modal-header-left i,
       .faq-header-left i,
+      .tlw-header-left i,
+      .vp-header-left i,
+      .pg-header-left i,
       .at-header-left i {
         color: var(--accent, #b18fcf) !important;
         font-size: 20px !important;
         flex-shrink: 0 !important;
         margin: 0 !important;
+      }
+
+      #faqCloseBtn {
+        background: none !important;
+        border: none !important;
+        color: var(--text-secondary) !important;
+        font-size: 1.15rem !important;
+        cursor: pointer !important;
+        padding: 6px 10px !important;
+        border-radius: 50% !important;
+        transition: all 0.2s !important;
+        line-height: 1 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+      #faqCloseBtn:hover {
+        color: var(--accent-light) !important;
+        background: var(--accent-bg) !important;
+      }
+      body.light-mode #faqCloseBtn:hover {
+        color: var(--accent) !important;
       }
 
       /* Breadcrumb Bar overrides for inline placement inside active header */
@@ -243,10 +284,21 @@
 <body class="theme-aurora-gelato light-mode">
 
 <!-- Ambient layers -->
-<div class="nebula neb-1"></div>
-<div class="nebula neb-2"></div>
-<div class="nebula neb-3"></div>
-<div id="canvas-container"></div>
+<div id="canvas-container">
+    <div class="glow-blob blob-1"></div>
+    <div class="glow-blob blob-2"></div>
+    <div class="glow-blob blob-3"></div>
+    <div class="aurora-wash"></div>
+    <div class="bg-geometric">
+        <svg class="geom-ring" viewBox="0 0 1000 1000">
+            <circle cx="500" cy="500" r="400" fill="none" stroke="currentColor" stroke-width="0.5" stroke-dasharray="4 8" />
+            <circle cx="500" cy="500" r="250" fill="none" stroke="currentColor" stroke-width="0.3" />
+        </svg>
+        <svg class="geom-ring-fast" viewBox="0 0 1000 1000">
+            <path d="M 150 500 A 350 350 0 0 1 850 500" fill="none" stroke="currentColor" stroke-width="0.4" />
+        </svg>
+    </div>
+</div>
 
 <div class="container">
 
@@ -268,56 +320,87 @@
             </div>
         </div>
 
-        <!-- Primary actions -->
-        <div class="sidebar-actions">
-            <button class="sidebar-btn new-chat-btn" onclick="createNewChat()" title="New Chat">
-                <i class="fa-solid fa-plus"></i>
-                <span class="sidebar-text">New Chat</span>
-            </button>
-            <button class="sidebar-btn upload-trigger-btn" onclick="toggleUploadPanel()" title="Upload Documents">
-                <i class="fa-solid fa-folder-open"></i>
-                <span class="sidebar-text">Upload Documents</span>
-            </button>
-        </div>
-
-        <!-- Upload / document panel -->
-        <div class="upload-panel" id="uploadPanel">
-            <h3>Upload Documents</h3>
-
-            <div class="upload-drag-area" onclick="document.getElementById('pdfFiles').click()">
-                <i class="fa-solid fa-cloud-arrow-up"></i>
-                <p>Click to add files</p>
-                <span>PDF, TXT, DOC/DOCX, PPT/PPTX</span>
-                <input type="file" id="pdfFiles" accept=".pdf,.txt,.doc,.docx,.ppt,.pptx" multiple style="display:none" onchange="handleFileSelection(this)">
+        <!-- Scrollable Navigation -->
+        <div class="sidebar-nav">
+            <!-- Category: DOCUMENTS -->
+            <div class="nav-category">
+                <span class="category-title">Documents</span>
+                <button class="nav-item" id="nav-upload" onclick="openUploadModal()" title="Upload Documents">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <span class="sidebar-text">Upload Documents</span>
+                </button>
+                <button class="nav-item" id="nav-select-docs" onclick="openDocumentSelectionModal()" title="Select Documents for Query">
+                    <i class="fa-solid fa-file-circle-check"></i>
+                    <span class="sidebar-text">Select Documents</span>
+                </button>
             </div>
 
-            <div id="fileSelectionList" class="file-selection-list"></div>
+            <!-- Category: CHATBOT -->
+            <div class="nav-category">
+                <span class="category-title">Chatbot</span>
+                <button class="nav-item active" id="nav-chatbot" onclick="backToChatbot()" title="Chatbot Companion">
+                    <i class="fa-solid fa-comments"></i>
+                    <span class="sidebar-text">Active Chat</span>
+                </button>
+                <button class="nav-item" id="nav-new-chat" onclick="createNewChat()" title="New Chat">
+                    <i class="fa-solid fa-plus"></i>
+                    <span class="sidebar-text">New Chat</span>
+                </button>
+                <button class="nav-item" id="nav-toggle-history" onclick="toggleChatHistory()" title="View Chat Conversations">
+                    <i class="fa-solid fa-history"></i>
+                    <span class="sidebar-text">View Chat Conversation</span>
+                </button>
 
-            <button class="upload-real-btn" onclick="uploadFiles()">
-                <i class="fa-solid fa-arrows-spin"></i> Process Files
-            </button>
-
-            <div class="status" id="uploadStatus"></div>
-
-            <!-- Active session files -->
-            <div class="session-files-section">
-                <h4>Indexed in Session</h4>
-                <div class="session-files-list" id="sessionFilesList">
-                    <div class="no-files-msg">No files uploaded.</div>
-                </div>
+                <div class="chat-history-list" id="chatHistoryList" style="display: none;"></div>
             </div>
-        </div>
 
-        <!-- Document selector -->
-        <div class="document-filter-box">
-            <h4>Select Documents For Query</h4>
-            <div id="documentCheckboxList"></div>
-        </div>
+            <!-- Category: EXPLORE FEATURES -->
+            <div class="nav-category">
+                <span class="category-title">Explore Features</span>
+                <button class="nav-item" id="nav-nlp" onclick="openFeatureInWorkspace('NLP Analytics', () => NLPAnalytics.open())" title="NLP Analytics Suite">
+                    <i class="fa-solid fa-flask-vial"></i>
+                    <span class="sidebar-text">NLP Analytics</span>
+                </button>
+                <!--
+                <button class="nav-item" id="nav-mindmap" onclick="openFeatureInWorkspace('Mind Map', () => MindMap.open())" title="Interactive Mind Map">
+                    <i class="fa-solid fa-brain"></i>
+                    <span class="sidebar-text">Mind Map</span>
+                </button>
+                -->
+                <button class="nav-item" id="nav-kg" onclick="openFeatureInWorkspace('Knowledge Graph', () => KnowledgeGraph.open())" title="Knowledge Graph">
+                    <i class="fa-solid fa-diagram-project"></i>
+                    <span class="sidebar-text">Knowledge Graph</span>
+                </button>
+                <button class="nav-item" id="nav-cluster" onclick="openFeatureInWorkspace('Cluster Universe', () => ClusterUniverse.open())" title="Cluster Universe">
+                    <i class="fa-solid fa-circle-nodes"></i>
+                    <span class="sidebar-text">Cluster Universe</span>
+                </button>
+                <button class="nav-item" id="nav-action" onclick="openFeatureInWorkspace('Action Tracker', () => ActionTracker.open())" title="Action Items & Decision Tracker">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span class="sidebar-text">Action Tracker</span>
+                </button>
+                <button class="nav-item" id="nav-report" onclick="openFeatureInWorkspace('Executive Report', () => openReportModal())" title="Generate Full Report from Documents">
+                    <i class="fa-solid fa-file-invoice"></i>
+                    <span class="sidebar-text">Executive Report</span>
+                </button>
+                <button class="nav-item" id="nav-trendlens" onclick="openFeatureInWorkspace('TrendLens', () => WebAugmentor.open())" title="Web-Grounded Intelligence Report">
+                    <i class="fa-solid fa-globe"></i>
+                    <span class="sidebar-text">TrendLens</span>
+                </button>
+                <button class="nav-item" id="nav-timeline" onclick="openFeatureInWorkspace('TimelineWeave', () => TimelineWeave.open())" title="Timeline Weave Report">
+                    <i class="fa-solid fa-timeline"></i>
+                    <span class="sidebar-text">TimelineWeave</span>
+                </button>
+                <button class="nav-item" id="nav-pulse" onclick="openFeatureInWorkspace('VisualPulse', () => VisualPulse.open())" title="Visual Pulse Mood Board">
+                    <i class="fa-solid fa-images"></i>
+                    <span class="sidebar-text">Visual Pulse</span>
+                </button>
+                <button class="nav-item" id="nav-grid" onclick="openFeatureInWorkspace('PulseGrid', () => PulseGrid.open())" title="StatSonar Heatmap">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span class="sidebar-text">StatSonar</span>
+                </button>
+            </div>
 
-        <!-- Chat history -->
-        <div class="chat-history">
-            <h3 class="chat-history-title">Conversations</h3>
-            <div class="chat-history-list" id="chatHistoryList"></div>
         </div>
 
     </div><!-- /sidebar -->
@@ -337,64 +420,22 @@
 
             <div class="top-controls">
                 <input type="hidden" id="languageSelector" value="English">
-
-                <!-- Explore Features Menu -->
-                <div class="explore-wrapper">
-                    <button id="exploreFeaturesBtn" class="explore-btn" onclick="toggleExploreFeatures()" title="Explore Nexora Features">
-                        <i class="fa-solid fa-compass-drafting header-icon"></i>
-                        <span>Explore Features</span>
-                        <i class="fa-solid fa-chevron-down explore-arrow" id="exploreArrow"></i>
-                    </button>
-
-                    <!-- Features Dropdown Menu -->
-                    <div class="features-dropdown" id="featuresDropdown">
-                        <button class="toolbar-btn nlp-analytics-btn" onclick="openFeatureInWorkspace('NLP Analytics', () => NLPAnalytics.open())" title="NLP Analytics Suite">
-                            <i class="fa-solid fa-flask-vial"></i>
-                            <span>NLP Analytics</span>
-                        </button>
-
-                        <button class="toolbar-btn mindmap-btn" onclick="openFeatureInWorkspace('Mind Map', () => MindMap.open())" title="Interactive Mind Map">
-                        <i class="fa-solid fa-brain"></i>
-                        <span>Mind Map</span>
-                        </button>
-                        
-                        <button class="toolbar-btn" onclick="openFeatureInWorkspace('Knowledge Graph', () => KnowledgeGraph.open())" title="Knowledge Graph">
-                            <i class="fa-solid fa-diagram-project"></i>
-                            <span>Knowledge Graph</span>
-                        </button>
-                        <button class="toolbar-btn" onclick="openFeatureInWorkspace('Cluster Universe', () => ClusterUniverse.open())" title="Cluster Universe">
-                            <i class="fa-solid fa-circle-nodes"></i>
-                            <span>Cluster Universe</span>
-                        </button>
-                        <button class="toolbar-btn action-tracker-btn" onclick="openFeatureInWorkspace('Action Tracker', () => ActionTracker.open())" title="Action Items & Decision Tracker">
-                            <i class="fa-solid fa-circle-check"></i>
-                            <span>Action Tracker</span>
-                        </button>
-                        <button class="toolbar-btn report-trigger-btn" onclick="openFeatureInWorkspace('Executive Report', () => openReportModal())" title="Generate Full Report from Documents">
-                            <i class="fa-solid fa-file-invoice"></i>
-                            <span>Executive Report</span>
-                        </button>
-                        <button class="toolbar-btn" onclick="openFeatureInWorkspace('TrendLens', () => WebAugmentor.open())" title="Web-Grounded Intelligence Report">
-                        <i class="fa-solid fa-globe"></i>
-                        <span>TrendLens</span>
-                        </button>
-                    </div>
-                </div>
-
+                
                 <!-- User Guide & FAQ Button -->
                 <button id="guideBtn" class="explore-btn" onclick="showGuideInCenter()" title="System Guide & FAQ">
                     <i class="fa-solid fa-circle-question header-icon"></i>
                     <span>User Guide &amp; FAQ</span>
                 </button>
 
+                <!-- Session Settings -->
                 <button id="settingsBtn" class="header-icon-btn" onclick="toggleSettingsDrawer()" title="Session Settings">
                     <i class="fa-solid fa-sliders"></i>
                 </button>
 
+                <!-- Logout -->
                 <button class="logout-btn" onclick="window.location.href='/logout'" title="Logout">
                     <i class="fa-solid fa-right-from-bracket"></i>
                 </button>
-
             </div>
         </div>
 
@@ -404,15 +445,7 @@
             <span>Export PDF</span>
         </button>
 
-        <!-- Breadcrumb bar for feature workspace navigation -->
-        <div class="breadcrumb-bar" id="breadcrumbBar" style="display: none;">
-            <button onclick="backToChatbot()" class="back-btn" title="Back to chat companion">
-                <i class="fa-solid fa-arrow-left"></i>
-                <span>Back to Chatbot</span>
-            </button>
-            <span class="breadcrumb-separator">/</span>
-            <span class="breadcrumb-active" id="activeFeatureName"></span>
-        </div>
+
 
         <!-- Embedded Feature Workspace -->
         <div id="featureWorkspace">
@@ -501,13 +534,17 @@
                         <div class="faq-header-left">
                             <i class="fa-solid fa-circle-question"></i>
                             <div>
-                                <h2 style="margin: 0; line-height: 1.2;">User Guide &amp; System FAQ</h2>
+                                <h2>User Guide &amp; System FAQ</h2>
                                 <span class="hdr-subtitle">
                                     Find guides, troubleshooting steps, and answers to frequently asked questions about Nexora.AI.
                                 </span>
                             </div>
                         </div>
-
+                        <div class="faq-header-right">
+                            <button id="faqCloseBtn" onclick="backToChatbot()" title="Close FAQ">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
                     </div>
                     <!-- Scrollable Body Content -->
                     <div id="faqWorkspaceScrollBody" style="padding: 24px; box-sizing: border-box; overflow-y: auto; height: calc(100% - 72px); padding-right: 8px;">
@@ -536,10 +573,12 @@
                                         <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-flask-vial"></i> NLP Analytics Suite</strong>
                                         <span style="font-size: 0.8rem; display: block;">Analyzes text to extract overall emotional sentiment, create word clouds of frequent keywords, discover main topics, identify keyphrases, extract named entities (people/places/dates), and calculate readability scores.</span>
                                     </div>
+                                    <!--
                                     <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
                                         <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-brain"></i> Interactive Mind Map</strong>
                                         <span style="font-size: 0.8rem; display: block;">Builds a hierarchical, branching tree structure of topics discovered in your documents. Clicking any branch expands it and opens a side pane showing detail summaries, keywords, and citations.</span>
                                     </div>
+                                    -->
                                     <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
                                         <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-diagram-project"></i> Knowledge Graph</strong>
                                         <span style="font-size: 0.8rem; display: block;">Visualizes connections between concepts, entities, and source documents in a dynamic force-directed network. Helps pinpoint key relationships across separate files.</span>
@@ -560,6 +599,18 @@
                                         <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-earth-americas"></i> TrendLens</strong>
                                         <span style="font-size: 0.8rem; display: block;">Compares your documents against live web intelligence—news, tweets, reviews, research, and trends—providing a "Doc vs. World" verification report that can be exported as a PDF.</span>
                                     </div>
+                                    <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
+                                        <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-timeline"></i> TimelineWeave</strong>
+                                        <span style="font-size: 0.8rem; display: block;">Plots your document's topics chronologically against real-world events sourced live from the web, weaving dates, news, and research into a structured timeline report.</span>
+                                    </div>
+                                    <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
+                                        <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-images"></i> Visual Pulse</strong>
+                                        <span style="font-size: 0.8rem; display: block;">Turns your document's core concepts and topics into a live, visual mood-board gallery sourced fresh from the web.</span>
+                                    </div>
+                                    <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
+                                        <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-chart-pie"></i> StatSonar</strong>
+                                        <span style="font-size: 0.8rem; display: block;">Displays live statistical big-number cards, cross-source sparkline charts, and a source-credibility heatmap, counting and grouping references directly.</span>
+                                    </div>
                                 </div>
                             </div>
                             
@@ -569,6 +620,18 @@
                                     <div>
                                         <strong style="color: var(--text-primary); display: block; margin-bottom: 2px;">Q: What is TrendLens and how does it work?</strong>
                                         <span>A: TrendLens extracts key claims and topics from your uploaded documents and runs real-time web searches to check them against live internet resources. It compiles this evidence to show whether your documents are confirmed, contradicted, or outdated relative to current information.</span>
+                                    </div>
+                                    <div>
+                                        <strong style="color: var(--text-primary); display: block; margin-bottom: 2px;">Q: What is TimelineWeave?</strong>
+                                        <span>A: TimelineWeave automatically identifies the primary themes in your documents and graphs them chronologically alongside live web events, tweets, news, and milestones. It helps you see how your document's storyline aligns with real-world history.</span>
+                                    </div>
+                                    <div>
+                                        <strong style="color: var(--text-primary); display: block; margin-bottom: 2px;">Q: What is Visual Pulse?</strong>
+                                        <span>A: Visual Pulse generates an interactive image gallery and visual mood-board. It analyzes document topics and pairs them with relevant real-world images searched live from the web, providing visual context to text-based reports.</span>
+                                    </div>
+                                    <div>
+                                        <strong style="color: var(--text-primary); display: block; margin-bottom: 2px;">Q: What is StatSonar?</strong>
+                                        <span>A: StatSonar displays live metric counts, animated gauge cards, and source-credibility grids. It counts web references across news, blogs, and social feeds for your topics and groups them into credibility tiers to analyze source patterns.</span>
                                     </div>
                                     <div>
                                         <strong style="color: var(--text-primary); display: block; margin-bottom: 2px;">Q: How does the AI search across my files?</strong>
@@ -594,10 +657,10 @@
         <!-- Messages -->
         <div class="messages" id="messages">
             <div class="greeting-splash" id="greetingSplash">
-                <div class="greeting-emoji" id="greetingEmoji">☀️</div>
+                <div class="greeting-emoji" id="greetingEmoji"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
                 <h2 class="greeting-title">{{ greeting }}, <span class="user-name">{{ username }}</span></h2>
                 <p class="greeting-sub">Welcome to Nexora.AI</p>
-                <p class="greeting-tagline">Upload enterprise documentation or dataset files to unlock semantic QA, dynamic clustering, interactive knowledge graphs, mind maps, and automated action trackers.</p>
+                <p class="greeting-tagline">Nexora.AI is an advanced enterprise intelligence workspace that dynamically transforms unstructured data into semantic QA engines, interactive knowledge graphs, and automated action trackers. Simply upload your documentation to instantly activate real-time cognitive analytics, dynamic clustering, and structured executive reporting.</p>
             </div>
         </div>
 
@@ -670,13 +733,12 @@
         <div class="setting-group">
             <label for="themeSelector">Color Theme</label>
             <select id="themeSelector" onchange="handleThemeChange(this.value)" title="Choose Color Theme">
-                <option value="aurora-gelato">Aurora Gelato Theme</option>
-                <option value="lavender">Lavender Theme</option>
-                <option value="cyan">Cyan Theme</option>
-                <option value="sunset">Sunset Theme</option>
-                <option value="sherbet">Sherbet Theme</option>
-                <option value="obsidian">Obsidian Theme</option>
-                <option value="tropical">Tropical Oasis Theme</option>
+                <option value="midnight">Classic Midnight</option>
+                <option value="emerald">Neo Indigo</option>
+                <option value="amber">Obsidian Amber</option>
+                <option value="rose">Sunset Rose</option>
+                <option value="aurora">Oceanic Aurora</option>
+                <option value="amazon">Amazon Green</option>
             </select>
         </div>
         <div class="setting-group">
@@ -728,6 +790,70 @@
 ==================================================== -->
 <script>
     marked.setOptions({ breaks: true });
+
+    /* ---- Navigation & Modal UI Helpers ---- */
+    function setActiveNavItem(navId) {
+        document.querySelectorAll('.sidebar-nav .nav-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        if (navId) {
+            const activeItem = document.getElementById(navId);
+            if (activeItem) {
+                activeItem.classList.add('active');
+            }
+        }
+    }
+
+    function openUploadModal() {
+        const overlay = document.getElementById("uploadModalOverlay");
+        if (overlay) {
+            overlay.style.display = "flex";
+            setTimeout(() => overlay.classList.add("active"), 10);
+        }
+    }
+
+    function closeUploadModal(event, force = false) {
+        const overlay = document.getElementById("uploadModalOverlay");
+        if (!overlay) return;
+        if (force || event.target === overlay) {
+            overlay.classList.remove("active");
+            setTimeout(() => overlay.style.display = "none", 300);
+        }
+    }
+
+    function openDocumentSelectionModal() {
+        const overlay = document.getElementById("documentSelectionModalOverlay");
+        if (overlay) {
+            overlay.style.display = "flex";
+            setTimeout(() => overlay.classList.add("active"), 10);
+            loadUserDocuments();
+        }
+    }
+
+    function closeDocumentSelectionModal(event, force = false) {
+        const overlay = document.getElementById("documentSelectionModalOverlay");
+        if (!overlay) return;
+        if (force || event.target === overlay) {
+            overlay.classList.remove("active");
+            setTimeout(() => overlay.style.display = "none", 300);
+        }
+    }
+
+    function toggleChatHistory() {
+        const historyList = document.getElementById("chatHistoryList");
+        const toggleBtn = document.getElementById("nav-toggle-history");
+        if (historyList) {
+            const isHidden = historyList.style.display === "none" || historyList.style.display === "";
+            historyList.style.display = isHidden ? "flex" : "none";
+            if (toggleBtn) {
+                if (isHidden) {
+                    toggleBtn.classList.add("active");
+                } else {
+                    toggleBtn.classList.remove("active");
+                }
+            }
+        }
+    }
 
     /* ---- Typing Effect System ---- */
     let typeQueue = [];
@@ -824,7 +950,7 @@
 
     /* ---- Theme / Mode ---- */
     function changeTheme(theme){
-        document.body.classList.remove('theme-aurora-gelato', 'theme-lavender', 'theme-cyan', 'theme-sunset', 'theme-sherbet', 'theme-obsidian', 'theme-tropical');
+        document.body.classList.remove('theme-midnight', 'theme-emerald', 'theme-amber', 'theme-rose', 'theme-aurora', 'theme-amazon');
         document.body.classList.add(`theme-${theme}`);
         localStorage.setItem("theme", theme);
         
@@ -847,21 +973,21 @@
     function updateGreetingEmoji(theme) {
         const emojiEl = document.getElementById("greetingEmoji");
         if (emojiEl) {
-            if (theme === "aurora-gelato") {
-                emojiEl.innerText = "🍦";
-            } else if (theme === "lavender") {
-                emojiEl.innerText = "☀️";
-            } else if (theme === "cyan") {
-                emojiEl.innerText = "🌊";
-            } else if (theme === "sunset") {
-                emojiEl.innerText = "🔥";
-            } else if (theme === "sherbet") {
-                emojiEl.innerText = "🌅";
-            } else if (theme === "obsidian") {
-                emojiEl.innerText = "👑";
-            } else if (theme === "tropical") {
-                emojiEl.innerText = "🌴";
+            let iconHtml = '<i class="fa-solid fa-wand-magic-sparkles"></i>';
+            if (theme === "midnight") {
+                iconHtml = '<i class="fa-solid fa-moon"></i>';
+            } else if (theme === "emerald") {
+                iconHtml = '<i class="fa-solid fa-gem"></i>';
+            } else if (theme === "amber") {
+                iconHtml = '<i class="fa-solid fa-bolt"></i>';
+            } else if (theme === "rose") {
+                iconHtml = '<i class="fa-solid fa-feather-pointed"></i>';
+            } else if (theme === "aurora") {
+                iconHtml = '<i class="fa-solid fa-water"></i>';
+            } else if (theme === "amazon") {
+                iconHtml = '<i class="fa-solid fa-leaf"></i>';
             }
+            emojiEl.innerHTML = iconHtml;
         }
     }
 
@@ -897,8 +1023,7 @@
 
     /* ---- Upload Panel ---- */
     function toggleUploadPanel(){
-        const panel = document.getElementById("uploadPanel");
-        panel.classList.toggle("active");
+        openUploadModal();
     }
 
     /* ---- File selection display ---- */
@@ -1036,12 +1161,12 @@
         session_id = null; messagesData = []; isGenerating = false; stopTypingEffect();
         document.getElementById("messages").innerHTML = `
             <div class="greeting-splash" id="greetingSplash">
-                <div class="greeting-emoji" id="greetingEmoji">☀️</div>
+                <div class="greeting-emoji" id="greetingEmoji"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
                 <h2 class="greeting-title">{{ greeting }}, <span class="user-name">{{ username }}</span></h2>
                 <p class="greeting-sub">Welcome to Nexora.AI</p>
-                <p class="greeting-tagline">Upload enterprise documentation or dataset files to unlock semantic QA, dynamic clustering, interactive knowledge graphs, mind maps, and automated action trackers.</p>
+                <p class="greeting-tagline">Nexora.AI is an advanced enterprise intelligence workspace that dynamically transforms unstructured data into semantic QA engines, interactive knowledge graphs, and automated action trackers. Simply upload your documentation to instantly activate real-time cognitive analytics, dynamic clustering, and structured executive reporting.</p>
             </div>`;
-        updateGreetingEmoji(localStorage.getItem("theme") || "lavender");
+        updateGreetingEmoji(localStorage.getItem("theme") || "midnight");
         document.getElementById("starterSuggestions").style.display = "flex";
         document.getElementById("uploadStatus").innerText = "";
         document.getElementById("pdfFiles").value = "";
@@ -1274,8 +1399,8 @@
     function toggleExploreFeatures(){
         const btn = document.getElementById("exploreFeaturesBtn");
         const dropdown = document.getElementById("featuresDropdown");
-        btn.classList.toggle("active");
-        dropdown.classList.toggle("open");
+        if (btn) btn.classList.toggle("active");
+        if (dropdown) dropdown.classList.toggle("open");
     }
 
 
@@ -1305,16 +1430,29 @@
         try { ClusterUniverse.close(); } catch(e){}
         try { ActionTracker.close(); } catch(e){}
         try { closeReportModal(); } catch(e){}
+        try { TimelineWeave.close(); } catch(e){}
+        try { VisualPulse.close(); } catch(e){}
+        try { PulseGrid.close(); } catch(e){}
         const faqOverlay = document.getElementById("faqWorkspaceOverlay");
         if (faqOverlay) faqOverlay.style.display = "none";
 
-        // 3. Set the active feature title in breadcrumb
-        document.getElementById("activeFeatureName").innerText = featureName;
+        // Set active nav item in sidebar
+        if (featureName === 'NLP Analytics') setActiveNavItem('nav-nlp');
+        else if (featureName === 'Mind Map') setActiveNavItem('nav-mindmap');
+        else if (featureName === 'Knowledge Graph') setActiveNavItem('nav-kg');
+        else if (featureName === 'Cluster Universe') setActiveNavItem('nav-cluster');
+        else if (featureName === 'Action Tracker') setActiveNavItem('nav-action');
+        else if (featureName === 'Executive Report') setActiveNavItem('nav-report');
+        else if (featureName === 'TrendLens') setActiveNavItem('nav-trendlens');
+        else if (featureName === 'TimelineWeave') setActiveNavItem('nav-timeline');
+        else if (featureName === 'VisualPulse') setActiveNavItem('nav-pulse');
+        else if (featureName === 'PulseGrid') setActiveNavItem('nav-grid');
+        else if (featureName === 'User Guide & FAQ') setActiveNavItem('nav-guide');
 
-        // 4. Show the workspace (breadcrumb will be inserted inside it dynamically)
+        // 3. Show the workspace
         document.getElementById("featureWorkspace").style.display = "block";
 
-        // 5. Hide chatbot sections
+        // 4. Hide chatbot sections
         document.getElementById("messages").style.display = "none";
         const starter = document.getElementById("starterSuggestions");
         if (starter) starter.style.display = "none";
@@ -1326,48 +1464,12 @@
         // Add feature-active class to chat-area
         document.querySelector(".chat-area").classList.add("feature-active");
 
-        // 6. Invoke the feature's open function
+        // 5. Invoke the feature's open function
         if (typeof openFunc === 'function') {
             openFunc();
         }
 
-        // 7. Find the active feature's header and insert the breadcrumb bar right after it
         setTimeout(() => {
-            const breadcrumbBar = document.getElementById("breadcrumbBar");
-            if (breadcrumbBar) {
-                const headers = document.querySelectorAll(
-                    "#featureWorkspace #nlpHeader, " +
-                    "#featureWorkspace #cuHeader, " +
-                    "#featureWorkspace #kgHeader, " +
-                    "#featureWorkspace #mmHeader, " +
-                    "#featureWorkspace .report-modal-header, " +
-                    "#featureWorkspace #faqWorkspaceHeader, " +
-                    "#featureWorkspace .at-header"
-                );
-                let activeHeader = null;
-                for (let h of headers) {
-                    const parentModal = h.closest("#nlpOverlay, #cuOverlay, #kgModal, #mmOverlay, #nexoraReportModal, #actionTrackerOverlay, #faqWorkspaceOverlay");
-                    if (parentModal) {
-                        const style = window.getComputedStyle(parentModal);
-                        if (style.display !== "none" && style.opacity !== "0" && style.visibility !== "hidden") {
-                            activeHeader = h;
-                            break;
-                        }
-                    }
-                }
-                
-                if (activeHeader) {
-                    activeHeader.insertBefore(breadcrumbBar, activeHeader.firstChild);
-                    breadcrumbBar.style.display = "flex";
-                } else {
-                    const workspace = document.getElementById("featureWorkspace");
-                    if (workspace) {
-                        workspace.insertBefore(breadcrumbBar, workspace.firstChild);
-                        breadcrumbBar.style.display = "flex";
-                    }
-                }
-            }
-            
             // Dispatch window resize event so visualization canvases/SVGs adjust to the new container size
             window.dispatchEvent(new Event('resize'));
         }, 120);
@@ -1377,6 +1479,8 @@
         if (_isTransitioningBack) return;
         _isTransitioningBack = true;
 
+        setActiveNavItem('nav-chatbot');
+
         // 1. Close any active features in JS
         try { NLPAnalytics.close(); } catch(e){}
         try { MindMap.close(); } catch(e){}
@@ -1384,20 +1488,16 @@
         try { ClusterUniverse.close(); } catch(e){}
         try { ActionTracker.close(); } catch(e){}
         try { closeReportModal(); } catch(e){}
+        try { TimelineWeave.close(); } catch(e){}
+        try { VisualPulse.close(); } catch(e){}
+        try { PulseGrid.close(); } catch(e){}
 
         // Hide FAQ overlay
         const faqOverlay = document.getElementById("faqWorkspaceOverlay");
         if (faqOverlay) faqOverlay.style.display = "none";
 
-        // 2. Move breadcrumb back to its original parent before #featureWorkspace
-        const breadcrumbBar = document.getElementById("breadcrumbBar");
-        const workspace = document.getElementById("featureWorkspace");
-        if (breadcrumbBar && workspace) {
-            workspace.parentNode.insertBefore(breadcrumbBar, workspace);
-            breadcrumbBar.style.display = "none";
-        }
-
         // Hide workspace
+        const workspace = document.getElementById("featureWorkspace");
         if (workspace) workspace.style.display = "none";
 
         // 3. Show chatbot sections
@@ -1678,6 +1778,7 @@
 
     async function loadChatMessages(chatSessionId){
         if(isGenerating) return;
+        try { backToChatbot(); } catch(e){}
         session_id = chatSessionId;
         const messagesDiv = document.getElementById("messages");
         messagesDiv.innerHTML = `<div class="loading-messages"><span class="nexora-spinner inline"></span> Loading chat session…</div>`;
@@ -1701,12 +1802,12 @@
             if(messages.length === 0){
                 messagesDiv.innerHTML = `
                     <div class="greeting-splash" id="greetingSplash">
-                        <div class="greeting-emoji" id="greetingEmoji">☀️</div>
+                        <div class="greeting-emoji" id="greetingEmoji"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
                         <h2 class="greeting-title">{{ greeting }}, <span class="user-name">{{ username }}</span></h2>
                         <p class="greeting-sub">Welcome to Nexora.AI</p>
-                        <p class="greeting-tagline">Upload enterprise documentation or dataset files to unlock semantic QA, dynamic clustering, interactive knowledge graphs, mind maps, and automated action trackers.</p>
+                        <p class="greeting-tagline">Nexora.AI is an advanced enterprise intelligence workspace that dynamically transforms unstructured data into semantic QA engines, interactive knowledge graphs, and automated action trackers. Simply upload your documentation to instantly activate real-time cognitive analytics, dynamic clustering, and structured executive reporting.</p>
                     </div>`;
-                updateGreetingEmoji(localStorage.getItem("theme") || "lavender");
+                updateGreetingEmoji(localStorage.getItem("theme") || "midnight");
                 document.getElementById("starterSuggestions").style.display = "flex";
             }
             loadChats();
@@ -1802,225 +1903,31 @@
             this.container = document.getElementById(containerId);
             if (!this.container) return;
 
-            // Scene Setup
-            this.scene = new THREE.Scene();
-            
-            const width = this.container.clientWidth || window.innerWidth;
-            const height = this.container.clientHeight || window.innerHeight;
-            
-            this.camera = new THREE.PerspectiveCamera(50, width / height, 1, 1000);
-            this.camera.position.z = 270;
-
-            this.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-            this.renderer.setSize(width, height);
-            this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            this.container.appendChild(this.renderer.domElement);
-
-            // Group to apply global rotation / mouse drift
-            this.networkGroup = new THREE.Group();
-            this.scene.add(this.networkGroup);
-
-            // Initialize Particles (Neurons)
-            this.particleCount = 130;
-            this.positions = new Float32Array(this.particleCount * 3);
-            this.velocities = [];
-
-            // Generate particles spread randomly across the entire page (wide volume)
-            for (let i = 0; i < this.particleCount; i++) {
-                this.positions[i * 3] = (Math.random() - 0.5) * 520;  // X: -260 to 260
-                this.positions[i * 3 + 1] = (Math.random() - 0.5) * 340; // Y: -170 to 170
-                this.positions[i * 3 + 2] = (Math.random() - 0.5) * 200; // Z: -100 to 100
-                
-                this.velocities.push({
-                    x: (Math.random() - 0.5) * 0.1,
-                    y: (Math.random() - 0.5) * 0.1,
-                    z: (Math.random() - 0.5) * 0.1
-                });
-            }
-
-            this.geometry = new THREE.BufferGeometry();
-            this.geometry.setAttribute('position', new THREE.BufferAttribute(this.positions, 3));
-
-            // Line segments linking nodes
-            this.maxConnections = this.particleCount * 4;
-            this.linePositions = new Float32Array(this.maxConnections * 6);
-            this.lineGeometry = new THREE.BufferGeometry();
-            this.lineGeometry.setAttribute('position', new THREE.BufferAttribute(this.linePositions, 3));
-
-            // Initial materials (placeholders, will be updated by updateColors)
-            this.pointsMaterial = new THREE.PointsMaterial({
-                size: 14,
-                transparent: true,
-                opacity: 0.85,
-                depthWrite: false
-            });
-
-            this.lineMaterial = new THREE.LineBasicMaterial({
-                transparent: true,
-                opacity: 0.32
-            });
-
-            this.points = new THREE.Points(this.geometry, this.pointsMaterial);
-            this.networkGroup.add(this.points);
-
-            this.lines = new THREE.LineSegments(this.lineGeometry, this.lineMaterial);
-            this.networkGroup.add(this.lines);
-
-            // Interaction / Parallax variables
-            this.mouseX = 0;
-            this.mouseY = 0;
+            // Parallax mouse variables
             this.targetX = 0;
             this.targetY = 0;
+            this.currentX = 0;
+            this.currentY = 0;
 
             window.addEventListener('mousemove', (e) => {
-                this.targetX = (e.clientX - window.innerWidth / 2) * 0.08;
-                this.targetY = (e.clientY - window.innerHeight / 2) * 0.08;
-            });
-
-            this.autoRotationY = 0;
-            this.autoRotationX = 0;
-
-            this.updateColors();
-
-            window.addEventListener('resize', () => {
-                const w = this.container.clientWidth || window.innerWidth;
-                const h = this.container.clientHeight || window.innerHeight;
-                this.camera.aspect = w / h;
-                this.camera.updateProjectionMatrix();
-                this.renderer.setSize(w, h);
+                // Calculate parallax offset: shift by -1.5px to +1.5px (3px max shift)
+                this.targetX = ((e.clientX / window.innerWidth) - 0.5) * 3;
+                this.targetY = ((e.clientY / window.innerHeight) - 0.5) * 3;
             });
 
             this.animate();
         }
 
         updateColors() {
-            const style = getComputedStyle(document.body);
-            const accent = (style.getPropertyValue('--accent') || '#B18FCF').trim();
-            
-            // Convert to color string that canvas gradient helper understands
-            let colorStr = accent;
-            if (!colorStr.startsWith('#') && !colorStr.startsWith('rgb')) {
-                colorStr = '#B18FCF';
-            }
-
-            if (this.lineMaterial) {
-                this.lineMaterial.color.set(colorStr);
-            }
-
-            if (this.pointsMaterial) {
-                const canvas = document.createElement('canvas');
-                canvas.width = 32;
-                canvas.height = 32;
-                const ctx = canvas.getContext('2d');
-                
-                // Solid core dot
-                ctx.fillStyle = colorStr;
-                ctx.beginPath();
-                ctx.arc(16, 16, 3, 0, Math.PI * 2);
-                ctx.fill();
-                
-                // Soft outer radial glow
-                let rgbAccent = colorStr;
-                if (colorStr.startsWith('#')) {
-                    const hex = colorStr.replace('#', '');
-                    let r = 177, g = 143, b = 207;
-                    if (hex.length === 3) {
-                        r = parseInt(hex[0] + hex[0], 16);
-                        g = parseInt(hex[1] + hex[1], 16);
-                        b = parseInt(hex[2] + hex[2], 16);
-                    } else if (hex.length >= 6) {
-                        r = parseInt(hex.substring(0, 2), 16);
-                        g = parseInt(hex.substring(2, 4), 16);
-                        b = parseInt(hex.substring(4, 6), 16);
-                    }
-                    rgbAccent = `rgba(${r}, ${g}, ${b}`;
-                } else if (colorStr.startsWith('rgb')) {
-                    rgbAccent = colorStr.substring(0, colorStr.lastIndexOf(')'));
-                }
-                
-                const grad = ctx.createRadialGradient(16, 16, 3, 16, 16, 16);
-                grad.addColorStop(0, rgbAccent.includes('rgba') ? `${rgbAccent}, 0.45)` : `${rgbAccent.replace('rgb', 'rgba')}, 0.45)`);
-                grad.addColorStop(1, rgbAccent.includes('rgba') ? `${rgbAccent}, 0)` : `${rgbAccent.replace('rgb', 'rgba')}, 0)`);
-                ctx.fillStyle = grad;
-                ctx.beginPath();
-                ctx.arc(16, 16, 16, 0, Math.PI * 2);
-                ctx.fill();
-                
-                const texture = new THREE.CanvasTexture(canvas);
-                const oldTexture = this.pointsMaterial.map;
-                this.pointsMaterial.map = texture;
-                this.pointsMaterial.needsUpdate = true;
-                if (oldTexture) oldTexture.dispose();
-            }
+            // Colors update dynamically via theme variables automatically
         }
 
         animate() {
             requestAnimationFrame(() => this.animate());
-
-            const pos = this.geometry.attributes.position.array;
-            const linePos = this.lineGeometry.attributes.position.array;
-            let lineIdx = 0;
-
-            // 1. Move Neurons randomly within boundaries
-            for (let i = 0; i < this.particleCount; i++) {
-                pos[i * 3] += this.velocities[i].x;
-                pos[i * 3 + 1] += this.velocities[i].y;
-                pos[i * 3 + 2] += this.velocities[i].z;
-
-                // Keep them within box bounds
-                if (Math.abs(pos[i * 3]) > 260) {
-                    this.velocities[i].x *= -1;
-                    pos[i * 3] = Math.sign(pos[i * 3]) * 260;
-                }
-                if (Math.abs(pos[i * 3 + 1]) > 170) {
-                    this.velocities[i].y *= -1;
-                    pos[i * 3 + 1] = Math.sign(pos[i * 3 + 1]) * 170;
-                }
-                if (Math.abs(pos[i * 3 + 2]) > 100) {
-                    this.velocities[i].z *= -1;
-                    pos[i * 3 + 2] = Math.sign(pos[i * 3 + 2]) * 100;
-                }
-            }
-            this.geometry.attributes.position.needsUpdate = true;
-
-            // 2. Build Connections between close neurons
-            for (let i = 0; i < this.particleCount; i++) {
-                const x1 = pos[i * 3];
-                const y1 = pos[i * 3 + 1];
-                const z1 = pos[i * 3 + 2];
-
-                for (let j = i + 1; j < this.particleCount; j++) {
-                    const x2 = pos[j * 3];
-                    const y2 = pos[j * 3 + 1];
-                    const z2 = pos[j * 3 + 2];
-
-                    const dist = Math.sqrt((x2 - x1)**2 + (y2 - y1)**2 + (z2 - z1)**2);
-
-                    if (dist < 75 && lineIdx < this.maxConnections) {
-                        linePos[lineIdx * 6] = x1;
-                        linePos[lineIdx * 6 + 1] = y1;
-                        linePos[lineIdx * 6 + 2] = z1;
-                        linePos[lineIdx * 6 + 3] = x2;
-                        linePos[lineIdx * 6 + 4] = y2;
-                        linePos[lineIdx * 6 + 5] = z2;
-                        lineIdx++;
-                    }
-                }
-            }
-            this.lineGeometry.setDrawRange(0, lineIdx * 2);
-            this.lineGeometry.attributes.position.needsUpdate = true;
-
-            // 3. Apply Parallax and Auto-drift
-            this.mouseX += (this.targetX - this.mouseX) * 0.05;
-            this.mouseY += (this.targetY - this.mouseY) * 0.05;
-
-            this.autoRotationY += 0.0004;
-            this.autoRotationX += 0.0002;
-
-            this.networkGroup.rotation.x = this.autoRotationX + (this.mouseY * 0.004);
-            this.networkGroup.rotation.y = this.autoRotationY + (this.mouseX * 0.004);
-
-            this.renderer.render(this.scene, this.camera);
+            // Interpolate for smooth drift
+            this.currentX += (this.targetX - this.currentX) * 0.05;
+            this.currentY += (this.targetY - this.currentY) * 0.05;
+            this.container.style.transform = `translate(${this.currentX}px, ${this.currentY}px)`;
         }
     }
 
@@ -2030,7 +1937,7 @@
         loadUserDocuments();
         
         // Initialize Theme Selection
-        const savedTheme = localStorage.getItem("theme") || "aurora-gelato";
+        const savedTheme = localStorage.getItem("theme") || "midnight";
         changeTheme(savedTheme);
         
         // Initialize Light/Dark Mode
@@ -2041,5 +1948,55 @@
         window.analyticsBg = new AnalyticsBackground('canvas-container');
     };
 </script>
+<!-- Upload Documents Modal Popup -->
+<div class="upload-modal-overlay" id="uploadModalOverlay" onclick="closeUploadModal(event)">
+    <div class="upload-panel" id="uploadPanel">
+        <div class="upload-modal-header">
+            <h3>Upload Documents</h3>
+            <button class="close-modal-btn" onclick="closeUploadModal(event, true)" title="Close Modal">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="upload-drag-area" onclick="document.getElementById('pdfFiles').click()">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <p>Click to add files</p>
+            <span>PDF, TXT, DOC/DOCX, PPT/PPTX</span>
+            <input type="file" id="pdfFiles" accept=".pdf,.txt,.doc,.docx,.ppt,.pptx" multiple style="display:none" onchange="handleFileSelection(this)">
+        </div>
+
+        <div id="fileSelectionList" class="file-selection-list"></div>
+
+        <button class="upload-real-btn" onclick="uploadFiles()">
+            <i class="fa-solid fa-arrows-spin"></i> Process Files
+        </button>
+
+        <div class="status" id="uploadStatus"></div>
+
+        <!-- Active session files -->
+        <div class="session-files-section">
+            <h4>Indexed in Session</h4>
+            <div class="session-files-list" id="sessionFilesList">
+                <div class="no-files-msg">No files uploaded.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Document Selection Modal Popup -->
+<div class="upload-modal-overlay" id="documentSelectionModalOverlay" onclick="closeDocumentSelectionModal(event)">
+    <div class="upload-panel" id="documentSelectionPanel" style="max-width: 500px;">
+        <div class="upload-modal-header">
+            <h3>Select Documents for Query</h3>
+            <button class="close-modal-btn" onclick="closeDocumentSelectionModal(event, true)" title="Close Modal">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <p style="font-size: 12.5px; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.4;">
+            Choose which documents the AI should reference when answering your questions. Checked documents will be included in the context.
+        </p>
+        <div id="documentCheckboxList" class="doc-checkbox-list-modal"></div>
+    </div>
+</div>
+
 </body>
 </html>

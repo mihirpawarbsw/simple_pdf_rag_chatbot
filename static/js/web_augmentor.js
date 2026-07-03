@@ -23,6 +23,7 @@ const WebAugmentor = (() => {
     let _injected    = false;
     let _generating  = false;
     let _currentReport = null;          // last fully loaded ReportJSON
+    let originalBackToChatbot = null;
 
     // ── Verdict config ────────────────────────────────────────────────────
     const VERDICTS = {
@@ -145,6 +146,7 @@ const WebAugmentor = (() => {
         #warHeader {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 12px;
             padding: 16px 22px;
             border-bottom: 1px solid var(--border);
@@ -689,6 +691,8 @@ const WebAugmentor = (() => {
         }
         .war-tab-btn:hover { color: var(--text-primary); }
         .war-tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+        #warCloseBtn:hover { color: var(--accent-light) !important; }
+        body.light-mode #warCloseBtn:hover { color: var(--accent) !important; }
         `;
         document.head.appendChild(style);
 
@@ -718,6 +722,9 @@ const WebAugmentor = (() => {
                     </button>
                     <button class="war-header-btn" id="warDownloadBtn" onclick="WebAugmentor.downloadPDF()" style="display:none">
                         <i class="fa-solid fa-file-arrow-down"></i> Download PDF
+                    </button>
+                    <button class="war-header-btn" id="warCloseBtn" onclick="WebAugmentor.close()" title="Close TrendLens" style="margin-left: 8px; background: transparent; border: none; color: var(--text-secondary); cursor: pointer; font-size: 18px; display: inline-flex; align-items: center; justify-content: center; padding: 4px; transition: color 0.2s;">
+                        <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
             </div>
@@ -1116,24 +1123,14 @@ const WebAugmentor = (() => {
     function open() {
         _inject();
         document.getElementById("warOverlay").classList.add("war-active");
-        
-        // Ensure breadcrumb bar is placed inside our header
-        setTimeout(() => {
-            const breadcrumbBar = document.getElementById("breadcrumbBar");
-            const header = document.getElementById("warHeader");
-            if (breadcrumbBar && header) {
-                header.insertBefore(breadcrumbBar, header.firstChild);
-                breadcrumbBar.style.display = "flex";
-            }
-        }, 150);
     }
 
     /** Close the modal. */
     function close() {
         const overlay = document.getElementById("warOverlay");
         if (overlay) overlay.classList.remove("war-active");
-        if (typeof window.originalBackToChatbot === "function") {
-            window.originalBackToChatbot();
+        if (typeof originalBackToChatbot === "function") {
+            originalBackToChatbot();
         } else if (typeof backToChatbot === "function") {
             backToChatbot();
         }
@@ -1258,13 +1255,15 @@ const WebAugmentor = (() => {
 
     // Hook into global functions to ensure WebAugmentor closes when returning to chatbot or opening other features
     if (typeof window.backToChatbot === "function") {
-        window.originalBackToChatbot = window.backToChatbot;
+        originalBackToChatbot = window.backToChatbot;
         window.backToChatbot = function() {
             try {
                 const overlay = document.getElementById("warOverlay");
                 if (overlay) overlay.classList.remove("war-active");
             } catch(e){}
-            window.originalBackToChatbot.apply(this, arguments);
+            if (typeof originalBackToChatbot === "function") {
+                originalBackToChatbot.apply(this, arguments);
+            }
         };
     }
     if (typeof window.openFeatureInWorkspace === "function") {

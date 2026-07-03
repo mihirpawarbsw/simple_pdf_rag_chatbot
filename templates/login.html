@@ -573,6 +573,103 @@ body::after{
   100% { transform: scale(1.2); opacity: 0; }
 }
 
+/* TimelineWeave Preview */
+.mp-timeline {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 100%;
+  padding: 0 20px;
+  position: relative;
+}
+.mp-timeline::before {
+  content: '';
+  position: absolute;
+  height: 2px;
+  background: rgba(203, 255, 252, 0.15);
+  left: 20px;
+  right: 20px;
+  top: 50%;
+  z-index: 1;
+}
+.mp-timeline .tl-node {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--surface-trench);
+  border: 2.5px solid var(--color-current-gradient);
+  z-index: 2;
+  position: relative;
+  animation: pulseGlobe 2s infinite alternate;
+}
+.mp-timeline .tl-node:nth-child(2) {
+  border-color: var(--color-twilight-gradient);
+  animation-delay: 0.6s;
+}
+.mp-timeline .tl-node:nth-child(3) {
+  border-color: var(--color-current-gradient);
+  animation-delay: 1.2s;
+}
+
+/* StatSonar Preview */
+.mp-sonar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  position: relative;
+}
+.mp-sonar .sonar-wave {
+  position: absolute;
+  border: 1px solid var(--color-current-gradient);
+  border-radius: 50%;
+  opacity: 0.5;
+  width: 70px;
+  height: 70px;
+  animation: radarScan 2.5s linear infinite;
+}
+.mp-sonar .sonar-core {
+  font-size: 24px;
+  color: var(--color-current-gradient);
+  animation: pulseGlobe 2s infinite alternate;
+}
+
+/* Visual Pulse Preview */
+.mp-pulse {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 100%;
+}
+.mp-pulse .pulse-card {
+  width: 45px;
+  height: 60px;
+  border-radius: 6px;
+  background: var(--surface-trench);
+  border: 1px solid rgba(237,255,254,0.06);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: var(--color-ice-mist);
+  transition: all 0.3s;
+  animation: mpReport 3s ease-in-out infinite;
+}
+.mp-pulse .pulse-card:nth-child(1) {
+  animation-delay: 0s;
+  border-color: var(--color-current-gradient);
+}
+.mp-pulse .pulse-card:nth-child(2) {
+  animation-delay: 0.5s;
+  border-color: var(--color-twilight-gradient);
+}
+.mp-pulse .pulse-card:nth-child(3) {
+  animation-delay: 1s;
+  border-color: var(--color-current-gradient);
+}
+
 /* USE CASES */
 .usecases-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
 @media(max-width:980px){.usecases-grid{grid-template-columns:repeat(2,1fr)}}
@@ -906,7 +1003,7 @@ footer{background:var(--surface-abyss);border-top:1px solid rgba(237,255,254,0.0
       <div class="feat-card gs-reveal">
         <div class="feat-icon"><i class="fa-solid fa-sliders"></i></div>
         <h3>Custom Workspace Styling</h3>
-        <p>Personalize your session with 6 beautiful visual themes, adjustable response lengths, and light/dark modes tailored for your workflow.</p>
+        <p>Personalize your session with 5 premium visual themes, adjustable response lengths, and light/dark modes tailored for your workflow.</p>
       </div>
       <div class="feat-card gs-reveal">
         <div class="feat-icon"><i class="fa-solid fa-user-shield"></i></div>
@@ -946,7 +1043,7 @@ footer{background:var(--surface-abyss);border-top:1px solid rgba(237,255,254,0.0
   <div class="scene-inner">
     <div class="center gs-reveal">
       <div class="scene-tag"><i class="fa-solid fa-layer-group"></i>Explore every tool</div>
-      <h2 class="scene-h2">One workspace, <em>seven superpowers.</em></h2>
+      <h2 class="scene-h2">One workspace, <em>nine superpowers.</em></h2>
       <p class="scene-sub">Behind the simple chat box sits a full toolkit. Open any of these any time — no extra setup, just a click.</p>
     </div>
 
@@ -971,7 +1068,7 @@ footer{background:var(--surface-abyss);border-top:1px solid rgba(237,255,254,0.0
         </div>
       </div>
 
-      <!-- 2. Interactive Mind Map -->
+      <!-- 2. Interactive Mind Map commented out
       <div class="tool-card gs-reveal">
         <div class="tool-preview mp-map">
           <div class="mp-line"></div><div class="mp-line"></div><div class="mp-line"></div><div class="mp-line"></div>
@@ -991,6 +1088,7 @@ footer{background:var(--surface-abyss);border-top:1px solid rgba(237,255,254,0.0
           </ul>
         </div>
       </div>
+      -->
 
       <!-- 3. Cluster Universe -->
       <div class="tool-card gs-reveal">
@@ -1087,6 +1185,68 @@ footer{background:var(--surface-abyss);border-top:1px solid rgba(237,255,254,0.0
             <li><i class="fa-solid fa-circle"></i>Cross-reference files with live web searches</li>
             <li><i class="fa-solid fa-circle"></i>Spot confirmed, contradicted, or outdated data</li>
             <li><i class="fa-solid fa-circle"></i>Export comprehensive "Doc vs. World" reports</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 8. TimelineWeave -->
+      <div class="tool-card gs-reveal">
+        <div class="tool-preview mp-timeline">
+          <div class="tl-node"></div>
+          <div class="tl-node"></div>
+          <div class="tl-node"></div>
+        </div>
+        <div class="tool-body">
+          <div class="tool-head">
+            <div class="tool-icon"><i class="fa-solid fa-timeline"></i></div>
+            <h3>TimelineWeave</h3>
+          </div>
+          <p>Plots document topics chronologically alongside live web events, news, and history milestones.</p>
+          <ul class="tool-list">
+            <li><i class="fa-solid fa-circle"></i>Visualizes timelines dynamically</li>
+            <li><i class="fa-solid fa-circle"></i>Correlates internal files with real-world history</li>
+            <li><i class="fa-solid fa-circle"></i>Exports detailed temporal reports as PDF</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 9. StatSonar -->
+      <div class="tool-card gs-reveal">
+        <div class="tool-preview mp-sonar">
+          <div class="sonar-wave"></div>
+          <div class="sonar-core"><i class="fa-solid fa-chart-pie"></i></div>
+        </div>
+        <div class="tool-body">
+          <div class="tool-head">
+            <div class="tool-icon"><i class="fa-solid fa-chart-pie"></i></div>
+            <h3>StatSonar Live Heatmaps</h3>
+          </div>
+          <p>Extracts statistical metrics and maps source credibility across different web feeds.</p>
+          <ul class="tool-list">
+            <li><i class="fa-solid fa-circle"></i>Animated gauge and big-number cards</li>
+            <li><i class="fa-solid fa-circle"></i>Real-time source-tier heatmaps</li>
+            <li><i class="fa-solid fa-circle"></i>Cross-source reference counts</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 10. Visual Pulse -->
+      <div class="tool-card gs-reveal">
+        <div class="tool-preview mp-pulse">
+          <div class="pulse-card"><i class="fa-solid fa-image"></i></div>
+          <div class="pulse-card"><i class="fa-solid fa-image"></i></div>
+          <div class="pulse-card"><i class="fa-solid fa-image"></i></div>
+        </div>
+        <div class="tool-body">
+          <div class="tool-head">
+            <div class="tool-icon"><i class="fa-solid fa-images"></i></div>
+            <h3>Visual Pulse Mood Board</h3>
+          </div>
+          <p>Transforms document subjects into a live visual mood-board gallery searched from the web.</p>
+          <ul class="tool-list">
+            <li><i class="fa-solid fa-circle"></i>Generates clean image-driven galleries</li>
+            <li><i class="fa-solid fa-circle"></i>Pairs text-based data with visual context</li>
+            <li><i class="fa-solid fa-circle"></i>Supports PDF downloads for visual reports</li>
           </ul>
         </div>
       </div>

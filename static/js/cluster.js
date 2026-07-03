@@ -432,8 +432,6 @@ const ClusterUniverse = (() => {
     function open() {
         _inject();
         document.getElementById("cuOverlay").classList.add("cu-active");
-        // Auto-load on first open
-        if (_lastFetchKey === null) load(true);
     }
 
     function close() {

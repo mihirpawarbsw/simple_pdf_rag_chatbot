@@ -1,4 +1,4 @@
-# Flask calls
+# Flask call
 flask
 python-dotenv
 gunicorn

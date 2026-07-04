@@ -148,57 +148,16 @@ def _save_embed_cache(cache: dict) -> None:
         json.dump(cache, f)
 
 
-def is_already_embedded(file_hash: str, username: str | None = None) -> bool:
-    """
-    Ground-truth check: does the vector store *actually* contain chunks
-    for this exact file content (optionally scoped to one user)?
-
-    IMPORTANT: this used to just check embed_cache.json — a side-cache
-    that can drift out of sync with the real vector store (e.g. if
-    chroma_db/ is ever deleted/reset, or restored from a different git
-    state than chat_history.db). When that happens, the cache still says
-    "already embedded" even though Chroma is empty, so nothing ever gets
-    re-indexed and every query returns "document not found".
-
-    Checking Chroma directly makes this self-healing: if the collection
-    or the vectors for this hash don't exist, we correctly report
-    "not embedded" and the caller will (re-)ingest.
-    """
-    try:
-        client = chromadb.PersistentClient(path=CHROMA_PATH)
-        col    = client.get_collection(CHROMA_COLLECTION)
-    except Exception:
-        # Collection doesn't exist yet (e.g. chroma_db/ was wiped) → nothing embedded.
-        return False
-
-    where = {"file_hash": file_hash}
-    if username:
-        where = {"$and": [{"file_hash": file_hash}, {"username": username}]}
-
-    try:
-        results = col.get(where=where, limit=1)
-        return len(results.get("ids", [])) > 0
-    except Exception:
-        return False
+def is_already_embedded(file_hash: str) -> bool:
+    """Return True if this exact file hash has been embedded before."""
+    return file_hash in _load_embed_cache()
 
 
 def mark_as_embedded(file_hash: str, filename: str) -> None:
-    """
-    Record that this file hash has been indexed. Kept only as a
-    lightweight diagnostic log now — it is no longer used to decide
-    whether to (re-)embed a file; see is_already_embedded() above.
-    """
+    """Record that this file hash has been indexed."""
     cache = _load_embed_cache()
     cache[file_hash] = {"filename": filename, "indexed_at": datetime.utcnow().isoformat()}
     _save_embed_cache(cache)
-
-
-def remove_from_embed_cache(file_hash: str) -> None:
-    """Drop a stale entry from the diagnostic embed cache (e.g. on file delete)."""
-    cache = _load_embed_cache()
-    if file_hash in cache:
-        del cache[file_hash]
-        _save_embed_cache(cache)
 
 
 # ============================================================
@@ -487,9 +446,9 @@ def ingest_document(
     """
     file_hash = compute_file_hash(filepath)
 
-    # --- Duplicate guard (same hash, ALREADY present in Chroma for this user) ---
-    if not force_reindex and is_already_embedded(file_hash, username):
-        print(f"[Ingest] {filename} already indexed in Chroma for {username} (hash match). Skipping.")
+    # --- Duplicate guard (same hash, already indexed) ---
+    if not force_reindex and is_already_embedded(file_hash):
+        print(f"[Ingest] {filename} already indexed (hash match). Skipping.")
         return {"status": "skipped", "reason": "duplicate", "chunk_count": 0}
 
     # --- Version: remove stale vectors if filename exists ---

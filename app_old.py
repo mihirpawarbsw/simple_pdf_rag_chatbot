@@ -34,7 +34,6 @@ from rag_logic import (
     ingest_document,
     compute_file_hash,
     is_already_embedded,
-    remove_from_embed_cache,
     version_document,
     # Retrieval
     hybrid_search,
@@ -520,21 +519,13 @@ def upload_files():
 
         if existing:
             old_hash = existing[1]
-            # NOTE: matching hashes in SQLite does NOT mean the vectors still
-            # exist in Chroma — e.g. after `chroma_db/` gets wiped/reset
-            # (git pull conflict, manual delete, etc.) the DB row survives
-            # but the vector store is empty. Trusting the hash alone here
-            # was exactly why re-uploads got silently skipped as "duplicate"
-            # and every query then failed with "document not found".
-            # is_already_embedded() now checks Chroma itself, so this is
-            # self-healing regardless of how chroma_db/ got out of sync.
-            if old_hash == file_hash and is_already_embedded(file_hash, username):
-                # Same file content AND still actually indexed — truly duplicate
+            if old_hash == file_hash:
+                # Same file content — truly duplicate
                 results.append({"filename": filename, "status": "duplicate"})
                 continue
             else:
-                reason = "new version" if old_hash != file_hash else "vectors missing from Chroma"
-                print(f"[Upload] Re-indexing {filename} ({reason})")
+                # New version of an existing file — re-index
+                print(f"[Upload] New version of {filename} detected — re-indexing")
                 cursor.execute(
                     "DELETE FROM uploaded_files WHERE username = ? AND filename = ?",
                     (username, filename)
@@ -827,20 +818,6 @@ def delete_file():
     conn     = sqlite3.connect(DB_NAME)
     cursor   = conn.cursor()
 
-    # Look up the ACTUAL stored path(s) + hash(es) BEFORE deleting the row.
-    # Reconstructing the path as f"{username}_{filename}" from whatever the
-    # client sent (previous version of this route) silently failed to match
-    # the file on disk whenever the request filename wasn't byte-identical
-    # to the secure_filename() result stored at upload time — so the DB row
-    # disappeared but the file sat in uploads/ forever. Reading the stored
-    # `filepath` column is exact, so this can no longer drift.
-    cursor.execute(
-        "SELECT filepath, file_hash FROM uploaded_files "
-        "WHERE username = ? AND TRIM(filename) = TRIM(?)",
-        (username, filename)
-    )
-    rows = cursor.fetchall()
-
     cursor.execute(
         "DELETE FROM uploaded_files WHERE username = ? AND TRIM(filename) = TRIM(?)",
         (username, filename)
@@ -848,61 +825,26 @@ def delete_file():
     conn.commit()
     conn.close()
 
-    # ── Delete physical file(s) ────────────────────────────────────────
-    candidate_paths = {row[0] for row in rows if row[0]}
-    # Fallbacks for older rows that predate the `filepath` column / migrations
-    candidate_paths.add(os.path.join(UPLOAD_FOLDER, f"{username}_{filename}"))
-    candidate_paths.add(os.path.join(UPLOAD_FOLDER, f"{username}_{secure_filename(filename)}"))
+    # Delete physical file
+    filepath = os.path.join(UPLOAD_FOLDER, f"{username}_{filename}")
+    if os.path.exists(filepath):
+        os.remove(filepath)
 
-    removed_paths = []
-    for path in candidate_paths:
-        try:
-            if path and os.path.exists(path):
-                os.remove(path)
-                removed_paths.append(path)
-        except Exception as e:
-            print(f"[Delete] Could not remove {path}: {e}")
-
-    if not removed_paths:
-        print(f"[Delete] Warning: no physical file found on disk for '{filename}' (user={username})")
-
-    # ── Delete vectors from shared collection ──────────────────────────
+    # Delete vectors from shared collection (filter by username + source)
     try:
         client = chromadb.PersistentClient(path=CHROMA_PATH)
         col    = client.get_collection(CHROMA_COLLECTION)
-
         results = col.get(
             where={"$and": [{"username": username}, {"source": filename}]}
         )
-        ids = set(results.get("ids", []))
-
-        # Belt-and-braces: also catch any chunks by file_hash, in case
-        # the `source` metadata ever drifts from the display filename.
-        for _, file_hash in rows:
-            if file_hash:
-                extra = col.get(
-                    where={"$and": [{"username": username}, {"file_hash": file_hash}]}
-                )
-                ids.update(extra.get("ids", []))
-
+        ids = results.get("ids", [])
         if ids:
-            col.delete(ids=list(ids))
+            col.delete(ids=ids)
             print(f"[Delete] Removed {len(ids)} vectors for {filename}")
-
-        # Clean up the diagnostic embed cache too, so it can't ever mask
-        # a fresh re-upload of a file that was deleted then re-added.
-        for _, file_hash in rows:
-            if file_hash:
-                remove_from_embed_cache(file_hash)
-
     except Exception as e:
         print(f"[Delete] Vector error: {e}")
 
-    return jsonify({
-        "status":        "success",
-        "message":       "File deleted successfully",
-        "files_removed": removed_paths
-    })
+    return jsonify({"status": "success", "message": "File deleted successfully"})
 
 
 # ─────────────────────────────────────────────────────────────────────────────

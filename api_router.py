@@ -7,15 +7,21 @@ Usage (replace every direct ChatGroq / get_llm call):
     from api_router import get_routed_llm, call_llm_with_fallback
 
 Key pool is read from environment variables at startup:
-    GROQ_API_KEY           — primary key  (general use)
+    GROQ_API_KEY             — primary key  (general use)
     GROQ_API_KEY_FULL_REPORT — secondary key  (reports)
-    GROQ_UPLOAD_API        — tertiary key   (upload / ingest helpers)
+    GROQ_UPLOAD_API          — tertiary key   (upload / ingest helpers)
+    GROQ_API_KEYS            — optional CSV of any number of additional
+                               Groq keys, e.g. from other accounts:
+                               GROQ_API_KEYS="gsk_acct2_xxx,gsk_acct3_xxx"
     INSIGHTS_GEMINI_API_KEY — Gemini flash  (fallback when Groq 429s)
     GEMINI_API_KEY          — Gemini flash  (second Gemini fallback)
 
 The router:
-  1. Tries each Groq key in round-robin until one succeeds.
-  2. If ALL Groq keys are rate-limited → falls back to Gemini Flash.
+  1. Tries EVERY Groq key (round-robin / in order) until one succeeds.
+     Because keys may belong to different Groq accounts, a daily-quota
+     error on one key does NOT stop the router from trying the rest —
+     it only means that particular key/account is exhausted for today.
+  2. Only after ALL Groq keys have failed does it fall back to Gemini Flash.
   3. Surfaces the original exception only when every provider fails.
 
 Drop-in replacement for rag_logic.get_llm():
@@ -39,12 +45,20 @@ logger = logging.getLogger(__name__)
 # ─── Key pools ───────────────────────────────────────────────────────────────
 
 def _groq_keys() -> list[str]:
-    """Return all configured Groq API keys (non-empty, deduplicated)."""
+    """
+    Return all configured Groq API keys (non-empty, deduplicated).
+
+    Supports both the original named env vars AND an open-ended CSV list
+    (GROQ_API_KEYS) so you can add keys from as many different Groq
+    accounts as you want without touching code.
+    """
     candidates = [
         os.getenv("GROQ_API_KEY", ""),
         os.getenv("GROQ_API_KEY_FULL_REPORT", ""),
         os.getenv("GROQ_UPLOAD_API", ""),
     ]
+    candidates += [k.strip() for k in os.getenv("GROQ_API_KEYS", "").split(",")]
+
     seen, keys = set(), []
     for k in candidates:
         k = k.strip()
@@ -103,7 +117,7 @@ def _make_gemini_llm(api_key: str, settings: dict):
     try:
         from langchain_google_genai import ChatGoogleGenerativeAI
         return ChatGoogleGenerativeAI(
-            model="gemini-1.5-flash",
+            model="gemini-2.5-flash",
             google_api_key=api_key,
             temperature=settings.get("temperature", 0.0),
             max_output_tokens=settings.get("max_tokens", 1024),
@@ -167,15 +181,16 @@ def call_llm_with_fallback(
             all_errors.append(f"Groq[{attempt}]: {err[:120]}")
             if _is_rate_limit(err):
                 if _is_daily_quota(err):
-                    # Org-level daily token quota — ALL Groq keys under this
-                    # account share the same pool, so rotating keys (or
-                    # sleeping and retrying) cannot possibly help. Skip
-                    # straight to Gemini instead of burning request time.
+                    # This key's daily token quota is exhausted. Keys can
+                    # belong to DIFFERENT Groq accounts, so this tells us
+                    # nothing about the other keys' quotas — just move on
+                    # to the next key instead of giving up on Groq entirely.
                     logger.warning(
-                        "Groq daily token quota exhausted (org-wide) — "
-                        "skipping remaining Groq keys, falling back to Gemini"
+                        "Groq key #%d hit its daily token quota — "
+                        "trying next Groq key (if any)",
+                        attempt
                     )
-                    break
+                    continue
                 logger.warning(
                     "Groq 429 on key #%d — waiting %.1fs before next key",
                     attempt, retry_delay

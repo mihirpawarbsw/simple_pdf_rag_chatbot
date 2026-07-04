@@ -2773,28 +2773,22 @@ body.light-mode .features-dropdown .toolbar-btn:hover {
 .nexora-spinner {
     display: inline-block;
     vertical-align: middle;
-    border-radius: 50%;
-    animation: nexoraSpin 0.8s linear infinite;
     box-sizing: border-box;
+    background-image: url('../images/Brain.gif');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 .nexora-spinner.inline {
-    width: 14px;
-    height: 14px;
-    border: 2px solid var(--accent-glow-soft);
-    border-top-color: var(--accent);
+    width: 24px;
+    height: 24px;
     margin-right: 6px;
 }
 
 .nexora-spinner.large {
-    width: 40px;
-    height: 40px;
-    border: 3px solid var(--accent-glow-soft);
-    border-top-color: var(--accent);
-}
-
-@keyframes nexoraSpin {
-    to { transform: rotate(360deg); }
+    width: 80px;
+    height: 80px;
 }
 
 /* Action Tracker Filter select option overrides to guarantee text visibility */

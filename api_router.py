@@ -141,7 +141,7 @@ def call_llm_with_fallback(
     settings: dict,
     *,
     max_retries: int = 3,
-    retry_delay: float = 2.0,
+    retry_delay: float = 0.5,
 ) -> str:
     """
     Invoke the LLM with automatic key rotation on 429 / RateLimitError.
@@ -166,6 +166,16 @@ def call_llm_with_fallback(
             err = str(e)
             all_errors.append(f"Groq[{attempt}]: {err[:120]}")
             if _is_rate_limit(err):
+                if _is_daily_quota(err):
+                    # Org-level daily token quota — ALL Groq keys under this
+                    # account share the same pool, so rotating keys (or
+                    # sleeping and retrying) cannot possibly help. Skip
+                    # straight to Gemini instead of burning request time.
+                    logger.warning(
+                        "Groq daily token quota exhausted (org-wide) — "
+                        "skipping remaining Groq keys, falling back to Gemini"
+                    )
+                    break
                 logger.warning(
                     "Groq 429 on key #%d — waiting %.1fs before next key",
                     attempt, retry_delay
@@ -241,3 +251,16 @@ def _is_rate_limit(error_str: str) -> bool:
         "rate_limit", "rate limit", "429", "too many requests",
         "ratelimiterror", "quota", "resource_exhausted",
     ))
+
+
+def _is_daily_quota(error_str: str) -> bool:
+    """
+    True for org-wide DAILY token-quota errors (TPD), as opposed to a
+    transient per-minute/per-second rate limit (RPM/TPM). Daily quota
+    errors are shared across every key in the same Groq org, so retrying
+    with a different key from the pool is pointless until the quota resets
+    (Groq reports the reset time in the error, often 5-10+ minutes away —
+    far longer than any web request should block for).
+    """
+    lower = error_str.lower()
+    return "tokens per day" in lower or "tpd" in lower

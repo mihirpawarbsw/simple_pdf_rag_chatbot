@@ -315,8 +315,10 @@
         <!-- Logo -->
         <div class="sidebar-top">
             <div class="logo">
-                <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora.AI" class="logo-full sidebar-text">
-                <img src="{{ url_for('static', filename='images/logo_nexora_icon.png') }}" alt="Nexora.AI" class="logo-icon">
+                <div class="logo-badge">
+                    <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora.AI" class="logo-full sidebar-text">
+                    <img src="{{ url_for('static', filename='images/logo_nexora_icon.png') }}" alt="Nexora.AI" class="logo-icon">
+                </div>
             </div>
         </div>
 
@@ -357,47 +359,65 @@
             <!-- Category: EXPLORE FEATURES -->
             <div class="nav-category">
                 <span class="category-title">Explore Features</span>
-                <button class="nav-item" id="nav-nlp" onclick="openFeatureInWorkspace('NLP Analytics', () => NLPAnalytics.open())" title="NLP Analytics Suite">
-                    <i class="fa-solid fa-flask-vial"></i>
-                    <span class="sidebar-text">NLP Analytics</span>
-                </button>
-                <!--
-                <button class="nav-item" id="nav-mindmap" onclick="openFeatureInWorkspace('Mind Map', () => MindMap.open())" title="Interactive Mind Map">
+
+                <!-- Subheader: Intelligence -->
+                <div class="sidebar-subheader">
                     <i class="fa-solid fa-brain"></i>
-                    <span class="sidebar-text">Mind Map</span>
-                </button>
-                -->
-                <button class="nav-item" id="nav-kg" onclick="openFeatureInWorkspace('Knowledge Graph', () => KnowledgeGraph.open())" title="Knowledge Graph">
-                    <i class="fa-solid fa-diagram-project"></i>
-                    <span class="sidebar-text">Knowledge Graph</span>
-                </button>
-                <button class="nav-item" id="nav-cluster" onclick="openFeatureInWorkspace('Cluster Universe', () => ClusterUniverse.open())" title="Cluster Universe">
-                    <i class="fa-solid fa-circle-nodes"></i>
-                    <span class="sidebar-text">Cluster Universe</span>
-                </button>
-                <button class="nav-item" id="nav-action" onclick="openFeatureInWorkspace('Action Tracker', () => ActionTracker.open())" title="Action Items & Decision Tracker">
-                    <i class="fa-solid fa-circle-check"></i>
-                    <span class="sidebar-text">Action Tracker</span>
-                </button>
-                <button class="nav-item" id="nav-report" onclick="openFeatureInWorkspace('Executive Report', () => openReportModal())" title="Generate Full Report from Documents">
+                    <span class="sidebar-text">Intelligence</span>
+                </div>
+                <button class="nav-item nav-sub-item" id="nav-report" onclick="openFeatureInWorkspace('Executive Report', () => openReportModal())" title="Generate Full Report from Documents">
                     <i class="fa-solid fa-file-invoice"></i>
                     <span class="sidebar-text">Executive Report</span>
                 </button>
-                <button class="nav-item" id="nav-trendlens" onclick="openFeatureInWorkspace('TrendLens', () => WebAugmentor.open())" title="Web-Grounded Intelligence Report">
+                <button class="nav-item nav-sub-item" id="nav-action" onclick="openFeatureInWorkspace('Action Tracker', () => ActionTracker.open())" title="Action Items & Decision Tracker">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span class="sidebar-text">Action Tracker</span>
+                </button>
+                <button class="nav-item nav-sub-item" id="nav-trendlens" onclick="openFeatureInWorkspace('TrendLens', () => WebAugmentor.open())" title="Web-Grounded Intelligence Report">
                     <i class="fa-solid fa-globe"></i>
                     <span class="sidebar-text">TrendLens</span>
                 </button>
-                <button class="nav-item" id="nav-timeline" onclick="openFeatureInWorkspace('TimelineWeave', () => TimelineWeave.open())" title="Timeline Weave Report">
+
+                <!-- Subheader: Knowledge Discovery -->
+                <div class="sidebar-subheader">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i>
+                    <span class="sidebar-text">Knowledge Discovery</span>
+                </div>
+                <button class="nav-item nav-sub-item" id="nav-kg" onclick="openFeatureInWorkspace('Knowledge Graph', () => KnowledgeGraph.open())" title="Knowledge Graph">
+                    <i class="fa-solid fa-diagram-project"></i>
+                    <span class="sidebar-text">Knowledge Graph</span>
+                </button>
+                <button class="nav-item nav-sub-item" id="nav-cluster" onclick="openFeatureInWorkspace('Cluster Universe', () => ClusterUniverse.open())" title="Cluster Universe">
+                    <i class="fa-solid fa-circle-nodes"></i>
+                    <span class="sidebar-text">Cluster Universe</span>
+                </button>
+                <button class="nav-item nav-sub-item" id="nav-timeline" onclick="openFeatureInWorkspace('TimelineWeave', () => TimelineWeave.open())" title="Timeline Weave Report">
                     <i class="fa-solid fa-timeline"></i>
                     <span class="sidebar-text">TimelineWeave</span>
                 </button>
-                <button class="nav-item" id="nav-pulse" onclick="openFeatureInWorkspace('VisualPulse', () => VisualPulse.open())" title="Visual Pulse Mood Board">
+
+                <!-- Subheader: Visual Analytics -->
+                <div class="sidebar-subheader">
+                    <i class="fa-solid fa-chart-column"></i>
+                    <span class="sidebar-text">Visual Analytics</span>
+                </div>
+                <button class="nav-item nav-sub-item" id="nav-pulse" onclick="openFeatureInWorkspace('VisualPulse', () => VisualPulse.open())" title="Visual Pulse Mood Board">
                     <i class="fa-solid fa-images"></i>
                     <span class="sidebar-text">Visual Pulse</span>
                 </button>
-                <button class="nav-item" id="nav-grid" onclick="openFeatureInWorkspace('PulseGrid', () => PulseGrid.open())" title="StatSonar Heatmap">
+                <button class="nav-item nav-sub-item" id="nav-grid" onclick="openFeatureInWorkspace('PulseGrid', () => PulseGrid.open())" title="StatSonar Heatmap">
                     <i class="fa-solid fa-chart-pie"></i>
                     <span class="sidebar-text">StatSonar</span>
+                </button>
+
+                <!-- Subheader: Advanced Analytics -->
+                <div class="sidebar-subheader">
+                    <i class="fa-solid fa-gears"></i>
+                    <span class="sidebar-text">Advanced Analytics</span>
+                </div>
+                <button class="nav-item nav-sub-item" id="nav-nlp" onclick="openFeatureInWorkspace('LexiScope', () => NLPAnalytics.open())" title="LexiScope Suite">
+                    <i class="fa-solid fa-flask-vial"></i>
+                    <span class="sidebar-text">LexiScope</span>
                 </button>
             </div>
 
@@ -420,6 +440,11 @@
 
             <div class="top-controls">
                 <input type="hidden" id="languageSelector" value="English">
+                
+                <!-- User Greeting -->
+                <div class="user-greeting-header">
+                    Hello <span class="user-name-gradient">{{ username }}</span>
+                </div>
                 
                 <!-- User Guide & FAQ Button -->
                 <button id="guideBtn" class="explore-btn" onclick="showGuideInCenter()" title="System Guide & FAQ">
@@ -562,54 +587,74 @@
                                     <li><strong>Upload Your Documents:</strong> Click the "Upload Files" area in the sidebar to upload PDFs or text documents. Once uploaded, the files are parsed and indexed semantically.</li>
                                     <li><strong>Ask Questions (RAG QA):</strong> Use the primary chat companion interface to type questions. Nexora will search across all uploaded files, fetch the most relevant paragraphs, and generate an answer citing the sources.</li>
                                     <li><strong>Inspect Citations:</strong> Click the highlighted source badge on any response to open the "Source Context Inspector" and read the exact source paragraphs.</li>
-                                    <li><strong>Explore Analytics Features:</strong> Click the "Explore Features" dropdown at the top to access specialized tools like NLP Analytics, Mind Map, Knowledge Graph, Cluster Universe, and Action Item Tracker.</li>
+                                    <li><strong>Explore Analytics Features:</strong> Click the "Explore Features" dropdown at the top to access specialized tools like LexiScope, Mind Map, Knowledge Graph, Cluster Universe, and Action Item Tracker.</li>
                                 </ol>
                             </div>
                             
                             <div style="border-top: 1px solid var(--border); padding-top: 16px;">
-                                <h4 style="margin: 0 0 10px; font-family: var(--font-display); font-size: 0.98rem; color: var(--text-primary);"><i class="fa-solid fa-cubes" style="color: var(--accent); margin-right: 6px;"></i> Explore Features in Detail</h4>
-                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px;">
-                                    <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
-                                        <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-flask-vial"></i> NLP Analytics Suite</strong>
-                                        <span style="font-size: 0.8rem; display: block;">Analyzes text to extract overall emotional sentiment, create word clouds of frequent keywords, discover main topics, identify keyphrases, extract named entities (people/places/dates), and calculate readability scores.</span>
+                                <h4 style="margin: 0 0 16px; font-family: var(--font-display); font-size: 0.98rem; color: var(--text-primary);"><i class="fa-solid fa-cubes" style="color: var(--accent); margin-right: 6px;"></i> Explore Features in Detail</h4>
+                                
+                                <!-- Group: Intelligence -->
+                                <div style="margin-bottom: 20px;">
+                                    <h5 style="margin: 0 0 10px 4px; font-family: var(--font-display); font-size: 0.85rem; color: var(--sidebar-accent, #818cf8); display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.5px;"><i class="fa-solid fa-brain"></i> Intelligence</h5>
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px;">
+                                        <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
+                                            <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-file-invoice"></i> Executive Report</strong>
+                                            <span style="font-size: 0.8rem; display: block;">Compiles and generates a comprehensive, AI-written PDF or DOCX report summarising all findings, insights, and key metrics from the selected set of documents.</span>
+                                        </div>
+                                        <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
+                                            <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-circle-check"></i> Action Item &amp; Decision Tracker</strong>
+                                            <span style="font-size: 0.8rem; display: block;">Scans documents using AI to automatically identify hidden action items, deadlines, owners, and decisions, organizing them inside a fully operational Kanban board.</span>
+                                        </div>
+                                        <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
+                                            <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-earth-americas"></i> TrendLens</strong>
+                                            <span style="font-size: 0.8rem; display: block;">Compares your documents against live web intelligence—news, tweets, reviews, research, and trends—providing a "Doc vs. World" verification report that can be exported as a PDF.</span>
+                                        </div>
                                     </div>
-                                    <!--
-                                    <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
-                                        <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-brain"></i> Interactive Mind Map</strong>
-                                        <span style="font-size: 0.8rem; display: block;">Builds a hierarchical, branching tree structure of topics discovered in your documents. Clicking any branch expands it and opens a side pane showing detail summaries, keywords, and citations.</span>
+                                </div>
+                                
+                                <!-- Group: Knowledge Discovery -->
+                                <div style="margin-bottom: 20px;">
+                                    <h5 style="margin: 0 0 10px 4px; font-family: var(--font-display); font-size: 0.85rem; color: var(--sidebar-accent, #818cf8); display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.5px;"><i class="fa-solid fa-magnifying-glass-chart"></i> Knowledge Discovery</h5>
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px;">
+                                        <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
+                                            <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-diagram-project"></i> Knowledge Graph</strong>
+                                            <span style="font-size: 0.8rem; display: block;">Visualizes connections between concepts, entities, and source documents in a dynamic force-directed network. Helps pinpoint key relationships across separate files.</span>
+                                        </div>
+                                        <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
+                                            <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-circle-nodes"></i> Cluster Universe</strong>
+                                            <span style="font-size: 0.8rem; display: block;">Embeds your files into a 2D coordinate space based on semantic meaning. Nearby points represent documents with similar context, giving you a bird's-eye view of your entire dataset.</span>
+                                        </div>
+                                        <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
+                                            <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-timeline"></i> TimelineWeave</strong>
+                                            <span style="font-size: 0.8rem; display: block;">Plots your document's topics chronologically against real-world events sourced live from the web, weaving dates, news, and research into a structured timeline report.</span>
+                                        </div>
                                     </div>
-                                    -->
-                                    <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
-                                        <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-diagram-project"></i> Knowledge Graph</strong>
-                                        <span style="font-size: 0.8rem; display: block;">Visualizes connections between concepts, entities, and source documents in a dynamic force-directed network. Helps pinpoint key relationships across separate files.</span>
+                                </div>
+                                
+                                <!-- Group: Visual Analytics -->
+                                <div style="margin-bottom: 20px;">
+                                    <h5 style="margin: 0 0 10px 4px; font-family: var(--font-display); font-size: 0.85rem; color: var(--sidebar-accent, #818cf8); display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.5px;"><i class="fa-solid fa-chart-column"></i> Visual Analytics</h5>
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px;">
+                                        <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
+                                            <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-images"></i> Visual Pulse</strong>
+                                            <span style="font-size: 0.8rem; display: block;">Turns your document's core concepts and topics into a live, visual mood-board gallery sourced fresh from the web.</span>
+                                        </div>
+                                        <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
+                                            <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-chart-pie"></i> StatSonar</strong>
+                                            <span style="font-size: 0.8rem; display: block;">Displays live statistical big-number cards, cross-source sparkline charts, and a source-credibility heatmap, counting and grouping references directly.</span>
+                                        </div>
                                     </div>
-                                    <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
-                                        <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-circle-nodes"></i> Cluster Universe</strong>
-                                        <span style="font-size: 0.8rem; display: block;">Embeds your files into a 2D coordinate space based on semantic meaning. Nearby points represent documents with similar context, giving you a bird's-eye view of your entire dataset.</span>
-                                    </div>
-                                    <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
-                                        <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-circle-check"></i> Action Item &amp; Decision Tracker</strong>
-                                        <span style="font-size: 0.8rem; display: block;">Scans documents using AI to automatically identify hidden action items, deadlines, owners, and decisions, organizing them inside a fully operational Kanban board.</span>
-                                    </div>
-                                    <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
-                                        <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-file-invoice"></i> Executive Report</strong>
-                                        <span style="font-size: 0.8rem; display: block;">Compiles and generates a comprehensive, AI-written PDF or DOCX report summarising all findings, insights, and key metrics from the selected set of documents.</span>
-                                    </div>
-                                    <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
-                                        <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-earth-americas"></i> TrendLens</strong>
-                                        <span style="font-size: 0.8rem; display: block;">Compares your documents against live web intelligence—news, tweets, reviews, research, and trends—providing a "Doc vs. World" verification report that can be exported as a PDF.</span>
-                                    </div>
-                                    <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
-                                        <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-timeline"></i> TimelineWeave</strong>
-                                        <span style="font-size: 0.8rem; display: block;">Plots your document's topics chronologically against real-world events sourced live from the web, weaving dates, news, and research into a structured timeline report.</span>
-                                    </div>
-                                    <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
-                                        <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-images"></i> Visual Pulse</strong>
-                                        <span style="font-size: 0.8rem; display: block;">Turns your document's core concepts and topics into a live, visual mood-board gallery sourced fresh from the web.</span>
-                                    </div>
-                                    <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
-                                        <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-chart-pie"></i> StatSonar</strong>
-                                        <span style="font-size: 0.8rem; display: block;">Displays live statistical big-number cards, cross-source sparkline charts, and a source-credibility heatmap, counting and grouping references directly.</span>
+                                </div>
+                                
+                                <!-- Group: Advanced Analytics -->
+                                <div>
+                                    <h5 style="margin: 0 0 10px 4px; font-family: var(--font-display); font-size: 0.85rem; color: var(--sidebar-accent, #818cf8); display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.5px;"><i class="fa-solid fa-gears"></i> Advanced Analytics</h5>
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px;">
+                                        <div style="background: var(--bg-glass); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
+                                            <strong style="color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 4px;"><i class="fa-solid fa-flask-vial"></i> LexiScope Suite</strong>
+                                            <span style="font-size: 0.8rem; display: block;">Analyzes text to extract overall emotional sentiment, create word clouds of frequent keywords, discover main topics, identify keyphrases, extract named entities (people/places/dates), and calculate readability scores.</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -733,7 +778,10 @@
         <div class="setting-group">
             <label for="themeSelector">Color Theme</label>
             <select id="themeSelector" onchange="handleThemeChange(this.value)" title="Choose Color Theme">
-                <option value="midnight">Classic Midnight</option>
+                <option value="cyberpunk">Cyberpunk Neon</option>
+                <option value="bubblegum">Bubblegum Pop</option>
+                <option value="tokyosunset">Tokyo Sunset</option>
+                <option value="acidlime">Acid Lime</option>
                 <option value="emerald">Neo Indigo</option>
                 <option value="amber">Obsidian Amber</option>
                 <option value="rose">Sunset Rose</option>
@@ -855,6 +903,17 @@
         }
     }
 
+    function closeChatHistory() {
+        const historyList = document.getElementById("chatHistoryList");
+        const toggleBtn = document.getElementById("nav-toggle-history");
+        if (historyList) {
+            historyList.style.display = "none";
+            if (toggleBtn) {
+                toggleBtn.classList.remove("active");
+            }
+        }
+    }
+
     /* ---- Typing Effect System ---- */
     let typeQueue = [];
     let isTyping = false;
@@ -950,7 +1009,11 @@
 
     /* ---- Theme / Mode ---- */
     function changeTheme(theme){
-        document.body.classList.remove('theme-midnight', 'theme-emerald', 'theme-amber', 'theme-rose', 'theme-aurora', 'theme-amazon');
+        document.body.className.split(' ').forEach(c => {
+            if (c.startsWith('theme-')) {
+                document.body.classList.remove(c);
+            }
+        });
         document.body.classList.add(`theme-${theme}`);
         localStorage.setItem("theme", theme);
         
@@ -974,12 +1037,18 @@
         const emojiEl = document.getElementById("greetingEmoji");
         if (emojiEl) {
             let iconHtml = '<i class="fa-solid fa-wand-magic-sparkles"></i>';
-            if (theme === "midnight") {
-                iconHtml = '<i class="fa-solid fa-moon"></i>';
+            if (theme === "cyberpunk") {
+                iconHtml = '<i class="fa-solid fa-robot"></i>';
+            } else if (theme === "bubblegum") {
+                iconHtml = '<i class="fa-solid fa-candy-cane"></i>';
+            } else if (theme === "tokyosunset") {
+                iconHtml = '<i class="fa-solid fa-city"></i>';
+            } else if (theme === "acidlime") {
+                iconHtml = '<i class="fa-solid fa-lemon"></i>';
             } else if (theme === "emerald") {
                 iconHtml = '<i class="fa-solid fa-gem"></i>';
             } else if (theme === "amber") {
-                iconHtml = '<i class="fa-solid fa-bolt"></i>';
+                iconHtml = '<i class="fa-solid fa-fire"></i>';
             } else if (theme === "rose") {
                 iconHtml = '<i class="fa-solid fa-feather-pointed"></i>';
             } else if (theme === "aurora") {
@@ -1166,7 +1235,7 @@
                 <p class="greeting-sub">Welcome to Nexora.AI</p>
                 <p class="greeting-tagline">Nexora.AI is an advanced enterprise intelligence workspace that dynamically transforms unstructured data into semantic QA engines, interactive knowledge graphs, and automated action trackers. Simply upload your documentation to instantly activate real-time cognitive analytics, dynamic clustering, and structured executive reporting.</p>
             </div>`;
-        updateGreetingEmoji(localStorage.getItem("theme") || "midnight");
+        updateGreetingEmoji(localStorage.getItem("theme") || "cyberpunk");
         document.getElementById("starterSuggestions").style.display = "flex";
         document.getElementById("uploadStatus").innerText = "";
         document.getElementById("pdfFiles").value = "";
@@ -1437,7 +1506,7 @@
         if (faqOverlay) faqOverlay.style.display = "none";
 
         // Set active nav item in sidebar
-        if (featureName === 'NLP Analytics') setActiveNavItem('nav-nlp');
+        if (featureName === 'LexiScope') setActiveNavItem('nav-nlp');
         else if (featureName === 'Mind Map') setActiveNavItem('nav-mindmap');
         else if (featureName === 'Knowledge Graph') setActiveNavItem('nav-kg');
         else if (featureName === 'Cluster Universe') setActiveNavItem('nav-cluster');
@@ -1779,6 +1848,7 @@
     async function loadChatMessages(chatSessionId){
         if(isGenerating) return;
         try { backToChatbot(); } catch(e){}
+        try { closeChatHistory(); } catch(e){}
         session_id = chatSessionId;
         const messagesDiv = document.getElementById("messages");
         messagesDiv.innerHTML = `<div class="loading-messages"><span class="nexora-spinner inline"></span> Loading chat session…</div>`;
@@ -1807,7 +1877,7 @@
                         <p class="greeting-sub">Welcome to Nexora.AI</p>
                         <p class="greeting-tagline">Nexora.AI is an advanced enterprise intelligence workspace that dynamically transforms unstructured data into semantic QA engines, interactive knowledge graphs, and automated action trackers. Simply upload your documentation to instantly activate real-time cognitive analytics, dynamic clustering, and structured executive reporting.</p>
                     </div>`;
-                updateGreetingEmoji(localStorage.getItem("theme") || "midnight");
+                updateGreetingEmoji(localStorage.getItem("theme") || "cyberpunk");
                 document.getElementById("starterSuggestions").style.display = "flex";
             }
             loadChats();
@@ -1937,7 +2007,7 @@
         loadUserDocuments();
         
         // Initialize Theme Selection
-        const savedTheme = localStorage.getItem("theme") || "midnight";
+        const savedTheme = localStorage.getItem("theme") || "cyberpunk";
         changeTheme(savedTheme);
         
         // Initialize Light/Dark Mode
@@ -1946,6 +2016,13 @@
 
         // Initialize Analytics Background Canvas
         window.analyticsBg = new AnalyticsBackground('canvas-container');
+
+        // Close chat history automatically when clicking other sidebar items
+        document.querySelectorAll('.sidebar .nav-item').forEach(button => {
+            if (button.id !== 'nav-toggle-history') {
+                button.addEventListener('click', closeChatHistory);
+            }
+        });
     };
 </script>
 <!-- Upload Documents Modal Popup -->

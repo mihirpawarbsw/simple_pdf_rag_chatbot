@@ -27,126 +27,499 @@
 /* ==========================================
    1. THEME: MIDNIGHT CARBON (theme-midnight - Default Dark)
    ========================================== */
-body, body.theme-midnight {
-    --bg-base: radial-gradient(circle at 50% 50%, #171b22 0%, #0c1015 100%);
-    --bg-sidebar: linear-gradient(180deg, #0c1015 0%, #131820 100%);
-    --border-sidebar: rgba(255, 255, 255, 0.05);
+body, body.theme-cyberpunk {
+    --bg-base: linear-gradient(135deg, #0e0a1f 0%, #05070a 100%);
+    --bg-sidebar: linear-gradient(180deg, #ffffff 0%, #f4f0ff 100%);
+    --border-sidebar: rgba(255, 0, 127, 0.1);
     
-    --bg-glass: rgba(27, 33, 43, 0.4);
-    --bg-glass-deep: rgba(12, 16, 21, 0.95);
-    --border: rgba(255, 255, 255, 0.06);
-    --border-hover: rgba(129, 140, 248, 0.2);
+    --bg-glass: rgba(22, 11, 44, 0.4);
+    --bg-glass-deep: rgba(10, 5, 20, 0.96);
+    --border: rgba(0, 240, 255, 0.15);
+    --border-hover: rgba(255, 0, 127, 0.4);
     --text-primary: #f3f4f6;
-    --text-secondary: #9ca3af;
-    --text-muted: #6b7280;
-    --shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+    --text-secondary: #b3b9c9;
+    --text-muted: #687189;
+    --shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
 
-    --accent: #818cf8;
-    --accent-light: #a5b4fc;
-    --accent-deep: #4f46e5;
-    --accent-glow: rgba(129, 140, 248, 0.25);
-    --accent-glow-soft: rgba(129, 140, 248, 0.08);
-    --accent-bg: rgba(129, 140, 248, 0.05);
+    --accent: #00f0ff;
+    --accent-light: #80f7ff;
+    --accent-deep: #008b99;
+    --accent-glow: rgba(0, 240, 255, 0.25);
+    --accent-glow-soft: rgba(0, 240, 255, 0.08);
+    --accent-bg: rgba(0, 240, 255, 0.05);
     --accent-text: #f3f4f6;
 
-    --grad-primary: linear-gradient(135deg, #818cf8 0%, #4cc9f0 100%);
-    --grad-button: linear-gradient(135deg, #4f46e5 0%, #818cf8 100%);
-    --grad-button-hover: linear-gradient(135deg, #6366f1 0%, #a5b4fc 100%);
-    --grad-text: linear-gradient(135deg, #818cf8 0%, #34d399 100%);
-    --sidebar-border-glow: linear-gradient(180deg, #4f46e5, #818cf8, #34d399);
-    --blob-1-color: rgba(129, 140, 248, 0.06);
-    --blob-2-color: rgba(76, 201, 240, 0.04);
-    --blob-3-color: rgba(52, 211, 153, 0.04);
+    --grad-primary: linear-gradient(135deg, #ff007f 0%, #00f0ff 100%);
+    --grad-button: linear-gradient(135deg, #ff007f 0%, #7000ff 100%);
+    --grad-button-hover: linear-gradient(135deg, #00f0ff 0%, #ff007f 100%);
+    --grad-text: linear-gradient(135deg, #ff007f 0%, #00f0ff 100%);
+    --sidebar-border-glow: linear-gradient(180deg, #ff007f, #7000ff, #00f0ff);
+    --blob-1-color: rgba(255, 0, 127, 0.06);
+    --blob-2-color: rgba(0, 240, 255, 0.04);
+    --blob-3-color: rgba(112, 0, 255, 0.04);
 
-    --swal-bg: rgba(19, 24, 32, 0.98);
+    --swal-bg: rgba(10, 5, 20, 0.98);
     --swal-text: #f3f4f6;
-    --swal-border: rgba(129, 140, 248, 0.2);
-    --swal-btn-bg: linear-gradient(135deg, #4f46e5 0%, #818cf8 100%);
+    --swal-border: rgba(0, 240, 255, 0.2);
+    --swal-btn-bg: linear-gradient(135deg, #ff007f 0%, #7000ff 100%);
     --swal-btn-text: #ffffff;
 
-    --sidebar-bg: linear-gradient(180deg, #0c1015 0%, #131820 100%);
-    --sidebar-border: rgba(255, 255, 255, 0.05);
-    --sidebar-shadow: 4px 0 24px rgba(0, 0, 0, 0.2);
-    --sidebar-text-primary: #f3f4f6;
-    --sidebar-text-secondary: #9ca3af;
-    --sidebar-text-muted: #6b7280;
-    --sidebar-accent: #818cf8;
-    --sidebar-accent-bg: rgba(129, 140, 248, 0.06);
+    --sidebar-bg: linear-gradient(180deg, #ffffff 0%, #f4f0ff 100%);
+    --sidebar-border: rgba(255, 0, 127, 0.1);
+    --sidebar-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
+    --sidebar-text-primary: #1f1430;
+    --sidebar-text-secondary: #5c4d70;
+    --sidebar-text-muted: #9b8ea8;
+    --sidebar-accent: #ff007f;
+    --sidebar-accent-bg: rgba(255, 0, 127, 0.08);
 
-    --sidebar-bg-grad: linear-gradient(180deg, #0c1015 0%, #131820 100%);
-    --sidebar-text-color: rgba(255, 255, 255, 0.8);
-    --sidebar-text-muted-color: rgba(255, 255, 255, 0.4);
-    --sidebar-hover-bg: rgba(255, 255, 255, 0.05);
-    --sidebar-hover-icon-grad: linear-gradient(135deg, #4cc9f0 0%, #818cf8 100%);
-    --sidebar-active-bg-grad: linear-gradient(135deg, #4f46e5 0%, #818cf8 100%);
-    --sidebar-border-color: rgba(255, 255, 255, 0.05);
-    --chat-history-bg: #131820;
+    --sidebar-bg-grad: linear-gradient(180deg, #ffffff 0%, #f4f0ff 100%);
+    --sidebar-text-color: rgba(31, 20, 48, 0.8);
+    --sidebar-text-muted-color: rgba(31, 20, 48, 0.45);
+    --sidebar-hover-bg: rgba(255, 0, 127, 0.05);
+    --sidebar-hover-icon-grad: linear-gradient(135deg, #ff007f 0%, #00f0ff 100%);
+    --sidebar-active-bg-grad: linear-gradient(135deg, #ff007f 0%, #7000ff 100%);
+    --sidebar-border-color: rgba(255, 0, 127, 0.1);
+    --chat-history-bg: #fcedf6;
+
+    /* Claymorphism Shadow variables */
+    --clay-shadow: 10px 10px 30px rgba(0, 0, 0, 0.35), inset 3px 3px 6px rgba(255, 255, 255, 0.08), inset -3px -3px 6px rgba(0, 0, 0, 0.55);
 }
 
 /* ==========================================
-   1L. THEME: MIDNIGHT CARBON (Light Mode)
+   1L. DEFAULT THEME: CYBERPUNK NEON (Light Mode)
    ========================================== */
-body.light-mode, body.theme-midnight.light-mode {
-    --bg-base: radial-gradient(circle at 50% 50%, #f4f6f8 0%, #e5e7eb 100%);
-    --bg-sidebar: linear-gradient(180deg, #ffffff 0%, #f3f4f6 100%);
-    --border-sidebar: rgba(0, 0, 0, 0.05);
+body.light-mode, body.theme-cyberpunk.light-mode {
+    --bg-base: linear-gradient(135deg, #fcedf6 0%, #e0f7fc 100%);
+    --bg-sidebar: linear-gradient(180deg, #05020c 0%, #0e0a1f 100%);
+    --border-sidebar: rgba(0, 240, 255, 0.2);
+
+    --bg-glass: rgba(255, 255, 255, 0.55);
+    --bg-glass-deep: rgba(255, 255, 255, 0.97);
+    --border: rgba(255, 0, 127, 0.15);
+    --border-hover: rgba(0, 240, 255, 0.5);
+    --text-primary: #1f1430;
+    --text-secondary: #5c4d70;
+    --text-muted: #9b8ea8;
+    --shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+
+    --accent: #d9006c;
+    --accent-light: #ff4097;
+    --accent-deep: #96004b;
+    --accent-glow: rgba(255, 0, 127, 0.18);
+    --accent-glow-soft: rgba(255, 0, 127, 0.06);
+    --accent-bg: rgba(255, 0, 127, 0.04);
+    --accent-text: #1f1430;
+
+    --grad-primary: linear-gradient(135deg, #d9006c 0%, #00a4b3 100%);
+    --grad-button: linear-gradient(135deg, #d9006c 0%, #6200d9 100%);
+    --grad-button-hover: linear-gradient(135deg, #ff4097 0%, #d9006c 100%);
+    --grad-text: linear-gradient(135deg, #d9006c 0%, #00a4b3 100%);
+    --sidebar-border-glow: linear-gradient(180deg, #d9006c, #6200d9, #00a4b3);
+    --blob-1-color: rgba(217, 0, 108, 0.04);
+    --blob-2-color: rgba(0, 164, 179, 0.03);
+    --blob-3-color: rgba(98, 0, 217, 0.02);
+
+    --swal-bg: rgba(255, 255, 255, 0.98);
+    --swal-text: #1f1430;
+    --swal-border: rgba(217, 0, 108, 0.1);
+    --swal-btn-bg: linear-gradient(135deg, #d9006c 0%, #6200d9 100%);
+    --swal-btn-text: #ffffff;
+
+    --sidebar-bg: linear-gradient(180deg, #05020c 0%, #0e0a1f 100%);
+    --sidebar-border: rgba(0, 240, 255, 0.2);
+    --sidebar-shadow: 4px 0 24px rgba(0, 0, 0, 0.35);
+    --sidebar-text-primary: #f3f4f6;
+    --sidebar-text-secondary: #b3b9c9;
+    --sidebar-text-muted: #687189;
+    --sidebar-accent: #00f0ff;
+    --sidebar-accent-bg: rgba(0, 240, 255, 0.08);
+
+    --sidebar-bg-grad: linear-gradient(180deg, #05020c 0%, #0e0a1f 100%);
+    --sidebar-text-color: rgba(243, 244, 246, 0.85);
+    --sidebar-text-muted-color: rgba(243, 244, 246, 0.45);
+    --sidebar-hover-bg: rgba(255, 255, 255, 0.05);
+    --sidebar-hover-icon-grad: linear-gradient(135deg, #00f0ff 0%, #ff007f 100%);
+    --sidebar-active-bg-grad: linear-gradient(135deg, #ff007f 0%, #7000ff 100%);
+    --sidebar-border-color: rgba(0, 240, 255, 0.2);
+    --chat-history-bg: #0e0a1f;
+
+    /* Claymorphism Shadow variables */
+    --clay-shadow: 10px 10px 30px rgba(0, 0, 0, 0.08), inset 3px 3px 6px rgba(255, 255, 255, 0.75), inset -3px -3px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* ==========================================
+   2A. THEME: BUBBLEGUM POP (theme-bubblegum - Dark Mode)
+   ========================================== */
+body.theme-bubblegum {
+    --bg-base: linear-gradient(135deg, #2b182d 0%, #110c1c 100%);
+    --bg-sidebar: linear-gradient(180deg, #ffffff 0%, #fff0f5 100%);
+    --border-sidebar: rgba(255, 117, 140, 0.15);
+    
+    --bg-glass: rgba(43, 24, 45, 0.4);
+    --bg-glass-deep: rgba(18, 10, 19, 0.95);
+    --border: rgba(255, 117, 140, 0.15);
+    --border-hover: rgba(177, 143, 207, 0.4);
+    --text-primary: #fbf7fc;
+    --text-secondary: #d8c8dc;
+    --text-muted: #8e7a93;
+    --shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+
+    --accent: #ff758c;
+    --accent-light: #ff9ebb;
+    --accent-deep: #c7435a;
+    --accent-glow: rgba(255, 117, 140, 0.25);
+    --accent-glow-soft: rgba(255, 117, 140, 0.08);
+    --accent-bg: rgba(255, 117, 140, 0.05);
+    --accent-text: #fbf7fc;
+
+    --grad-primary: linear-gradient(135deg, #ff758c 0%, #b18fcf 100%);
+    --grad-button: linear-gradient(135deg, #ff758c 0%, #b18fcf 100%);
+    --grad-button-hover: linear-gradient(135deg, #ff9ebb 0%, #d8b7eb 100%);
+    --grad-text: linear-gradient(135deg, #ff758c 0%, #b18fcf 100%);
+    --sidebar-border-glow: linear-gradient(180deg, #ff758c, #b18fcf, #ff9ebb);
+    --blob-1-color: rgba(255, 117, 140, 0.06);
+    --blob-2-color: rgba(177, 143, 207, 0.04);
+    --blob-3-color: rgba(255, 158, 187, 0.04);
+
+    --swal-bg: rgba(18, 10, 19, 0.98);
+    --swal-text: #fbf7fc;
+    --swal-border: rgba(255, 117, 140, 0.2);
+    --swal-btn-bg: linear-gradient(135deg, #ff758c 0%, #b18fcf 100%);
+    --swal-btn-text: #ffffff;
+
+    --sidebar-bg: linear-gradient(180deg, #ffffff 0%, #fff0f5 100%);
+    --sidebar-border: rgba(255, 117, 140, 0.1);
+    --sidebar-shadow: 4px 0 24px rgba(0, 0, 0, 0.08);
+    --sidebar-text-primary: #361e38;
+    --sidebar-text-secondary: #725477;
+    --sidebar-text-muted: #ad98b1;
+    --sidebar-accent: #ff758c;
+    --sidebar-accent-bg: rgba(255, 117, 140, 0.08);
+
+    --sidebar-bg-grad: linear-gradient(180deg, #ffffff 0%, #fff0f5 100%);
+    --sidebar-text-color: rgba(54, 30, 56, 0.8);
+    --sidebar-text-muted-color: rgba(54, 30, 56, 0.45);
+    --sidebar-hover-bg: rgba(255, 117, 140, 0.05);
+    --sidebar-hover-icon-grad: linear-gradient(135deg, #ff758c 0%, #b18fcf 100%);
+    --sidebar-active-bg-grad: linear-gradient(135deg, #ff758c 0%, #b18fcf 100%);
+    --sidebar-border-color: rgba(255, 117, 140, 0.1);
+    --chat-history-bg: #ffe4e1;
+
+    /* Claymorphism Shadow variables */
+    --clay-shadow: 10px 10px 30px rgba(0, 0, 0, 0.3), inset 3px 3px 6px rgba(255, 255, 255, 0.08), inset -3px -3px 6px rgba(0, 0, 0, 0.5);
+}
+
+/* ==========================================
+   2AL. THEME: BUBBLEGUM POP (Light Mode)
+   ========================================== */
+body.theme-bubblegum.light-mode {
+    --bg-base: linear-gradient(135deg, #fff0f5 0%, #f3e5f5 100%);
+    --bg-sidebar: linear-gradient(180deg, #1b0f1e 0%, #2b182d 100%);
+    --border-sidebar: rgba(255, 117, 140, 0.2);
 
     --bg-glass: rgba(255, 255, 255, 0.6);
     --bg-glass-deep: rgba(255, 255, 255, 0.98);
-    --border: rgba(0, 0, 0, 0.06);
-    --border-hover: rgba(79, 70, 229, 0.15);
-    --text-primary: #1f2937;
-    --text-secondary: #4b5563;
-    --text-muted: #9ca3af;
-    --shadow: 0 16px 40px rgba(0, 0, 0, 0.05);
+    --border: rgba(255, 117, 140, 0.2);
+    --border-hover: rgba(177, 143, 207, 0.5);
+    --text-primary: #361e38;
+    --text-secondary: #725477;
+    --text-muted: #ad98b1;
+    --shadow: 0 16px 40px rgba(0, 0, 0, 0.06);
 
-    --accent: #4f46e5;
-    --accent-light: #818cf8;
-    --accent-deep: #312e81;
-    --accent-glow: rgba(79, 70, 229, 0.15);
-    --accent-glow-soft: rgba(79, 70, 229, 0.05);
-    --accent-bg: rgba(79, 70, 229, 0.04);
-    --accent-text: #4f46e5;
+    --accent: #e63e5d;
+    --accent-light: #ff758c;
+    --accent-deep: #a31430;
+    --accent-glow: rgba(230, 62, 93, 0.18);
+    --accent-glow-soft: rgba(230, 62, 93, 0.06);
+    --accent-bg: rgba(230, 62, 93, 0.04);
+    --accent-text: #361e38;
 
-    --grad-primary: linear-gradient(135deg, #4f46e5 0%, #818cf8 100%);
-    --grad-button: linear-gradient(135deg, #4f46e5 0%, #818cf8 100%);
-    --grad-button-hover: linear-gradient(135deg, #6366f1 0%, #a5b4fc 100%);
-    --grad-text: linear-gradient(135deg, #4f46e5 0%, #818cf8 100%);
-    --sidebar-border-glow: linear-gradient(180deg, #4f46e5, #818cf8, #a5b4fc);
-    --blob-1-color: rgba(79, 70, 229, 0.04);
-    --blob-2-color: rgba(129, 140, 248, 0.03);
-    --blob-3-color: rgba(76, 201, 240, 0.02);
+    --grad-primary: linear-gradient(135deg, #e63e5d 0%, #9560bd 100%);
+    --grad-button: linear-gradient(135deg, #e63e5d 0%, #9560bd 100%);
+    --grad-button-hover: linear-gradient(135deg, #ff758c 0%, #b18fcf 100%);
+    --grad-text: linear-gradient(135deg, #e63e5d 0%, #9560bd 100%);
+    --sidebar-border-glow: linear-gradient(180deg, #e63e5d, #9560bd, #b18fcf);
+    --blob-1-color: rgba(230, 62, 93, 0.04);
+    --blob-2-color: rgba(149, 96, 189, 0.03);
+    --blob-3-color: rgba(255, 117, 140, 0.02);
 
     --swal-bg: rgba(255, 255, 255, 0.98);
-    --swal-text: #1f2937;
-    --swal-border: rgba(79, 70, 229, 0.1);
-    --swal-btn-bg: linear-gradient(135deg, #4f46e5 0%, #818cf8 100%);
+    --swal-text: #361e38;
+    --swal-border: rgba(217, 0, 108, 0.1);
+    --swal-btn-bg: linear-gradient(135deg, #e63e5d 0%, #9560bd 100%);
     --swal-btn-text: #ffffff;
 
-    --sidebar-bg: linear-gradient(180deg, #0c1015 0%, #131820 100%);
-    --sidebar-border: rgba(255, 255, 255, 0.05);
-    --sidebar-shadow: 4px 0 24px rgba(0, 0, 0, 0.2);
-    --sidebar-text-primary: #f3f4f6;
-    --sidebar-text-secondary: #9ca3af;
-    --sidebar-text-muted: #6b7280;
-    --sidebar-accent: #818cf8;
-    --sidebar-accent-bg: rgba(129, 140, 248, 0.06);
+    --sidebar-bg: linear-gradient(180deg, #1b0f1e 0%, #2b182d 100%);
+    --sidebar-border: rgba(255, 117, 140, 0.2);
+    --sidebar-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
+    --sidebar-text-primary: #fbf7fc;
+    --sidebar-text-secondary: #d8c8dc;
+    --sidebar-text-muted: #8e7a93;
+    --sidebar-accent: #b18fcf;
+    --sidebar-accent-bg: rgba(177, 143, 207, 0.08);
 
-    --sidebar-bg-grad: linear-gradient(180deg, #0c1015 0%, #131820 100%);
-    --sidebar-text-color: rgba(255, 255, 255, 0.8);
-    --sidebar-text-muted-color: rgba(255, 255, 255, 0.4);
+    --sidebar-bg-grad: linear-gradient(180deg, #1b0f1e 0%, #2b182d 100%);
+    --sidebar-text-color: rgba(251, 247, 252, 0.85);
+    --sidebar-text-muted-color: rgba(251, 247, 252, 0.45);
     --sidebar-hover-bg: rgba(255, 255, 255, 0.05);
-    --sidebar-hover-icon-grad: linear-gradient(135deg, #4cc9f0 0%, #818cf8 100%);
-    --sidebar-active-bg-grad: linear-gradient(135deg, #4f46e5 0%, #818cf8 100%);
-    --sidebar-border-color: rgba(255, 255, 255, 0.05);
-    --chat-history-bg: #131820;
+    --sidebar-hover-icon-grad: linear-gradient(135deg, #ff9ebb 0%, #b18fcf 100%);
+    --sidebar-active-bg-grad: linear-gradient(135deg, #ff758c 0%, #b18fcf 100%);
+    --sidebar-border-color: rgba(255, 117, 140, 0.15);
+    --chat-history-bg: #2b182d;
+
+    --clay-shadow: 10px 10px 30px rgba(0, 0, 0, 0.06), inset 3px 3px 6px rgba(255, 255, 255, 0.8), inset -3px -3px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* ==========================================
+   2B. THEME: TOKYO SUNSET (theme-tokyosunset - Dark Mode)
+   ========================================== */
+body.theme-tokyosunset {
+    --bg-base: linear-gradient(135deg, #231123 0%, #0a0614 100%);
+    --bg-sidebar: linear-gradient(180deg, #ffffff 0%, #fff3e0 100%);
+    --border-sidebar: rgba(255, 75, 31, 0.15);
+    
+    --bg-glass: rgba(35, 17, 35, 0.4);
+    --bg-glass-deep: rgba(15, 7, 15, 0.95);
+    --border: rgba(255, 75, 31, 0.15);
+    --border-hover: rgba(255, 30, 86, 0.4);
+    --text-primary: #fff5f5;
+    --text-secondary: #e0c9c9;
+    --text-muted: #998080;
+    --shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+
+    --accent: #ff4b1f;
+    --accent-light: #ff7e5f;
+    --accent-deep: #cc2d00;
+    --accent-glow: rgba(255, 75, 31, 0.25);
+    --accent-glow-soft: rgba(255, 75, 31, 0.08);
+    --accent-bg: rgba(255, 75, 31, 0.05);
+    --accent-text: #fff5f5;
+
+    --grad-primary: linear-gradient(135deg, #ff4b1f 0%, #ff1e56 100%);
+    --grad-button: linear-gradient(135deg, #ff4b1f 0%, #ff1e56 100%);
+    --grad-button-hover: linear-gradient(135deg, #ff7e5f 0%, #ff5e7e 100%);
+    --grad-text: linear-gradient(135deg, #ff4b1f 0%, #ff1e56 100%);
+    --sidebar-border-glow: linear-gradient(180deg, #ff4b1f, #ff1e56, #ff7e5f);
+    --blob-1-color: rgba(255, 75, 31, 0.06);
+    --blob-2-color: rgba(255, 30, 86, 0.04);
+    --blob-3-color: rgba(255, 126, 95, 0.04);
+
+    --swal-bg: rgba(15, 7, 15, 0.98);
+    --swal-text: #fff5f5;
+    --swal-border: rgba(255, 75, 31, 0.2);
+    --swal-btn-bg: linear-gradient(135deg, #ff4b1f 0%, #ff1e56 100%);
+    --swal-btn-text: #ffffff;
+
+    --sidebar-bg: linear-gradient(180deg, #ffffff 0%, #fff3e0 100%);
+    --sidebar-border: rgba(255, 75, 31, 0.1);
+    --sidebar-shadow: 4px 0 24px rgba(0, 0, 0, 0.08);
+    --sidebar-text-primary: #3e160b;
+    --sidebar-text-secondary: #7d4334;
+    --sidebar-text-muted: #b38276;
+    --sidebar-accent: #ff1e56;
+    --sidebar-accent-bg: rgba(255, 30, 86, 0.08);
+
+    --sidebar-bg-grad: linear-gradient(180deg, #ffffff 0%, #fff3e0 100%);
+    --sidebar-text-color: rgba(62, 22, 11, 0.8);
+    --sidebar-text-muted-color: rgba(62, 22, 11, 0.45);
+    --sidebar-hover-bg: rgba(255, 75, 31, 0.05);
+    --sidebar-hover-icon-grad: linear-gradient(135deg, #ff7e5f 0%, #ff1e56 100%);
+    --sidebar-active-bg-grad: linear-gradient(135deg, #ff4b1f 0%, #ff1e56 100%);
+    --sidebar-border-color: rgba(255, 75, 31, 0.1);
+    --chat-history-bg: #ffe0b2;
+
+    --clay-shadow: 10px 10px 30px rgba(0, 0, 0, 0.35), inset 3px 3px 6px rgba(255, 255, 255, 0.08), inset -3px -3px 6px rgba(0, 0, 0, 0.55);
+}
+
+/* ==========================================
+   2BL. THEME: TOKYO SUNSET (Light Mode)
+   ========================================== */
+body.theme-tokyosunset.light-mode {
+    --bg-base: linear-gradient(135deg, #fff3e0 0%, #fce4ec 100%);
+    --bg-sidebar: linear-gradient(180deg, #140814 0%, #231123 100%);
+    --border-sidebar: rgba(255, 75, 31, 0.2);
+
+    --bg-glass: rgba(255, 255, 255, 0.65);
+    --bg-glass-deep: rgba(255, 255, 255, 0.98);
+    --border: rgba(255, 75, 31, 0.2);
+    --border-hover: rgba(255, 30, 86, 0.5);
+    --text-primary: #3e160b;
+    --text-secondary: #7d4334;
+    --text-muted: #b38276;
+    --shadow: 0 16px 40px rgba(0, 0, 0, 0.06);
+
+    --accent: #e63900;
+    --accent-light: #ff4b1f;
+    --accent-deep: #992600;
+    --accent-glow: rgba(230, 57, 0, 0.18);
+    --accent-glow-soft: rgba(230, 57, 0, 0.06);
+    --accent-bg: rgba(230, 57, 0, 0.04);
+    --accent-text: #3e160b;
+
+    --grad-primary: linear-gradient(135deg, #e63900 0%, #d81b60 100%);
+    --grad-button: linear-gradient(135deg, #e63900 0%, #d81b60 100%);
+    --grad-button-hover: linear-gradient(135deg, #ff4b1f 0%, #ff1e56 100%);
+    --grad-text: linear-gradient(135deg, #e63900 0%, #d81b60 100%);
+    --sidebar-border-glow: linear-gradient(180deg, #e63900, #d81b60, #ff1e56);
+    --blob-1-color: rgba(230, 57, 0, 0.04);
+    --blob-2-color: rgba(216, 27, 96, 0.03);
+    --blob-3-color: rgba(255, 75, 31, 0.02);
+
+    --swal-bg: rgba(255, 255, 255, 0.98);
+    --swal-text: #3e160b;
+    --swal-border: rgba(230, 57, 0, 0.1);
+    --swal-btn-bg: linear-gradient(135deg, #e63900 0%, #d81b60 100%);
+    --swal-btn-text: #ffffff;
+
+    --sidebar-bg: linear-gradient(180deg, #140814 0%, #231123 100%);
+    --sidebar-border: rgba(255, 75, 31, 0.2);
+    --sidebar-shadow: 4px 0 24px rgba(0, 0, 0, 0.35);
+    --sidebar-text-primary: #fff5f5;
+    --sidebar-text-secondary: #e0c9c9;
+    --sidebar-text-muted: #998080;
+    --sidebar-accent: #ff1e56;
+    --sidebar-accent-bg: rgba(255, 30, 86, 0.08);
+
+    --sidebar-bg-grad: linear-gradient(180deg, #140814 0%, #231123 100%);
+    --sidebar-text-color: rgba(255, 245, 245, 0.85);
+    --sidebar-text-muted-color: rgba(255, 245, 245, 0.45);
+    --sidebar-hover-bg: rgba(255, 255, 255, 0.05);
+    --sidebar-hover-icon-grad: linear-gradient(135deg, #ff7e5f 0%, #ff1e56 100%);
+    --sidebar-active-bg-grad: linear-gradient(135deg, #ff4b1f 0%, #ff1e56 100%);
+    --sidebar-border-color: rgba(255, 75, 31, 0.15);
+    --chat-history-bg: #231123;
+
+    --clay-shadow: 10px 10px 30px rgba(0, 0, 0, 0.06), inset 3px 3px 6px rgba(255, 255, 255, 0.8), inset -3px -3px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* ==========================================
+   2C. THEME: ACID LIME (theme-acidlime - Dark Mode)
+   ========================================== */
+body.theme-acidlime {
+    --bg-base: linear-gradient(135deg, #0e1a10 0%, #050a06 100%);
+    --bg-sidebar: linear-gradient(180deg, #ffffff 0%, #f1fbe7 100%);
+    --border-sidebar: rgba(163, 255, 18, 0.15);
+    
+    --bg-glass: rgba(14, 26, 16, 0.4);
+    --bg-glass-deep: rgba(6, 11, 7, 0.95);
+    --border: rgba(163, 255, 18, 0.15);
+    --border-hover: rgba(57, 255, 20, 0.4);
+    --text-primary: #f3fdf3;
+    --text-secondary: #bcdbbd;
+    --text-muted: #7c997d;
+    --shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+
+    --accent: #a3ff12;
+    --accent-light: #c6ff66;
+    --accent-deep: #75c000;
+    --accent-glow: rgba(163, 255, 18, 0.25);
+    --accent-glow-soft: rgba(163, 255, 18, 0.08);
+    --accent-bg: rgba(163, 255, 18, 0.05);
+    --accent-text: #f3fdf3;
+
+    --grad-primary: linear-gradient(135deg, #a3ff12 0%, #39ff14 100%);
+    --grad-button: linear-gradient(135deg, #a3ff12 0%, #1e3a1f 100%);
+    --grad-button-hover: linear-gradient(135deg, #c6ff66 0%, #a3ff12 100%);
+    --grad-text: linear-gradient(135deg, #a3ff12 0%, #39ff14 100%);
+    --sidebar-border-glow: linear-gradient(180deg, #a3ff12, #39ff14, #c6ff66);
+    --blob-1-color: rgba(163, 255, 18, 0.06);
+    --blob-2-color: rgba(57, 255, 20, 0.04);
+    --blob-3-color: rgba(198, 255, 102, 0.04);
+
+    --swal-bg: rgba(6, 11, 7, 0.98);
+    --swal-text: #f3fdf3;
+    --swal-border: rgba(163, 255, 18, 0.2);
+    --swal-btn-bg: linear-gradient(135deg, #a3ff12 0%, #1e3a1f 100%);
+    --swal-btn-text: #ffffff;
+
+    --sidebar-bg: linear-gradient(180deg, #ffffff 0%, #f1fbe7 100%);
+    --sidebar-border: rgba(163, 255, 18, 0.1);
+    --sidebar-shadow: 4px 0 24px rgba(0, 0, 0, 0.08);
+    --sidebar-text-primary: #1b3003;
+    --sidebar-text-secondary: #425f1b;
+    --sidebar-text-muted: #739644;
+    --sidebar-accent: #689f38;
+    --sidebar-accent-bg: rgba(163, 255, 18, 0.08);
+
+    --sidebar-bg-grad: linear-gradient(180deg, #ffffff 0%, #f1fbe7 100%);
+    --sidebar-text-color: rgba(27, 48, 3, 0.8);
+    --sidebar-text-muted-color: rgba(27, 48, 3, 0.45);
+    --sidebar-hover-bg: rgba(163, 255, 18, 0.05);
+    --sidebar-hover-icon-grad: linear-gradient(135deg, #a3ff12 0%, #39ff14 100%);
+    --sidebar-active-bg-grad: linear-gradient(135deg, #a3ff12 0%, #1e3a1f 100%);
+    --sidebar-border-color: rgba(163, 255, 18, 0.1);
+    --chat-history-bg: #e7f7d5;
+
+    --clay-shadow: 10px 10px 30px rgba(0, 0, 0, 0.35), inset 3px 3px 6px rgba(255, 255, 255, 0.08), inset -3px -3px 6px rgba(0, 0, 0, 0.55);
+}
+
+/* ==========================================
+   2CL. THEME: ACID LIME (Light Mode)
+   ========================================== */
+body.theme-acidlime.light-mode {
+    --bg-base: linear-gradient(135deg, #f1fbe7 0%, #e8f5e9 100%);
+    --bg-sidebar: linear-gradient(180deg, #081109 0%, #0e1a10 100%);
+    --border-sidebar: rgba(163, 255, 18, 0.2);
+
+    --bg-glass: rgba(255, 255, 255, 0.65);
+    --bg-glass-deep: rgba(255, 255, 255, 0.98);
+    --border: rgba(139, 195, 74, 0.25);
+    --border-hover: rgba(76, 175, 80, 0.5);
+    --text-primary: #1b3003;
+    --text-secondary: #425f1b;
+    --text-muted: #739644;
+    --shadow: 0 16px 40px rgba(0, 0, 0, 0.06);
+
+    --accent: #689f38;
+    --accent-light: #8bc34a;
+    --accent-deep: #33691e;
+    --accent-glow: rgba(104, 159, 56, 0.18);
+    --accent-glow-soft: rgba(104, 159, 56, 0.06);
+    --accent-bg: rgba(104, 159, 56, 0.04);
+    --accent-text: #1b3003;
+
+    --grad-primary: linear-gradient(135deg, #689f38 0%, #2e7d32 100%);
+    --grad-button: linear-gradient(135deg, #689f38 0%, #2e7d32 100%);
+    --grad-button-hover: linear-gradient(135deg, #8bc34a 0%, #4caf50 100%);
+    --grad-text: linear-gradient(135deg, #689f38 0%, #2e7d32 100%);
+    --sidebar-border-glow: linear-gradient(180deg, #689f38, #2e7d32, #8bc34a);
+    --blob-1-color: rgba(104, 159, 56, 0.04);
+    --blob-2-color: rgba(46, 125, 50, 0.03);
+    --blob-3-color: rgba(139, 195, 74, 0.02);
+
+    --swal-bg: rgba(255, 255, 255, 0.98);
+    --swal-text: #1b3003;
+    --swal-border: rgba(104, 159, 56, 0.1);
+    --swal-btn-bg: linear-gradient(135deg, #689f38 0%, #2e7d32 100%);
+    --swal-btn-text: #ffffff;
+
+    --sidebar-bg: linear-gradient(180deg, #081109 0%, #0e1a10 100%);
+    --sidebar-border: rgba(163, 255, 18, 0.2);
+    --sidebar-shadow: 4px 0 24px rgba(0, 0, 0, 0.35);
+    --sidebar-text-primary: #f3fdf3;
+    --sidebar-text-secondary: #bcdbbd;
+    --sidebar-text-muted: #7c997d;
+    --sidebar-accent: #a3ff12;
+    --sidebar-accent-bg: rgba(163, 255, 18, 0.08);
+
+    --sidebar-bg-grad: linear-gradient(180deg, #081109 0%, #0e1a10 100%);
+    --sidebar-text-color: rgba(243, 253, 243, 0.85);
+    --sidebar-text-muted-color: rgba(243, 253, 243, 0.45);
+    --sidebar-hover-bg: rgba(255, 255, 255, 0.05);
+    --sidebar-hover-icon-grad: linear-gradient(135deg, #c6ff66 0%, #39ff14 100%);
+    --sidebar-active-bg-grad: linear-gradient(135deg, #a3ff12 0%, #1e3a1f 100%);
+    --sidebar-border-color: rgba(163, 255, 18, 0.15);
+    --chat-history-bg: #0e1a10;
+
+    --clay-shadow: 10px 10px 30px rgba(0, 0, 0, 0.06), inset 3px 3px 6px rgba(255, 255, 255, 0.8), inset -3px -3px 6px rgba(0, 0, 0, 0.08);
 }
 
 /* ==========================================
    2. THEME: NEO INDIGO (theme-emerald - Dark Mode)
    ========================================== */
 body.theme-emerald {
-    --bg-base: radial-gradient(circle at 50% 50%, #141738 0%, #0d0f26 100%);
+    --bg-base: linear-gradient(135deg, #141738 0%, #0d0f26 100%);
     --bg-sidebar: linear-gradient(180deg, #1d245a 0%, #2b347d 100%);
     --border-sidebar: rgba(255, 255, 255, 0.05);
     
@@ -199,13 +572,16 @@ body.theme-emerald {
     --sidebar-active-bg-grad: linear-gradient(135deg, #3947a6 0%, #5b74ff 100%);
     --sidebar-border-color: rgba(255, 255, 255, 0.05);
     --chat-history-bg: #222967;
+
+    /* Claymorphism Shadow variables */
+    --clay-shadow: 10px 10px 30px rgba(0, 0, 0, 0.3), inset 3px 3px 6px rgba(255, 255, 255, 0.08), inset -3px -3px 6px rgba(0, 0, 0, 0.5);
 }
 
 /* ==========================================
    2L. THEME: NEO INDIGO (Light Mode)
    ========================================== */
 body.theme-emerald.light-mode {
-    --bg-base: radial-gradient(circle at 50% 50%, #f8f9ff 0%, #ebeeef 100%);
+    --bg-base: linear-gradient(135deg, #f8f9ff 0%, #ebeeef 100%);
     --bg-sidebar: linear-gradient(180deg, #ffffff 0%, #f3f5ff 100%);
     --border-sidebar: rgba(0, 0, 0, 0.05);
 
@@ -258,13 +634,15 @@ body.theme-emerald.light-mode {
     --sidebar-active-bg-grad: linear-gradient(135deg, #3947a6 0%, #5b74ff 100%);
     --sidebar-border-color: rgba(255, 255, 255, 0.05);
     --chat-history-bg: #222967;
+
+    --clay-shadow: 10px 10px 30px rgba(0, 0, 0, 0.06), inset 3px 3px 6px rgba(255, 255, 255, 0.8), inset -3px -3px 6px rgba(0, 0, 0, 0.08);
 }
 
 /* ==========================================
    3. THEME: SUNSET EMBER (theme-amber - Dark Mode)
    ========================================== */
 body.theme-amber {
-    --bg-base: radial-gradient(circle at 50% 50%, #2b1102 0%, #150801 100%);
+    --bg-base: linear-gradient(135deg, #3d1c02 0%, #0e0700 100%);
     --bg-sidebar: linear-gradient(180deg, #5e2605 0%, #7a3107 100%);
     --border-sidebar: rgba(255, 255, 255, 0.05);
     
@@ -317,13 +695,16 @@ body.theme-amber {
     --sidebar-active-bg-grad: linear-gradient(135deg, #a34a00 0%, #ff8e1a 100%);
     --sidebar-border-color: rgba(255, 255, 255, 0.05);
     --chat-history-bg: #6e2e07;
+
+    /* Claymorphism Shadow variables */
+    --clay-shadow: 10px 10px 30px rgba(0, 0, 0, 0.3), inset 3px 3px 6px rgba(255, 255, 255, 0.08), inset -3px -3px 6px rgba(0, 0, 0, 0.5);
 }
 
 /* ==========================================
    3L. THEME: SUNSET EMBER (Light Mode)
    ========================================== */
 body.theme-amber.light-mode {
-    --bg-base: radial-gradient(circle at 10% 20%, #fffbeb 0%, #fef3c7 90%);
+    --bg-base: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
     --bg-sidebar: #0c0a07;
     --border-sidebar: rgba(255, 255, 255, 0.07);
     --bg-glass: rgba(255, 255, 255, 0.7);
@@ -377,13 +758,15 @@ body.theme-amber.light-mode {
     --sidebar-hover-icon-grad: linear-gradient(135deg, #fde047 0%, #eab308 100%);
     --sidebar-active-bg-grad: linear-gradient(135deg, #d97706 0%, #78350f 100%);
     --sidebar-border-color: rgba(255, 255, 255, 0.1);
+
+    --clay-shadow: 10px 10px 30px rgba(0, 0, 0, 0.06), inset 3px 3px 6px rgba(255, 255, 255, 0.8), inset -3px -3px 6px rgba(0, 0, 0, 0.08);
 }
 
 /* ==========================================
    4. THEME: SUNSET ROSE (Dark Mode)
    ========================================== */
 body.theme-rose {
-    --bg-base: radial-gradient(circle at 10% 20%, #1c0c15 0%, #0c0609 90%);                   /* Deep rose dark gradient */
+    --bg-base: linear-gradient(135deg, #360f1b 0%, #0f0307 100%);
     --bg-sidebar: #ffffff;                /* Bright Light sidebar */
     --border-sidebar: rgba(0, 0, 0, 0.08);
     
@@ -437,13 +820,16 @@ body.theme-rose {
     --sidebar-hover-icon-grad: linear-gradient(135deg, #f43f5e 0%, #be123c 100%);
     --sidebar-active-bg-grad: linear-gradient(135deg, #e11d48 0%, #9f1239 100%);
     --sidebar-border-color: rgba(244, 63, 94, 0.15);
+
+    /* Claymorphism Shadow variables */
+    --clay-shadow: 10px 10px 30px rgba(0, 0, 0, 0.3), inset 3px 3px 6px rgba(255, 255, 255, 0.08), inset -3px -3px 6px rgba(0, 0, 0, 0.5);
 }
 
 /* ==========================================
    4L. THEME: SUNSET ROSE (Light Mode)
    ========================================== */
 body.theme-rose.light-mode {
-    --bg-base: radial-gradient(circle at 10% 20%, #faf0f4 0%, #eedcd2 90%);                   /* Soft Rose Light gradient */
+    --bg-base: linear-gradient(135deg, #faf0f4 0%, #eedcd2 100%);
     --bg-sidebar: #0c0609;                /* Dark Sidebar */
     --border-sidebar: rgba(255, 255, 255, 0.07);
 
@@ -497,13 +883,15 @@ body.theme-rose.light-mode {
     --sidebar-hover-icon-grad: linear-gradient(135deg, #fda4af 0%, #f43f5e 100%);
     --sidebar-active-bg-grad: linear-gradient(135deg, #be123c 0%, #881337 100%);
     --sidebar-border-color: rgba(255, 255, 255, 0.1);
+
+    --clay-shadow: 10px 10px 30px rgba(0, 0, 0, 0.06), inset 3px 3px 6px rgba(255, 255, 255, 0.8), inset -3px -3px 6px rgba(0, 0, 0, 0.08);
 }
 
 /* ==========================================
    5. THEME: OCEANIC AURORA (Dark Mode)
    ========================================== */
 body.theme-aurora {
-    --bg-base: radial-gradient(circle at 10% 20%, #08161c 0%, #05090b 90%);                   /* Deep cyan dark gradient */
+    --bg-base: linear-gradient(135deg, #072a3a 0%, #020d14 100%);
     --bg-sidebar: #ffffff;                /* Bright Light sidebar */
     --border-sidebar: rgba(0, 0, 0, 0.08);
     
@@ -557,13 +945,16 @@ body.theme-aurora {
     --sidebar-hover-icon-grad: linear-gradient(135deg, #22d3ee 0%, #0891b2 100%);
     --sidebar-active-bg-grad: linear-gradient(135deg, #06b6d4 0%, #0e7490 100%);
     --sidebar-border-color: rgba(6, 182, 212, 0.15);
+
+    /* Claymorphism Shadow variables */
+    --clay-shadow: 10px 10px 30px rgba(0, 0, 0, 0.3), inset 3px 3px 6px rgba(255, 255, 255, 0.08), inset -3px -3px 6px rgba(0, 0, 0, 0.5);
 }
 
 /* ==========================================
    5L. THEME: OCEANIC AURORA (Light Mode)
    ========================================== */
 body.theme-aurora.light-mode {
-    --bg-base: radial-gradient(circle at 10% 20%, #e1f2f8 0%, #d2e6ee 90%);                   /* Soft Teal/Cyan Light gradient */
+    --bg-base: linear-gradient(135deg, #e1f2f8 0%, #d2e6ee 100%);
     --bg-sidebar: #05090b;                /* Dark Sidebar */
     --border-sidebar: rgba(255, 255, 255, 0.07);
 
@@ -617,13 +1008,15 @@ body.theme-aurora.light-mode {
     --sidebar-hover-icon-grad: linear-gradient(135deg, #67e8f9 0%, #06b6d4 100%);
     --sidebar-active-bg-grad: linear-gradient(135deg, #0891b2 0%, #155e75 100%);
     --sidebar-border-color: rgba(255, 255, 255, 0.1);
+
+    --clay-shadow: 10px 10px 30px rgba(0, 0, 0, 0.06), inset 3px 3px 6px rgba(255, 255, 255, 0.8), inset -3px -3px 6px rgba(0, 0, 0, 0.08);
 }
 
 /* ==========================================
    6. THEME: AMAZON GREEN (Dark Mode)
    ========================================== */
 body.theme-amazon {
-    --bg-base: radial-gradient(circle at 10% 20%, #061f12 0%, #020a06 90%);                   /* Deep amazon green dark gradient */
+    --bg-base: linear-gradient(135deg, #093018 0%, #021209 100%);
     --bg-sidebar: #ffffff;                /* Bright Light sidebar */
     --border-sidebar: rgba(255, 255, 255, 0.05);
     
@@ -678,13 +1071,16 @@ body.theme-amazon {
     --sidebar-active-bg-grad: linear-gradient(135deg, #22c55e 0%, #14532d 100%);
     --sidebar-border-color: rgba(34, 197, 94, 0.15);
     --chat-history-bg: #052e16;
+
+    /* Claymorphism Shadow variables */
+    --clay-shadow: 10px 10px 30px rgba(0, 0, 0, 0.3), inset 3px 3px 6px rgba(255, 255, 255, 0.08), inset -3px -3px 6px rgba(0, 0, 0, 0.5);
 }
 
 /* ==========================================
    6L. THEME: AMAZON GREEN (Light Mode)
    ========================================== */
 body.theme-amazon.light-mode {
-    --bg-base: radial-gradient(circle at 10% 20%, #f0fdf4 0%, #dcfce7 90%);                   /* Soft Green Light gradient */
+    --bg-base: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
     --bg-sidebar: #020a06;                /* Dark Sidebar */
     --border-sidebar: rgba(255, 255, 255, 0.07);
 
@@ -738,6 +1134,8 @@ body.theme-amazon.light-mode {
     --sidebar-hover-icon-grad: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
     --sidebar-active-bg-grad: linear-gradient(135deg, #10b981 0%, #047857 100%);
     --sidebar-border-color: rgba(255, 255, 255, 0.1);
+
+    --clay-shadow: 10px 10px 30px rgba(0, 0, 0, 0.06), inset 3px 3px 6px rgba(255, 255, 255, 0.8), inset -3px -3px 6px rgba(0, 0, 0, 0.08);
 }
 body, 
 .sidebar, 
@@ -925,8 +1323,8 @@ body.light-mode .bg-geometric {
     height: 100vh; width: 100vw;
     position: relative;
     z-index: 5;
-    padding: 16px;
-    gap: 16px;
+    padding: 0;
+    gap: 0;
 }
 
 /* ==========================================
@@ -1031,36 +1429,49 @@ body.light-mode .bg-geometric {
 }
 
 .sidebar-top {
-    padding: 22px 18px;
+    height: 64px;
+    padding: 0;
     border-bottom: 1px solid var(--border);
     overflow: hidden;
     flex-shrink: 0;
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
 }
 
 /* Logo Sizing */
 .logo {
-    display: flex; align-items: center; gap: 10px;
-    font-family: var(--font-display);
-    font-size: 18px; font-weight: 800;
-    letter-spacing: -0.5px; color: #ffffff !important;
-    overflow: hidden; white-space: nowrap;
+    display: flex; align-items: center; justify-content: center;
+    width: 100%; height: 100%;
+    overflow: hidden;
 }
 .logo img {
     animation: gentleFloat 4s ease-in-out infinite;
-    filter: brightness(0) invert(1) !important;
 }
 
+/* White Claymorphism Logo Badge Wrapper - Stretched to Edges */
+.logo-badge {
+    background: #ffffff !important;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.9), inset -2px -2px 4px rgba(0, 0, 0, 0.1), 0 4px 10px rgba(0, 0, 0, 0.05);
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
 .logo-full {
-    width: 140px;
+    width: 165px;
     height: auto;
     object-fit: contain;
     flex-shrink: 0;
     display: block;
 }
 .logo-icon {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     object-fit: contain;
     flex-shrink: 0;
     display: none;
@@ -1109,6 +1520,50 @@ body.light-mode .bg-geometric {
     display: block;
     margin-bottom: 6px;
     padding-left: 10px;
+}
+
+/* Sidebar subheaders for grouped features */
+.sidebar-subheader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    margin-top: 14px;
+    margin-bottom: 4px;
+    font-family: var(--font-display, 'Sora', sans-serif);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--sidebar-accent, #818cf8);
+    opacity: 0.85;
+    transition: all var(--transition);
+}
+
+.sidebar-subheader i {
+    font-size: 11px;
+    color: var(--sidebar-accent, #818cf8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+}
+
+/* Slightly indent sub-items in non-collapsed sidebar */
+.sidebar:not(.collapsed) .nav-sub-item {
+    margin-left: 10px;
+    width: calc(100% - 10px) !important;
+}
+
+/* Hide subheaders and remove indent in collapsed mode */
+.sidebar.collapsed .sidebar-subheader {
+    display: none !important;
+}
+
+.sidebar.collapsed .nav-sub-item {
+    margin-left: 0 !important;
+    width: 100% !important;
 }
 
 .nav-item {
@@ -1581,6 +2036,29 @@ body.light-mode .session-file-item:hover {
 }
 
 .top-controls { display: flex; align-items: center; gap: 10px; }
+
+/* Dynamic Username Header Greeting */
+.user-greeting-header {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--font-display);
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-right: 8px;
+    user-select: none;
+}
+
+.user-greeting-header .user-name-gradient {
+    font-weight: 700;
+    background: var(--grad-text);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradFlow 8s linear infinite;
+}
 
 /* Selector inputs in header */
 .top-controls select {
@@ -2799,4 +3277,59 @@ body.light-mode .features-dropdown .toolbar-btn:hover {
 body.light-mode .at-filter-select option {
     background-color: #ffffff !important;
     color: #0f172a !important;
+}
+
+/* ==========================================
+   CLAYMORPHISM 3D GLASS DESIGN OVERRIDES
+   ========================================== */
+.message-content,
+.at-column,
+.card,
+.visual-pulse-card,
+.stat-sonar-card,
+.trendlens-card,
+.timeline-weave-card,
+#nlpModal,
+#cuModal,
+#kgPanel,
+#mmModal,
+.report-modal-content,
+.upload-modal-content,
+.faq-workspace-content {
+    border-radius: 20px !important;
+    box-shadow: var(--clay-shadow) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid var(--border) !important;
+}
+
+/* Docked Sidebar and Chat Area Fullscreen Styling */
+.sidebar {
+    border-radius: 0 !important;
+    border-top-left-radius: 20px !important;
+    border-bottom-left-radius: 20px !important;
+    box-shadow: var(--sidebar-shadow) !important;
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
+    border: 1px solid var(--sidebar-border) !important;
+    border-right: none !important;
+}
+
+.chat-area {
+    border-radius: 0 !important;
+    border-top-right-radius: 20px !important;
+    border-bottom-right-radius: 20px !important;
+    box-shadow: var(--shadow) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid var(--border) !important;
+}
+
+/* Specific styling for user and bot message bubbles under claymorphism */
+.message.bot .message-content {
+    background: var(--bg-glass) !important;
+}
+
+.message.user .message-content {
+    background: var(--grad-primary) !important;
 }

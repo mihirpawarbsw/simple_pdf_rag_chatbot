@@ -82,7 +82,7 @@ const NLPAnalytics = (() => {
 }
 
 .nlp-analytics-btn::after {
-    content: "NLP";
+    content: "LEX";
     position: absolute;
     top: -6px;
     right: -6px;
@@ -696,7 +696,7 @@ body.light-mode #nlpCloseBtn:hover {
               <i class="fa-solid fa-flask-vial"></i>
               <div>
                 <h2>
-                  NLP Analytics Suite
+                  LexiScope Suite
                   <span id="nlpStatBar"></span>
                 </h2>
                 <span class="hdr-subtitle">Performs advanced natural language tasks including Entity Extraction, Sentiment Analysis, and Summarization.</span>
@@ -736,7 +736,7 @@ body.light-mode #nlpCloseBtn:hover {
           <div id="nlpBody">
             <div class="nlp-state" id="nlpState" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0; gap: 8px; color: var(--text-secondary); width: 100%; height: 100%;">
               <i class="fa-solid fa-flask-vial" style="margin-bottom: 2px; font-size: 24px; color: var(--accent);"></i>
-              <h3 style="margin: 0; font-family: var(--font-display); font-size: 1.0rem; color: var(--text-primary);">NLP Analytics Suite</h3>
+              <h3 style="margin: 0; font-family: var(--font-display); font-size: 1.0rem; color: var(--text-primary);">LexiScope Suite</h3>
               <p style="margin: 0 0 8px; font-size: 0.78rem; max-width: 480px; line-height: 1.3;">
                 Analyze your documents to extract emotional tone, key terms, themes, entities, and readability complexity.
               </p>

@@ -25,6 +25,7 @@
 
 /* ── Card ─────────────────────────────────────────────────── */
 .report-modal-card {
+  position: relative;
   background: var(--bg-glass-deep);
   backdrop-filter: blur(40px);
   -webkit-backdrop-filter: blur(40px);
@@ -38,6 +39,17 @@
   box-shadow: 0 24px 64px rgba(0,0,0,0.6), 0 0 40px var(--accent-glow-soft);
   animation: reportSlideUp 0.28s cubic-bezier(0.25, 0.8, 0.25, 1);
   font-family: var(--font-body), sans-serif;
+}
+
+/* Slim top accent bar — echoes the numbered-section accent rule used in the
+   generated report itself, tying the modal to the "enterprise briefing" look. */
+.report-modal-card::before {
+  content: "";
+  display: block;
+  height: 3px;
+  margin: -28px -28px 20px;
+  background: var(--grad-button);
+  border-radius: var(--radius-modal) var(--radius-modal) 0 0;
 }
 
 @keyframes reportSlideUp {
@@ -164,6 +176,106 @@ body.light-mode .report-doc-count {
   background: var(--grad-button) !important;
   color: var(--swal-btn-text) !important;
   box-shadow: 0 4px 14px var(--accent-glow-soft);
+}
+
+/* ── Web research toggle ──────────────────────────────────── */
+.report-web-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--bg-glass);
+  transition: all var(--transition);
+}
+
+.report-web-toggle-row.active {
+  border-color: #22D3EE55;
+  background: linear-gradient(135deg, rgba(34,211,238,0.10), rgba(124,58,237,0.06));
+  box-shadow: 0 0 0 1px rgba(34,211,238,0.18) inset;
+}
+
+.report-web-toggle-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.report-web-toggle-icon {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #22D3EE;
+  background: rgba(34,211,238,0.12);
+  border: 1px solid rgba(34,211,238,0.3);
+}
+
+.report-web-toggle-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.report-web-toggle-sub {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  line-height: 1.35;
+  margin-top: 1px;
+}
+
+/* Toggle switch */
+.report-toggle-switch {
+  position: relative;
+  flex-shrink: 0;
+  display: inline-block;
+  width: 42px;
+  height: 24px;
+}
+
+.report-toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.report-toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: var(--border);
+  border-radius: 999px;
+  transition: all var(--transition);
+}
+
+.report-toggle-slider::before {
+  content: "";
+  position: absolute;
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: all var(--transition);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.report-toggle-switch input:checked + .report-toggle-slider {
+  background: linear-gradient(135deg, #22D3EE, #7C3AED);
+}
+
+.report-toggle-switch input:checked + .report-toggle-slider::before {
+  transform: translateX(18px);
 }
 
 /* ── Document list ────────────────────────────────────────── */

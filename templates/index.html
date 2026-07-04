@@ -356,6 +356,15 @@
                 <div class="chat-history-list" id="chatHistoryList" style="display: none;"></div>
             </div>
 
+            <!-- Category: WALKTHROUGH -->
+            <div class="nav-category">
+                <span class="category-title">Walkthrough</span>
+                <button class="nav-item" id="nav-guide" onclick="showGuideInCenter()" title="User Guide & FAQ">
+                    <i class="fa-solid fa-circle-question"></i>
+                    <span class="sidebar-text">User Guide &amp; FAQ</span>
+                </button>
+            </div>
+
             <!-- Category: EXPLORE FEATURES -->
             <div class="nav-category">
                 <span class="category-title">Explore Features</span>
@@ -445,12 +454,6 @@
                 <div class="user-greeting-header">
                     Hello <span class="user-name-gradient">{{ username }}</span>
                 </div>
-                
-                <!-- User Guide & FAQ Button -->
-                <button id="guideBtn" class="explore-btn" onclick="showGuideInCenter()" title="System Guide & FAQ">
-                    <i class="fa-solid fa-circle-question header-icon"></i>
-                    <span>User Guide &amp; FAQ</span>
-                </button>
 
                 <!-- Session Settings -->
                 <button id="settingsBtn" class="header-icon-btn" onclick="toggleSettingsDrawer()" title="Session Settings">

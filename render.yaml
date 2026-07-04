@@ -3,11 +3,12 @@ services:
     name: rag-ai-chatbot
     env: python
     plan: free
-
     buildCommand: pip install -r requirements.txt
-
-    startCommand: gunicorn app:app --workers 1 --threads 2 --timeout 600
-
+    startCommand: gunicorn app:app --workers 1 --timeout 120 --graceful-timeout 30
     envVars:
       - key: GROQ_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: INSIGHTS_GEMINI_API_KEY
         sync: false

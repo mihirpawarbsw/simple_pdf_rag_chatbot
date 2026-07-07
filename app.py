@@ -60,6 +60,9 @@ from rag_logic import (
     # Chroma constant
     CHROMA_PATH,
     CHROMA_COLLECTION,
+    # Web Mode (NEW) — multi-tool agentic retrieval (PDF + Web + Internal DB)
+    run_web_mode_retrieval,
+    get_web_mode_prompt,
 )
 
 from knowledge_graph import knowledge_graph_bp
@@ -605,6 +608,7 @@ def ask_stream():
     language      = data.get("language", "English")
     response_type = data.get("response_type", "detailed")
     selected_docs = data.get("selected_docs", [])
+    web_mode      = bool(data.get("web_mode", False))   # NEW — Web Mode toggle flag
 
     if not question or not session_id:
         return jsonify({"status": "error", "message": "Missing question or session_id"}), 400
@@ -636,33 +640,9 @@ def ask_stream():
             # ── LLM via key-rotating router ───────────────────────────────
             llm = get_routed_llm(session_id, settings)
 
-            # ── No docs + casual ──────────────────────────────────────────
-            if not has_files and is_general_question(question):
-                style_instruction = get_response_style_instruction(response_type)
-                prompt = (
-                    f"{settings['system_prompt']}\n\n"
-                    f"Respond in {language}.\n"
-                    f"{style_instruction}\n\n"
-                    f"User: {question}\n\nAssistant:"
-                )
-                answer_text = ""
-                for chunk in llm.stream(prompt):
-                    token = chunk.content
-                    answer_text += token
-                    yield f"data: {json.dumps({'token': token})}\n\n"
-
-                messages.append({"question": question, "answer": answer_text})
-                update_chat(username, session_id, messages, settings)
-                yield f"data: {json.dumps({'done': True, 'sources': []})}\n\n"
-                return
-
-            # ── No docs + non-casual ──────────────────────────────────────
-            if not has_files:
-                yield f"data: {json.dumps({'error': 'No knowledge base loaded. Please upload documents first.'})}\n\n"
-                yield f"data: {json.dumps({'done': True, 'sources': []})}\n\n"
-                return
-
-            # ── Casual chat (docs present, but greeting-style question) ───
+            # ── Casual chat (greeting-style question) — same for every mode ─
+            #    (Previously duplicated for the has_files/no-files cases;
+            #     merged since the behaviour was identical either way.)
             if is_general_question(question):
                 style_instruction = get_response_style_instruction(response_type)
                 prompt = (
@@ -679,6 +659,69 @@ def ask_stream():
 
                 messages.append({"question": question, "answer": answer_text})
                 update_chat(username, session_id, messages, settings)
+                yield f"data: {json.dumps({'done': True, 'sources': []})}\n\n"
+                return
+
+            # ── WEB MODE (NEW) — multi-tool agentic retrieval ──────────────
+            # Runs when the "Web Mode" toggle is ON, with or without uploaded
+            # docs. Original RAG pipeline (below) is completely untouched and
+            # only runs when web_mode is False.
+            if web_mode:
+                # 1. Condense the follow-up into a standalone query — reuses
+                #    the exact same condensation + validation guardrail the
+                #    original pipeline uses (fix #10), so query quality is
+                #    identical between modes.
+                capped_messages = messages[-5:]
+                condensed_raw   = condense_question(session_id, question, capped_messages, settings)
+                condensed_q     = validate_condensed_query(question, condensed_raw)
+
+                # 2. Router decides which of PDF / Web / Internal DB
+                #    are worth querying for THIS question, then fetches the
+                #    selected ones in parallel.
+                retrieval = run_web_mode_retrieval(
+                    question=question,
+                    condensed_q=condensed_q,
+                    username=username,
+                    has_docs=has_files,
+                    selected_docs=selected_docs,
+                    settings=settings,
+                )
+
+                style_instruction = get_response_style_instruction(response_type)
+                web_prompt = get_web_mode_prompt(
+                    system_prompt     = settings['system_prompt'],
+                    language           = language,
+                    style_instruction  = style_instruction,
+                    context_str        = retrieval["context_str"],
+                    question           = question,
+                    tools_used         = retrieval["tools_used"],
+                )
+
+                # 3. Stream with the same key-rotating router used everywhere else
+                answer_text = ""
+                for token in call_llm_streaming(web_prompt, settings):
+                    answer_text += token
+                    yield f"data: {json.dumps({'token': token})}\n\n"
+
+                # 4. Same secret-leakage guard as the original pipeline (untouched)
+                answer_text = sanitize_answer(answer_text)
+
+                # 5. Drop citations if nothing was actually retrieved, or the
+                #    model itself hedged ("no information found", etc.)
+                if not retrieval["citations"] or is_hallucinating(answer_text):
+                    final_tool_citations = []
+                else:
+                    final_tool_citations = retrieval["citations"]
+
+                yield f"data: {json.dumps({'done': True, 'sources': [], 'tool_citations': final_tool_citations, 'tools_used': retrieval['tools_used']})}\n\n"
+
+                messages.append({"question": question, "answer": answer_text})
+                update_chat(username, session_id, messages, settings)
+                return
+
+            # ── No docs + Web Mode OFF + non-casual ─────────────────────────
+            if not has_files:
+                yield f"data: {json.dumps({'error': 'No knowledge base loaded. Please upload documents first.'})}\n\n"
                 yield f"data: {json.dumps({'done': True, 'sources': []})}\n\n"
                 return
 

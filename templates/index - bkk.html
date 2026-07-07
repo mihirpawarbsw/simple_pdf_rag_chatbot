@@ -772,7 +772,7 @@
         <!-- Messages -->
         <div class="messages" id="messages">
             <div class="greeting-splash" id="greetingSplash">
-                <div class="greeting-emoji" id="greetingEmoji"><img src="{{ url_for('static', filename='images/logo_nexora_icon.png') }}" alt="Nexora Logo" class="greeting-logo"></div>
+                <div class="greeting-emoji" id="greetingEmoji"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
                 <h2 class="greeting-title">{{ greeting }}, <span class="user-name">{{ username }}</span></h2>
                 <p class="greeting-sub">Welcome to Nexora.AI</p>
                 <p class="greeting-tagline">Nexora.AI is an advanced enterprise intelligence workspace that dynamically transforms unstructured data into semantic QA engines, interactive knowledge graphs, and automated action trackers. Simply upload your documentation to instantly activate real-time cognitive analytics, dynamic clustering, and structured executive reporting.</p>
@@ -1132,7 +1132,27 @@
     function updateGreetingEmoji(theme) {
         const emojiEl = document.getElementById("greetingEmoji");
         if (emojiEl) {
-            emojiEl.innerHTML = `<img src="{{ url_for('static', filename='images/logo_nexora_icon.png') }}" alt="Nexora Logo" class="greeting-logo">`;
+            let iconHtml = '<i class="fa-solid fa-wand-magic-sparkles"></i>';
+            if (theme === "cyberpunk") {
+                iconHtml = '<i class="fa-solid fa-robot"></i>';
+            } else if (theme === "bubblegum") {
+                iconHtml = '<i class="fa-solid fa-candy-cane"></i>';
+            } else if (theme === "tokyosunset") {
+                iconHtml = '<i class="fa-solid fa-city"></i>';
+            } else if (theme === "acidlime") {
+                iconHtml = '<i class="fa-solid fa-lemon"></i>';
+            } else if (theme === "emerald") {
+                iconHtml = '<i class="fa-solid fa-gem"></i>';
+            } else if (theme === "amber") {
+                iconHtml = '<i class="fa-solid fa-fire"></i>';
+            } else if (theme === "rose") {
+                iconHtml = '<i class="fa-solid fa-feather-pointed"></i>';
+            } else if (theme === "aurora") {
+                iconHtml = '<i class="fa-solid fa-water"></i>';
+            } else if (theme === "amazon") {
+                iconHtml = '<i class="fa-solid fa-leaf"></i>';
+            }
+            emojiEl.innerHTML = iconHtml;
         }
     }
 
@@ -1306,7 +1326,7 @@
         session_id = null; messagesData = []; isGenerating = false; stopTypingEffect();
         document.getElementById("messages").innerHTML = `
             <div class="greeting-splash" id="greetingSplash">
-                <div class="greeting-emoji" id="greetingEmoji"><img src="{{ url_for('static', filename='images/logo_nexora_icon.png') }}" alt="Nexora Logo" class="greeting-logo"></div>
+                <div class="greeting-emoji" id="greetingEmoji"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
                 <h2 class="greeting-title">{{ greeting }}, <span class="user-name">{{ username }}</span></h2>
                 <p class="greeting-sub">Welcome to Nexora.AI</p>
                 <p class="greeting-tagline">Nexora.AI is an advanced enterprise intelligence workspace that dynamically transforms unstructured data into semantic QA engines, interactive knowledge graphs, and automated action trackers. Simply upload your documentation to instantly activate real-time cognitive analytics, dynamic clustering, and structured executive reporting.</p>
@@ -1995,7 +2015,7 @@
             if(messages.length === 0){
                 messagesDiv.innerHTML = `
                     <div class="greeting-splash" id="greetingSplash">
-                        <div class="greeting-emoji" id="greetingEmoji"><img src="{{ url_for('static', filename='images/logo_nexora_icon.png') }}" alt="Nexora Logo" class="greeting-logo"></div>
+                        <div class="greeting-emoji" id="greetingEmoji"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
                         <h2 class="greeting-title">{{ greeting }}, <span class="user-name">{{ username }}</span></h2>
                         <p class="greeting-sub">Welcome to Nexora.AI</p>
                         <p class="greeting-tagline">Nexora.AI is an advanced enterprise intelligence workspace that dynamically transforms unstructured data into semantic QA engines, interactive knowledge graphs, and automated action trackers. Simply upload your documentation to instantly activate real-time cognitive analytics, dynamic clustering, and structured executive reporting.</p>

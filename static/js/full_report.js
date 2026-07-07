@@ -56,21 +56,6 @@
       </button>
     </div>
 
-    <!-- Web research toggle -->
-    <div class="report-web-toggle-row" id="reportWebToggleRow">
-      <div class="report-web-toggle-left">
-        <i class="fa-solid fa-globe report-web-toggle-icon"></i>
-        <div>
-          <div class="report-web-toggle-title">Include Web Research</div>
-          <div class="report-web-toggle-sub">Adds current web context &amp; images alongside your documents (via Tavily). If unavailable, the report still generates and will note why.</div>
-        </div>
-      </div>
-      <label class="report-toggle-switch">
-        <input type="checkbox" id="reportWebToggle" onchange="toggleWebResearch(this)">
-        <span class="report-toggle-slider"></span>
-      </label>
-    </div>
-
     <!-- Document list -->
     <div class="report-section-label" style="margin-top:18px">
       Documents to Include
@@ -114,8 +99,6 @@
   ────────────────────────────────────────────────────────────────────────── */
   let _selectedFormat = "pdf";
   let _generating     = false;
-  let _useWeb         = false;
-
   const _progressSteps = [
     { pct: 10, label: "Fetching document chunks…"        },
     { pct: 25, label: "Writing Executive Summary…"        },
@@ -124,19 +107,6 @@
     { pct: 82, label: "Drafting Conclusion & Recommendations…" },
     { pct: 92, label: "Rendering report file…"            },
     { pct: 100, label: "Done! Downloading…"              },
-  ];
-
-  // Same steps, with a single upfront web-research step inserted —
-  // still just ONE extra network call (Tavily), not extra LLM hits.
-  const _progressStepsWeb = [
-    { pct: 8,  label: "Gathering web research (Tavily)…"  },
-    { pct: 18, label: "Fetching document chunks…"         },
-    { pct: 32, label: "Writing Executive Summary…"        },
-    { pct: 48, label: "Identifying Key Findings…"         },
-    { pct: 65, label: "Running Detailed Analysis…"        },
-    { pct: 82, label: "Drafting Conclusion & Recommendations…" },
-    { pct: 92, label: "Rendering report + web images…"    },
-    { pct: 100, label: "Done! Downloading…"               },
   ];
 
   /* ──────────────────────────────────────────────────────────────────────────
@@ -160,12 +130,6 @@
     _selectedFormat = fmt;
     document.querySelectorAll(".report-format-btn").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
-  };
-
-  window.toggleWebResearch = function (input) {
-    _useWeb = !!input.checked;
-    const row = document.getElementById("reportWebToggleRow");
-    if (row) row.classList.toggle("active", _useWeb);
   };
 
   window.reportSelectAll = function (checked) {
@@ -228,11 +192,10 @@
     document.getElementById("reportGenerateBtn").disabled = true;
 
     // Animate progress bar through fake steps while we wait
-    const steps = _useWeb ? _progressStepsWeb : _progressSteps;
     let stepIdx = 0;
     const stepTimer = setInterval(() => {
-      if (stepIdx < steps.length - 1) {
-        _setProgress(steps[stepIdx].pct, steps[stepIdx].label);
+      if (stepIdx < _progressSteps.length - 1) {
+        _setProgress(_progressSteps[stepIdx].pct, _progressSteps[stepIdx].label);
         stepIdx++;
       }
     }, 2500);
@@ -247,7 +210,6 @@
           session_id:    sessionId,
           selected_docs: checked,
           format:        _selectedFormat,
-          use_web:       _useWeb,
         }),
       });
 
@@ -259,12 +221,6 @@
       }
 
       _setProgress(100, "Done! Downloading…");
-
-      // The backend surfaces web-research failures (e.g. Tavily not configured,
-      // or the search returning nothing) via this header rather than failing
-      // the whole report — the report still downloads, but the user should
-      // know why "Include Web Research" didn't add anything.
-      const webWarning = resp.headers.get("X-Report-Web-Warning");
 
       // Trigger file download
       const blob        = await resp.blob();
@@ -281,11 +237,7 @@
 
       setTimeout(() => {
         closeReportModal();
-        if (_useWeb && webWarning) {
-          _showToast(`Report downloaded, but web research was skipped: ${webWarning}`, "warning");
-        } else {
-          _showToast("Report downloaded successfully!", "success");
-        }
+        _showToast("Report downloaded successfully!", "success");
       }, 800);
 
     } catch (err) {
@@ -303,14 +255,9 @@
   function _resetModal() {
     _generating     = false;
     _selectedFormat = "pdf";
-    _useWeb         = false;
     document.querySelectorAll(".report-format-btn").forEach((b, i) => {
       b.classList.toggle("active", i === 0);
     });
-    const webToggle = document.getElementById("reportWebToggle");
-    if (webToggle) webToggle.checked = false;
-    const webRow = document.getElementById("reportWebToggleRow");
-    if (webRow) webRow.classList.remove("active");
     _showProgress(false);
     const btn = document.getElementById("reportGenerateBtn");
     if (btn) btn.disabled = false;

@@ -752,15 +752,62 @@ def _render_report_html(report: dict) -> str:
 
 
 def _export_pdf(report: dict) -> bytes:
-    """Render HTML report to PDF bytes using WeasyPrint."""
-    try:
-        from weasyprint import HTML
-        html_str = _render_report_html(report)
-        return HTML(string=html_str).write_pdf()
-    except ImportError:
+    """
+    Render HTML report to PDF bytes via the PDFShift API (hosted Chromium).
+
+    Why this instead of a local renderer (WeasyPrint / Playwright / pyppeteer):
+      - Render's free web service instance has only 512 MB RAM. A local
+        Chromium/WebKit process alone needs 200-500 MB to launch, which
+        will intermittently OOM-kill the whole app alongside Flask + Chroma.
+      - PDFShift runs actual Chromium on their servers, so output is
+        pixel-identical to Playwright — same flexbox/grid/gradient support,
+        nothing in your HTML template needs to change.
+      - Your Render process just does a single HTTP POST + gets PDF bytes
+        back. Memory footprint is a few hundred KB (the request body),
+        not a few hundred MB.
+
+    Setup:
+      1. Sign up at https://pdfshift.io (free tier: 250 pages/month)
+      2. Set the env var on Render:  PDFSHIFT_API_KEY=sk_xxxxxxxx
+         (Render dashboard → your service → Environment → Add Environment Variable)
+    """
+    import requests
+
+    api_key = os.getenv("PDFSHIFT_API_KEY", "")
+    if not api_key:
         raise RuntimeError(
-            "WeasyPrint is not installed. Run: pip install weasyprint --break-system-packages"
+            "PDFSHIFT_API_KEY is not set. Sign up at https://pdfshift.io "
+            "(free tier available) and add PDFSHIFT_API_KEY to your Render "
+            "environment variables."
         )
+
+    html_str = _render_report_html(report)
+
+    try:
+        resp = requests.post(
+            "https://api.pdfshift.io/v3/convert/pdf",
+            auth=("api", api_key),
+            json={
+                "source": html_str,
+                "landscape": False,
+                "format": "A4",
+                "margin": "20mm 18mm",
+                "use_print": False,
+            },
+            timeout=30,
+        )
+    except requests.exceptions.RequestException as e:
+        raise RuntimeError(f"Could not reach PDFShift API: {e}")
+
+    if resp.status_code != 200:
+        # PDFShift returns JSON error bodies on failure
+        try:
+            err_msg = resp.json().get("message", resp.text[:300])
+        except Exception:
+            err_msg = resp.text[:300]
+        raise RuntimeError(f"PDFShift conversion failed ({resp.status_code}): {err_msg}")
+
+    return resp.content
 
 
 # ═════════════════════════════════════════════════════════════════════════════

@@ -369,9 +369,11 @@ const PulseGrid = (() => {
                     <button class="pg-header-btn primary" id="pgRegenerateBtn" onclick="PulseGrid.generate()" style="display:none">
                         <i class="fa-solid fa-wand-magic-sparkles"></i> Regenerate
                     </button>
+                    <!--
                     <button class="pg-header-btn" id="pgDownloadBtn" onclick="PulseGrid.downloadPDF()" style="display:none">
                         <i class="fa-solid fa-file-arrow-down"></i> Download PDF
                     </button>
+                    -->
                     <button id="pgCloseBtn" onclick="PulseGrid.close()" title="Close StatSonar" style="margin-left:8px;background:transparent;border:none;color:var(--text-secondary);cursor:pointer;font-size:18px;display:inline-flex;align-items:center;justify-content:center;padding:4px;transition:color 0.2s;">
                         <i class="fa-solid fa-xmark"></i>
                     </button>

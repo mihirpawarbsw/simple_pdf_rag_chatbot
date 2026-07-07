@@ -53,7 +53,9 @@ const ActionTracker = (() => {
         if (_isExtracting) return;
         _isExtracting = true;
 
-        const btn = $('atExtractBtn');
+        const btn = forceRefresh 
+            ? document.querySelector('.at-header-right .at-extract-btn') 
+            : document.querySelector('.at-body .at-extract-btn') || document.querySelector('.at-extract-btn');
         if (btn) { btn.disabled = true; btn.innerHTML = '<span class="nexora-spinner inline"></span> Scanning…'; }
 
         // Collect selected docs from the existing document filter checkboxes
@@ -86,7 +88,12 @@ const ActionTracker = (() => {
             Swal.fire({ icon: 'error', title: 'Network Error', text: e.message });
         } finally {
             _isExtracting = false;
-            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-bolt"></i> Extract Items'; }
+            if (btn) { 
+                btn.disabled = false; 
+                btn.innerHTML = forceRefresh 
+                    ? '<i class="fa-solid fa-rotate"></i> Re-scan' 
+                    : '<i class="fa-solid fa-bolt"></i> Extract Action Items'; 
+            }
         }
     }
 

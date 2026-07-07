@@ -1,0 +1,2419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexora.AI — Document Intelligence, Grounded in Your Files</title>
+<meta name="description" content="Nexora.AI reads your PDFs, Word files, and spreadsheets, then answers in plain language with a citation attached to every claim.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<style>
+/* ═══════════════════════════════════════════════════════════
+   NEXORA.AI — Phantom Design System
+   Lavender candy shop at dusk. Pill-shaped geometry,
+   whisper-weight typography, ghost mascot accents.
+   ═══════════════════════════════════════════════════════════ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  /* Colors */
+  --color-aubergine: #3c315b;
+  --color-ghost-lavender: #e2dffe;
+  --color-periwinkle: #ab9ff2;
+  --color-cornflower-pop: #4a87f2;
+  --color-buttercream: #ffffc4;
+  --color-blush-mist: #ffdadc;
+  --color-mint-signal: #2ec08b;
+  --color-paper-white: #fdfcfe;
+  --color-obsidian: #1c1c1c;
+  --color-fog: #86848d;
+  --color-ash: #e9e8ea;
+  --color-bone: #f4f2f4;
+
+  /* Typography */
+  --font-phantom: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Weights */
+  --fw-light: 300;
+  --fw-regular: 400;
+
+  /* Spacing */
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-48: 48px;
+  --spacing-64: 64px;
+  --spacing-96: 96px;
+  --spacing-128: 128px;
+
+  /* Radii */
+  --radius-nav: 100px;
+  --radius-buttons: 100px;
+  --radius-tags: 100px;
+  --radius-cards: 24px;
+  --radius-links: 32px;
+
+  /* Shadows */
+  --shadow-sm: rgb(226, 223, 254) 0px 0px 4px 0px;
+  --shadow-glow: rgb(226, 223, 254) 0px 0px 12px 0px;
+
+  /* Surfaces */
+  --surface-1: #fdfcfe;
+  --surface-2: #f4f2f4;
+  --surface-3: #e9e8ea;
+  --surface-4: #e2dffe;
+  --surface-5: #3c315b;
+
+  /* Layout */
+  --page-max-width: 1200px;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font-phantom);
+  background:var(--color-paper-white);
+  color:var(--color-obsidian);
+  min-height:100vh;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  font-size:15px;
+  font-weight:var(--fw-light);
+  letter-spacing:-0.025em;
+  line-height:1.4;
+}
+
+::selection{background:rgba(171,159,242,0.25);color:var(--color-aubergine)}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;border:none;background:none;cursor:pointer;letter-spacing:-0.025em}
+
+/* ═══ GLOBAL TYPOGRAPHY ═══ */
+h1,h2,h3,.nav-logo,.modal-title,.faq-question,.tool-name,.usecase-title,.layer-title,.step-title,.feature-title,.section-title,.finale-title{
+  font-family:var(--font-phantom);
+  font-weight:var(--fw-light);
+  color:var(--color-aubergine);
+  letter-spacing:-0.025em;
+}
+
+/* ═══ THREE.JS CONTAINER ═══ */
+#canvas-container{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  opacity:0.5;
+}
+
+/* ═══ SUBTLE GRID OVERLAY ═══ */
+.grid-overlay{
+  position:fixed;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  background-image:
+    linear-gradient(to right,rgba(60,49,91,0.02) 1px,transparent 1px),
+    linear-gradient(to bottom,rgba(60,49,91,0.02) 1px,transparent 1px);
+  background-size:80px 80px;
+  mask-image:radial-gradient(ellipse at center,black 0%,transparent 80%);
+}
+
+/* ═══ PILL NAVIGATION BAR ═══ */
+.navbar{
+  position:fixed;
+  top:0;left:0;right:0;
+  z-index:100;
+  padding:16px 24px;
+  transition:all 0.4s var(--ease);
+}
+.navbar-inner{
+  max-width:var(--page-max-width);
+  margin:0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:var(--color-paper-white);
+  border:1px solid var(--color-ash);
+  border-radius:var(--radius-nav);
+  padding:10px 10px 10px 28px;
+  transition:all 0.4s var(--ease);
+}
+.navbar.scrolled .navbar-inner{
+  box-shadow:0 4px 32px rgba(60,49,91,0.08);
+}
+.nav-brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.nav-logo{
+  height:28px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-weight:var(--fw-regular);
+  font-size:18px;
+  color:var(--color-aubergine);
+  letter-spacing:-0.025em;
+}
+.nav-logo-mark{
+  width:32px;height:32px;
+  background:var(--color-aubergine);
+  border-radius:var(--radius-nav);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:500;
+  font-size:14px;
+  color:var(--color-paper-white);
+}
+.nav-logo-suffix{
+  color:var(--color-periwinkle);
+  font-weight:500;
+}
+.nav-links{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.nav-link{
+  font-size:15px;
+  font-weight:var(--fw-light);
+  color:var(--color-aubergine);
+  transition:all 0.25s var(--ease);
+  padding:8px 16px;
+  border-radius:var(--radius-nav);
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  letter-spacing:-0.025em;
+}
+.nav-link:hover{
+  background:var(--color-bone);
+  color:var(--color-aubergine);
+}
+.nav-link i{font-size:11px;color:var(--color-fog);transition:transform 0.2s}
+.nav-link:hover i{transform:rotate(180deg)}
+.nav-actions{display:flex;align-items:center;gap:8px}
+
+/* ═══ BUTTONS ═══ */
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  font-size:15px;
+  font-weight:var(--fw-light);
+  padding:12px 28px;
+  border-radius:var(--radius-buttons);
+  transition:all 0.3s var(--ease);
+  letter-spacing:-0.025em;
+}
+.btn-ghost{
+  color:var(--color-aubergine);
+  padding:10px 20px;
+}
+.btn-ghost:hover{
+  background:var(--color-bone);
+}
+.btn-primary{
+  background:var(--color-ghost-lavender);
+  color:var(--color-aubergine);
+  box-shadow:var(--shadow-sm);
+}
+.btn-primary:hover{
+  box-shadow:var(--shadow-glow);
+  transform:translateY(-2px);
+}
+.btn-secondary{
+  background:var(--color-ash);
+  color:var(--color-aubergine);
+  border:1px solid var(--color-ash);
+}
+.btn-secondary:hover{
+  background:var(--color-bone);
+  border-color:var(--color-periwinkle);
+}
+.btn-pastel-yellow{
+  background:var(--color-buttercream);
+  color:var(--color-obsidian);
+}
+.btn-pastel-pink{
+  background:var(--color-blush-mist);
+  color:var(--color-obsidian);
+}
+.btn-pastel-blue{
+  background:var(--color-cornflower-pop);
+  color:var(--color-paper-white);
+}
+
+/* ═══ GHOST MASCOT ═══ */
+.ghost-accent{
+  display:inline-block;
+  vertical-align:middle;
+  position:relative;
+  animation:ghostFloat 3s ease-in-out infinite;
+}
+.ghost-accent svg{
+  width:0.85em;
+  height:0.85em;
+  display:inline-block;
+  vertical-align:baseline;
+  position:relative;
+  top:-0.03em;
+}
+@keyframes ghostFloat{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-6px)}
+}
+
+/* ═══ PAGE LAYOUT ═══ */
+.page{position:relative;z-index:3}
+
+/* ═══ HERO SECTION (DARK — Aubergine) ═══ */
+.hero{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:140px 24px 80px;
+  position:relative;
+  background:var(--color-aubergine);
+  overflow:hidden;
+}
+.hero::before{
+  content:'';
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:800px;height:800px;
+  background:radial-gradient(circle,rgba(171,159,242,0.15) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-inner{
+  max-width:900px;
+  text-align:center;
+  position:relative;
+  z-index:2;
+}
+.hero-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 20px;
+  background:rgba(226,223,254,0.1);
+  border:1px solid rgba(226,223,254,0.2);
+  border-radius:var(--radius-tags);
+  font-size:12px;
+  font-weight:var(--fw-regular);
+  color:var(--color-ghost-lavender);
+  text-transform:uppercase;
+  letter-spacing:0.1em;
+  margin-bottom:var(--spacing-32);
+}
+.hero-badge::before{
+  content:'';
+  width:6px;height:6px;
+  background:var(--color-mint-signal);
+  border-radius:50%;
+  animation:pulse 2s ease infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+.hero-title{
+  font-size:clamp(44px,7vw,80px);
+  font-weight:var(--fw-light);
+  letter-spacing:-2px;
+  line-height:1.05;
+  color:var(--color-paper-white);
+  margin-bottom:var(--spacing-24);
+}
+.hero-title .ghost-accent svg{
+  fill:var(--color-periwinkle);
+}
+.hero-subtitle{
+  font-size:16px;
+  line-height:1.5;
+  color:rgba(253,252,254,0.65);
+  max-width:620px;
+  margin:0 auto var(--spacing-48);
+  font-weight:var(--fw-light);
+}
+.hero-actions{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.hero-actions .btn{padding:16px 36px;font-size:16px}
+.hero-actions .btn-primary{
+  background:var(--color-ghost-lavender);
+  color:var(--color-aubergine);
+}
+.hero-actions .btn-secondary{
+  background:rgba(255,255,255,0.08);
+  color:var(--color-paper-white);
+  border-color:rgba(255,255,255,0.15);
+}
+.hero-actions .btn-secondary:hover{
+  background:rgba(255,255,255,0.12);
+  border-color:rgba(255,255,255,0.25);
+}
+
+.scroll-indicator{
+  position:absolute;
+  bottom:40px;left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+  color:rgba(253,252,254,0.3);
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:0.15em;
+}
+.scroll-line{
+  width:1px;height:40px;
+  background:linear-gradient(to bottom,rgba(226,223,254,0.4),transparent);
+  animation:scrollPulse 2s ease infinite;
+}
+@keyframes scrollPulse{0%,100%{opacity:0.3;transform:scaleY(1)}50%{opacity:1;transform:scaleY(1.2)}}
+
+/* ═══ HERO MOCKUP ═══ */
+.hero-mockup{
+  margin:56px auto 0;
+  max-width:620px;
+  text-align:left;
+  perspective:1200px;
+}
+.mockup-frame{
+  background:rgba(253,252,254,0.06);
+  border:1px solid rgba(226,223,254,0.15);
+  border-radius:var(--radius-cards);
+  overflow:hidden;
+  box-shadow:0 30px 80px rgba(0,0,0,0.3);
+  backdrop-filter:blur(12px);
+  transform:rotateX(4deg);
+}
+.mockup-topbar{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:14px 16px;
+  border-bottom:1px solid rgba(226,223,254,0.1);
+  background:rgba(253,252,254,0.04);
+}
+.mockup-dot{width:8px;height:8px;border-radius:50%;background:rgba(226,223,254,0.25)}
+.mockup-topbar-label{
+  margin-left:10px;
+  font-size:12px;
+  color:rgba(253,252,254,0.4);
+  letter-spacing:-0.025em;
+}
+.mockup-body{padding:22px 20px 20px;display:flex;flex-direction:column;gap:12px}
+.mockup-msg{
+  font-size:13.5px;
+  line-height:1.55;
+  padding:12px 16px;
+  border-radius:16px;
+  max-width:88%;
+}
+.mockup-msg-user{
+  align-self:flex-end;
+  background:rgba(253,252,254,0.08);
+  color:rgba(253,252,254,0.7);
+  border:1px solid rgba(226,223,254,0.1);
+}
+.mockup-msg-ai{
+  align-self:flex-start;
+  background:rgba(226,223,254,0.1);
+  color:var(--color-paper-white);
+  border:1px solid rgba(226,223,254,0.15);
+}
+.mockup-msg-ai strong{color:var(--color-periwinkle)}
+.mockup-citation{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin-top:10px;
+  padding:4px 12px;
+  font-size:11px;
+  color:var(--color-periwinkle);
+  background:rgba(171,159,242,0.12);
+  border:1px solid rgba(171,159,242,0.2);
+  border-radius:var(--radius-tags);
+}
+.mockup-graph{
+  margin-top:4px;
+  padding-top:14px;
+  border-top:1px dashed rgba(226,223,254,0.1);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+}
+.mockup-graph-svg{width:100%;max-width:260px;height:70px}
+.mg-edge{stroke:rgba(226,223,254,0.3);stroke-width:1}
+.mg-node-a{fill:var(--color-periwinkle)}
+.mg-node-b{fill:var(--color-ghost-lavender)}
+.mg-node-c{fill:var(--color-cornflower-pop)}
+.mockup-graph-label{font-size:11px;color:rgba(253,252,254,0.35)}
+
+.hero-stats{
+  display:flex;
+  justify-content:center;
+  gap:48px;
+  margin-top:52px;
+  flex-wrap:wrap;
+}
+.hero-stat{display:flex;flex-direction:column;align-items:center;gap:4px}
+.hero-stat-num{
+  font-family:var(--font-phantom);
+  font-size:26px;
+  font-weight:var(--fw-regular);
+  color:var(--color-periwinkle);
+}
+.hero-stat-label{
+  font-size:11.5px;
+  color:rgba(253,252,254,0.45);
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+}
+@media(max-width:768px){
+  .nav-links{display:none}
+  .hero-stats{gap:28px 32px}
+  .mockup-frame{transform:none}
+}
+
+/* ═══ SECTION STRUCTURE ═══ */
+.section{
+  padding:120px 24px;
+  position:relative;
+}
+.section-inner{
+  max-width:var(--page-max-width);
+  margin:0 auto;
+}
+.section-label{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 16px;
+  background:var(--color-ghost-lavender);
+  border-radius:var(--radius-tags);
+  font-size:12px;
+  font-weight:var(--fw-regular);
+  color:var(--color-aubergine);
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  margin-bottom:var(--spacing-16);
+}
+.section-number{
+  font-size:12px;
+  font-weight:var(--fw-light);
+  color:var(--color-fog);
+  margin-bottom:var(--spacing-8);
+  letter-spacing:0.05em;
+}
+.section-title{
+  font-size:clamp(32px,4.5vw,64px);
+  font-weight:var(--fw-light);
+  letter-spacing:-1.6px;
+  line-height:1.1;
+  color:var(--color-aubergine);
+  margin-bottom:var(--spacing-20);
+}
+.section-title em{
+  font-style:normal;
+  color:var(--color-periwinkle);
+}
+.section-desc{
+  font-size:16px;
+  line-height:1.5;
+  color:var(--color-fog);
+  max-width:600px;
+  font-weight:var(--fw-light);
+}
+.section-center{text-align:center}
+.section-center .section-desc{margin:0 auto}
+
+/* Dark section variant */
+.section-dark{
+  background:var(--color-aubergine);
+}
+.section-dark .section-label{
+  background:rgba(226,223,254,0.12);
+  color:var(--color-ghost-lavender);
+}
+.section-dark .section-number{color:rgba(253,252,254,0.3)}
+.section-dark .section-title{color:var(--color-paper-white)}
+.section-dark .section-title em{color:var(--color-periwinkle)}
+.section-dark .section-desc{color:rgba(253,252,254,0.55)}
+
+/* Bone section variant */
+.section-bone{background:var(--color-bone)}
+
+/* ═══ QUOTE BLOCK ═══ */
+.quote-section{
+  padding:100px 24px;
+  background:var(--color-bone);
+}
+.quote-block{
+  max-width:800px;
+  margin:0 auto;
+  text-align:center;
+}
+.quote-text{
+  font-size:clamp(22px,3vw,30px);
+  font-weight:var(--fw-light);
+  line-height:1.4;
+  color:var(--color-aubergine);
+  margin-bottom:var(--spacing-32);
+  letter-spacing:-0.75px;
+}
+.quote-text::before{
+  content:'\201C';
+  font-size:1.8em;
+  color:var(--color-periwinkle);
+  line-height:0;
+  margin-right:4px;
+}
+.quote-text::after{
+  content:'\201D';
+  font-size:1.8em;
+  color:var(--color-periwinkle);
+  line-height:0;
+  margin-left:4px;
+}
+.quote-author{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+}
+.quote-avatar{
+  width:48px;height:48px;
+  border-radius:var(--radius-nav);
+  background:var(--color-ghost-lavender);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--color-aubergine);
+  font-size:16px;
+}
+.quote-info{text-align:left}
+.quote-name{
+  font-size:15px;
+  font-weight:var(--fw-regular);
+  color:var(--color-aubergine);
+}
+.quote-role{
+  font-size:13px;
+  color:var(--color-fog);
+}
+
+/* ═══ HOW IT WORKS ═══ */
+.steps-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+  margin-top:var(--spacing-64);
+}
+@media(max-width:1024px){.steps-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.steps-grid{grid-template-columns:1fr}}
+
+.step-card{
+  background:var(--color-paper-white);
+  border:1px solid var(--color-ash);
+  border-radius:var(--radius-cards);
+  padding:var(--spacing-32);
+  transition:all 0.3s var(--ease);
+  position:relative;
+}
+.step-card:hover{
+  border-color:var(--color-periwinkle);
+  transform:translateY(-4px);
+  box-shadow:0 8px 32px rgba(171,159,242,0.1);
+}
+.step-card::before{
+  content:attr(data-step);
+  position:absolute;
+  top:-12px;left:24px;
+  font-size:11px;
+  font-weight:var(--fw-regular);
+  color:var(--color-aubergine);
+  background:var(--color-ghost-lavender);
+  padding:4px 14px;
+  border-radius:var(--radius-tags);
+  letter-spacing:0.05em;
+}
+.step-icon{
+  width:48px;height:48px;
+  background:var(--color-ghost-lavender);
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:var(--spacing-20);
+  color:var(--color-aubergine);
+  font-size:20px;
+  transition:all 0.3s var(--ease);
+}
+.step-card:hover .step-icon{
+  background:var(--color-periwinkle);
+  color:var(--color-paper-white);
+}
+.step-title{
+  font-size:17px;
+  font-weight:var(--fw-regular);
+  color:var(--color-aubergine);
+  margin-bottom:var(--spacing-12);
+}
+.step-desc{
+  font-size:14px;
+  line-height:1.5;
+  color:var(--color-fog);
+  font-weight:var(--fw-light);
+}
+
+/* ═══ LAYER DIAGRAM ═══ */
+.layer-section{
+  padding:100px 24px;
+  background:var(--color-aubergine);
+}
+.layer-diagram{
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  max-width:500px;
+  margin:60px auto 0;
+}
+.layer{
+  padding:24px 32px;
+  border:1px solid rgba(226,223,254,0.15);
+  text-align:center;
+  position:relative;
+  transition:all 0.3s var(--ease);
+}
+.layer:hover{
+  border-color:var(--color-periwinkle);
+  background:rgba(226,223,254,0.05);
+}
+.layer-l1{
+  background:rgba(253,252,254,0.05);
+  border-radius:var(--radius-cards) var(--radius-cards) 0 0;
+}
+.layer-l2{
+  background:rgba(226,223,254,0.1);
+  border-color:rgba(226,223,254,0.2);
+}
+.layer-l3{
+  background:rgba(253,252,254,0.03);
+  border-radius:0 0 var(--radius-cards) var(--radius-cards);
+}
+.layer-title{
+  font-size:13px;
+  font-weight:var(--fw-regular);
+  color:var(--color-paper-white);
+  margin-bottom:4px;
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+}
+.layer-desc{font-size:13px;color:rgba(253,252,254,0.5);font-weight:var(--fw-light)}
+.layer-l2 .layer-title{color:var(--color-periwinkle)}
+.layer-l2 .layer-desc{color:rgba(253,252,254,0.65)}
+.layer-connector{
+  display:flex;
+  justify-content:center;
+  padding:12px 0;
+  color:rgba(226,223,254,0.3);
+  font-size:18px;
+}
+
+/* ═══ FEATURES ═══ */
+.features-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+  margin-top:var(--spacing-64);
+}
+@media(max-width:980px){.features-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.features-grid{grid-template-columns:1fr}}
+
+.feature-card{
+  background:var(--color-paper-white);
+  border:1px solid var(--color-ash);
+  border-radius:var(--radius-cards);
+  padding:var(--spacing-32);
+  transition:all 0.3s var(--ease);
+}
+.feature-card:hover{
+  border-color:var(--color-periwinkle);
+  transform:translateY(-3px);
+  box-shadow:0 8px 24px rgba(171,159,242,0.08);
+}
+.feature-icon{
+  width:44px;height:44px;
+  background:var(--color-ghost-lavender);
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:var(--spacing-20);
+  color:var(--color-aubergine);
+  font-size:18px;
+  transition:all 0.3s var(--ease);
+}
+.feature-card:hover .feature-icon{
+  background:var(--color-periwinkle);
+  color:var(--color-paper-white);
+}
+.feature-title{
+  font-size:16px;
+  font-weight:var(--fw-regular);
+  color:var(--color-aubergine);
+  margin-bottom:var(--spacing-8);
+}
+.feature-desc{
+  font-size:14px;
+  line-height:1.5;
+  color:var(--color-fog);
+  font-weight:var(--fw-light);
+}
+
+/* ═══ TOOLS SHOWCASE ═══ */
+.tools-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+  margin-top:var(--spacing-64);
+}
+@media(max-width:980px){.tools-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.tools-grid{grid-template-columns:1fr}}
+
+.tool-card{
+  background:var(--color-paper-white);
+  border:1px solid var(--color-ash);
+  border-radius:var(--radius-cards);
+  overflow:hidden;
+  transition:all 0.3s var(--ease);
+}
+.tool-card:hover{
+  border-color:var(--color-periwinkle);
+  transform:translateY(-4px);
+  box-shadow:0 12px 40px rgba(171,159,242,0.1);
+}
+.tool-preview{
+  height:120px;
+  background:var(--color-bone);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+}
+.tool-preview-icon{
+  font-size:28px;
+  color:var(--color-periwinkle);
+  opacity:0.6;
+  position:relative;
+  z-index:1;
+}
+.tool-preview-rings{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.tool-ring{
+  position:absolute;
+  border:1px solid rgba(171,159,242,0.25);
+  border-radius:50%;
+  animation:ringPulse 3s linear infinite;
+}
+.tool-ring.r1{width:50px;height:50px}
+.tool-ring.r2{width:80px;height:80px;animation-delay:1s}
+.tool-ring.r3{width:110px;height:110px;animation-delay:2s}
+@keyframes ringPulse{
+  0%{transform:scale(0.8);opacity:0}
+  50%{opacity:0.6}
+  100%{transform:scale(1.3);opacity:0}
+}
+.tool-body{padding:var(--spacing-24)}
+.tool-header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:var(--spacing-12);
+}
+.tool-icon{
+  width:36px;height:36px;
+  background:var(--color-ghost-lavender);
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--color-aubergine);
+  font-size:16px;
+  transition:all 0.3s var(--ease);
+}
+.tool-card:hover .tool-icon{
+  background:var(--color-periwinkle);
+  color:var(--color-paper-white);
+}
+.tool-name{
+  font-size:16px;
+  font-weight:var(--fw-regular);
+  color:var(--color-aubergine);
+}
+.tool-desc{
+  font-size:14px;
+  line-height:1.5;
+  color:var(--color-fog);
+  margin-bottom:var(--spacing-16);
+  font-weight:var(--fw-light);
+}
+.tool-points{list-style:none}
+.tool-points li{
+  font-size:13px;
+  color:var(--color-fog);
+  padding:5px 0;
+  padding-left:20px;
+  position:relative;
+  font-weight:var(--fw-light);
+}
+.tool-points li::before{
+  content:'';
+  position:absolute;
+  left:0;top:12px;
+  width:8px;height:2px;
+  background:var(--color-periwinkle);
+  border-radius:1px;
+}
+
+/* ═══ USE CASES ═══ */
+.usecases-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+  margin-top:var(--spacing-64);
+}
+@media(max-width:980px){.usecases-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.usecases-grid{grid-template-columns:1fr}}
+
+.usecase-card{
+  background:var(--color-paper-white);
+  border:1px solid var(--color-ash);
+  border-radius:var(--radius-cards);
+  padding:var(--spacing-32);
+  transition:all 0.3s var(--ease);
+}
+.usecase-card:hover{
+  border-color:var(--color-periwinkle);
+  transform:translateY(-3px);
+}
+.usecase-icon{
+  width:48px;height:48px;
+  background:var(--color-ghost-lavender);
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:var(--spacing-20);
+  color:var(--color-aubergine);
+  font-size:20px;
+  transition:all 0.3s var(--ease);
+}
+.usecase-card:hover .usecase-icon{
+  background:var(--color-periwinkle);
+  color:var(--color-paper-white);
+}
+.usecase-title{
+  font-size:18px;
+  font-weight:var(--fw-regular);
+  color:var(--color-aubergine);
+  margin-bottom:6px;
+}
+.usecase-subtitle{
+  display:inline-block;
+  font-size:11px;
+  font-weight:var(--fw-regular);
+  color:var(--color-aubergine);
+  background:var(--color-ghost-lavender);
+  padding:3px 12px;
+  border-radius:var(--radius-tags);
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  margin-bottom:var(--spacing-20);
+}
+.usecase-list{list-style:none}
+.usecase-list li{
+  font-size:14px;
+  line-height:1.5;
+  color:var(--color-fog);
+  padding:8px 0;
+  border-bottom:1px solid var(--color-ash);
+  font-weight:var(--fw-light);
+}
+.usecase-list li:last-child{border-bottom:none}
+.usecase-list li strong{
+  color:var(--color-aubergine);
+  font-weight:var(--fw-regular);
+}
+
+/* ═══ FAQ ═══ */
+.faq-section{padding:100px 24px}
+.faq-list{
+  max-width:700px;
+  margin:var(--spacing-48) auto 0;
+  display:flex;
+  flex-direction:column;
+  gap:var(--spacing-8);
+}
+.faq-item{
+  background:var(--color-paper-white);
+  border:1px solid var(--color-ash);
+  border-radius:var(--radius-cards);
+  overflow:hidden;
+  transition:all 0.3s var(--ease);
+}
+.faq-item:hover{border-color:var(--color-periwinkle)}
+.faq-item.open{border-color:var(--color-periwinkle);background:var(--color-bone)}
+.faq-question{
+  width:100%;
+  padding:20px 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  text-align:left;
+  font-size:15px;
+  font-weight:var(--fw-regular);
+  color:var(--color-aubergine);
+}
+.faq-caret{
+  font-size:12px;
+  color:var(--color-fog);
+  transition:transform 0.3s var(--ease);
+}
+.faq-item.open .faq-caret{
+  transform:rotate(180deg);
+  color:var(--color-periwinkle);
+}
+.faq-answer{
+  max-height:0;
+  overflow:hidden;
+  transition:max-height 0.35s var(--ease);
+}
+.faq-answer-inner{
+  padding:0 24px 20px;
+  font-size:14px;
+  line-height:1.6;
+  color:var(--color-fog);
+  font-weight:var(--fw-light);
+}
+
+/* ═══ FINALE CTA ═══ */
+.finale{
+  padding:120px 24px;
+  text-align:center;
+  background:var(--color-aubergine);
+  position:relative;
+  overflow:hidden;
+}
+.finale-orb{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none;
+}
+.finale-ring{
+  position:absolute;
+  border:1px solid rgba(226,223,254,0.1);
+  border-radius:50%;
+  animation:ringPulse 4s linear infinite;
+}
+.finale-ring.f1{width:200px;height:200px}
+.finale-ring.f2{width:350px;height:350px;animation-delay:1.3s}
+.finale-ring.f3{width:500px;height:500px;animation-delay:2.6s}
+.finale-title{
+  font-size:clamp(34px,5vw,64px);
+  font-weight:var(--fw-light);
+  letter-spacing:-1.6px;
+  line-height:1.1;
+  color:var(--color-paper-white);
+  margin-bottom:var(--spacing-16);
+  position:relative;
+}
+.finale-title em{
+  font-style:normal;
+  color:var(--color-periwinkle);
+}
+.finale-desc{
+  font-size:16px;
+  color:rgba(253,252,254,0.55);
+  margin-bottom:var(--spacing-48);
+  font-weight:var(--fw-light);
+}
+
+/* ═══ FOOTER ═══ */
+.footer{
+  padding:var(--spacing-48) 24px;
+  border-top:1px solid var(--color-ash);
+  background:var(--color-paper-white);
+}
+.footer-inner{
+  max-width:var(--page-max-width);
+  margin:0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:var(--spacing-24);
+}
+.footer-brand{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-weight:var(--fw-regular);
+  font-size:16px;
+  color:var(--color-aubergine);
+}
+.footer-links{
+  display:flex;
+  gap:8px;
+}
+.footer-link{
+  font-size:13px;
+  color:var(--color-fog);
+  padding:6px 14px;
+  border-radius:var(--radius-links);
+  transition:all 0.2s var(--ease);
+  font-weight:var(--fw-light);
+}
+.footer-link:hover{
+  color:var(--color-aubergine);
+  background:var(--color-bone);
+}
+.footer-copy{
+  font-size:13px;
+  color:var(--color-fog);
+  font-weight:var(--fw-light);
+}
+@media(max-width:680px){
+  .footer-inner{flex-direction:column;text-align:center}
+  .footer-links{flex-wrap:wrap;justify-content:center;gap:4px}
+}
+
+/* ═══ DIVIDER ═══ */
+.divider{display:none}
+
+/* ═══ LOGIN MODAL ═══ */
+.modal-backdrop{
+  position:fixed;
+  inset:0;
+  z-index:200;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(60,49,91,0.6);
+  backdrop-filter:blur(20px);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.35s var(--ease);
+}
+.modal-backdrop.open{opacity:1;pointer-events:auto}
+.modal-card{
+  background:var(--color-paper-white);
+  border:1px solid var(--color-ash);
+  border-radius:var(--radius-cards);
+  padding:36px 40px 32px;
+  width:min(440px,calc(100% - 32px));
+  max-height:calc(100vh - 48px);
+  overflow-y:auto;
+  transform:translateY(20px) scale(0.97);
+  transition:transform 0.35s var(--ease);
+  position:relative;
+}
+.modal-backdrop.open .modal-card{transform:translateY(0) scale(1)}
+.modal-tabs{
+  display:flex;
+  gap:4px;
+  background:var(--color-bone);
+  border:1px solid var(--color-ash);
+  border-radius:var(--radius-nav);
+  padding:4px;
+  margin-bottom:28px;
+}
+.modal-tab{
+  flex:1;
+  padding:10px 0;
+  font-size:14px;
+  font-weight:var(--fw-regular);
+  color:var(--color-fog);
+  border-radius:var(--radius-nav);
+  transition:all 0.25s var(--ease);
+}
+.modal-tab.active{
+  background:var(--color-paper-white);
+  color:var(--color-aubergine);
+  box-shadow:0 1px 4px rgba(60,49,91,0.08);
+}
+.modal-tab:not(.active):hover{color:var(--color-aubergine)}
+.auth-panel{display:none}
+.auth-panel.active{display:block;animation:panelIn 0.25s var(--ease)}
+@keyframes panelIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.modal-close{
+  position:absolute;
+  top:16px;right:16px;
+  width:32px;height:32px;
+  background:var(--color-bone);
+  border:1px solid var(--color-ash);
+  border-radius:var(--radius-nav);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--color-fog);
+  font-size:14px;
+  transition:all 0.2s;
+}
+.modal-close:hover{
+  background:var(--color-ash);
+  color:var(--color-aubergine);
+}
+.modal-header{text-align:center;margin-bottom:var(--spacing-32)}
+.modal-logo{
+  width:52px;height:52px;
+  background:var(--color-aubergine);
+  border-radius:var(--radius-nav);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0 auto var(--spacing-16);
+  font-weight:500;
+  font-size:20px;
+  color:var(--color-paper-white);
+}
+.modal-title{
+  font-size:24px;
+  font-weight:var(--fw-light);
+  color:var(--color-aubergine);
+  margin-bottom:6px;
+  letter-spacing:-0.6px;
+}
+.modal-subtitle{
+  font-size:14px;
+  color:var(--color-fog);
+  font-weight:var(--fw-light);
+}
+.input-group{position:relative;margin-bottom:var(--spacing-16)}
+.input-icon{
+  position:absolute;
+  left:18px;top:50%;
+  transform:translateY(-50%);
+  color:var(--color-fog);
+  font-size:14px;
+}
+.input-group input{
+  width:100%;
+  height:52px;
+  padding:0 46px 0 46px;
+  background:var(--color-bone);
+  border:1px solid var(--color-ash);
+  border-radius:var(--radius-buttons);
+  color:var(--color-aubergine);
+  font-size:15px;
+  font-weight:var(--fw-light);
+  font-family:var(--font-phantom);
+  letter-spacing:-0.025em;
+  outline:none;
+  transition:all 0.25s var(--ease);
+}
+.input-group input:focus{
+  border-color:var(--color-periwinkle);
+  background:var(--color-paper-white);
+  box-shadow:var(--shadow-sm);
+}
+.input-group input::placeholder{color:var(--color-fog)}
+.input-toggle{
+  position:absolute;
+  right:8px;top:50%;
+  transform:translateY(-50%);
+  width:36px;height:36px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--color-fog);
+  font-size:14px;
+  border-radius:var(--radius-nav);
+  transition:all 0.2s;
+}
+.input-toggle:hover{color:var(--color-aubergine);background:var(--color-ash)}
+.submit-btn{
+  width:100%;
+  height:52px;
+  background:var(--color-ghost-lavender);
+  border-radius:var(--radius-buttons);
+  color:var(--color-aubergine);
+  font-size:15px;
+  font-weight:var(--fw-regular);
+  margin-top:var(--spacing-8);
+  transition:all 0.3s var(--ease);
+  box-shadow:var(--shadow-sm);
+  letter-spacing:-0.025em;
+}
+.submit-btn:hover{
+  box-shadow:var(--shadow-glow);
+  transform:translateY(-2px);
+}
+.modal-footer{
+  text-align:center;
+  margin-top:var(--spacing-24);
+  padding-top:var(--spacing-24);
+  border-top:1px solid var(--color-ash);
+}
+.modal-footer-text{
+  font-size:14px;
+  color:var(--color-fog);
+  font-weight:var(--fw-light);
+}
+.modal-footer-text a{
+  color:var(--color-periwinkle);
+  font-weight:var(--fw-regular);
+  transition:color 0.2s;
+}
+.modal-footer-text a:hover{color:var(--color-aubergine)}
+.modal-trust{
+  display:flex;
+  justify-content:center;
+  gap:var(--spacing-20);
+  margin-top:var(--spacing-24);
+  padding-top:var(--spacing-20);
+  border-top:1px solid var(--color-ash);
+  flex-wrap:wrap;
+}
+.trust-badge{
+  font-size:11px;
+  color:var(--color-fog);
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 12px;
+  background:var(--color-bone);
+  border-radius:var(--radius-tags);
+  font-weight:var(--fw-light);
+}
+.trust-badge i{color:var(--color-periwinkle);font-size:10px}
+
+/* ═══ ANIMATIONS ═══ */
+.fade-in{
+  opacity:0;
+  transform:translateY(24px);
+}
+
+/* ═══ PASTEL ACCENT BADGES ═══ */
+.pastel-badges{
+  display:flex;
+  gap:var(--spacing-8);
+  margin-top:var(--spacing-24);
+  justify-content:center;
+  flex-wrap:wrap;
+}
+.pastel-badge{
+  padding:8px 20px;
+  border-radius:var(--radius-tags);
+  font-size:13px;
+  font-weight:var(--fw-light);
+  color:var(--color-obsidian);
+}
+.pastel-badge.yellow{background:var(--color-buttercream)}
+.pastel-badge.pink{background:var(--color-blush-mist)}
+.pastel-badge.blue{background:var(--color-cornflower-pop);color:var(--color-paper-white)}
+
+/* ═══ SUCCESS BADGE ═══ */
+.success-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background:var(--color-mint-signal);
+  color:var(--color-paper-white);
+  padding:4px 14px;
+  border-radius:var(--radius-tags);
+  font-size:12px;
+  font-weight:var(--fw-regular);
+}
+</style>
+</head>
+<body>
+
+<div id="canvas-container"></div>
+<div class="grid-overlay"></div>
+
+<!-- NAVBAR — Pill Navigation Bar -->
+<nav class="navbar" id="navbar">
+  <div class="navbar-inner">
+    <a class="nav-brand" href="#">
+      <div class="nav-logo">
+        <div class="nav-logo-mark">N</div>
+        Nexora<span class="nav-logo-suffix">.AI</span>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="#how" class="nav-link"><i class="fa-solid fa-layer-group"></i> How it works <i class="fa-solid fa-chevron-down" style="font-size:8px;margin-left:2px"></i></a>
+      <a href="#features" class="nav-link"><i class="fa-solid fa-sparkles"></i> Platform <i class="fa-solid fa-chevron-down" style="font-size:8px;margin-left:2px"></i></a>
+      <a href="#tools" class="nav-link"><i class="fa-solid fa-toolbox"></i> Tools <i class="fa-solid fa-chevron-down" style="font-size:8px;margin-left:2px"></i></a>
+      <a href="#usecases" class="nav-link"><i class="fa-solid fa-briefcase"></i> Use cases <i class="fa-solid fa-chevron-down" style="font-size:8px;margin-left:2px"></i></a>
+      <a href="#faq" class="nav-link"><i class="fa-solid fa-circle-question"></i> FAQ</a>
+    </div>
+    <div class="nav-actions">
+      <button class="btn btn-ghost" onclick="openLogin('signin')"><i class="fa-solid fa-arrow-right-to-bracket"></i> Sign in</button>
+      <button class="btn btn-primary" onclick="openLogin('signup')"><i class="fa-solid fa-rocket"></i> Get started</button>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- HERO — Dark Aubergine -->
+<section class="hero">
+  <div class="hero-inner fade-in">
+    <div class="hero-badge"><i class="fa-solid fa-bolt"></i> Retrieval-Augmented Intelligence</div>
+    <h1 class="hero-title">Every answer,<br><span class="ghost-accent"><svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg"><path d="M60 10C30 10 10 35 10 65V105C10 108 12 110 15 110H25C25 110 30 130 35 130C40 130 40 115 40 115H50C50 115 50 130 55 130C60 130 60 115 60 115H65C65 115 65 130 70 130C75 130 75 115 75 115H85C85 115 85 130 90 130C95 130 95 110 95 110H105C108 110 110 108 110 105V65C110 35 90 10 60 10Z" fill="currentColor"/><circle cx="42" cy="55" r="8" fill="white" opacity="0.9"/><circle cx="78" cy="55" r="8" fill="white" opacity="0.9"/><circle cx="44" cy="53" r="3" fill="#3c315b"/><circle cx="80" cy="53" r="3" fill="#3c315b"/><ellipse cx="60" cy="75" rx="8" ry="6" fill="white" opacity="0.6"/></svg></span>traced to a source.</h1>
+    <p class="hero-subtitle">Nexora.AI reads your PDFs, Word files, and spreadsheets, then answers in plain language with a citation attached to every claim. Underneath the chat sits a full analysis suite — knowledge graphs, action-item extraction, live web verification, and more — so a folder of documents becomes something you can actually reason about.</p>
+    <div class="hero-actions">
+      <button class="btn btn-primary" onclick="openLogin('signup')">Get started free <i class="fa-solid fa-arrow-right"></i></button>
+      <a href="#how" class="btn btn-secondary"><i class="fa-regular fa-circle-play"></i> See how it works</a>
+    </div>
+
+    <!-- Signature element: live product glimpse -->
+    <div class="hero-mockup">
+      <div class="mockup-frame">
+        <div class="mockup-topbar">
+          <span class="mockup-dot"></span><span class="mockup-dot"></span><span class="mockup-dot"></span>
+          <span class="mockup-topbar-label">Active Chat — Q3_Vendor_Agreements.pdf</span>
+        </div>
+        <div class="mockup-body">
+          <div class="mockup-msg mockup-msg-user">What's our termination notice period with Meridian Logistics?</div>
+          <div class="mockup-msg mockup-msg-ai">
+            The agreement requires <strong>90 days' written notice</strong> prior to termination, extended to <strong>120 days</strong> if invoked within the first contract year.
+            <span class="mockup-citation"><i class="fa-solid fa-quote-left"></i> Section 14.2, p. 11</span>
+          </div>
+          <div class="mockup-graph">
+            <svg viewBox="0 0 260 90" class="mockup-graph-svg">
+              <line x1="30" y1="45" x2="110" y2="20" class="mg-edge"/>
+              <line x1="30" y1="45" x2="110" y2="70" class="mg-edge"/>
+              <line x1="110" y1="20" x2="200" y2="30" class="mg-edge"/>
+              <line x1="110" y1="70" x2="200" y2="65" class="mg-edge"/>
+              <line x1="200" y1="30" x2="200" y2="65" class="mg-edge"/>
+              <circle cx="30" cy="45" r="7" class="mg-node mg-node-a"/>
+              <circle cx="110" cy="20" r="6" class="mg-node mg-node-b"/>
+              <circle cx="110" cy="70" r="6" class="mg-node mg-node-b"/>
+              <circle cx="200" cy="30" r="5" class="mg-node mg-node-c"/>
+              <circle cx="200" cy="65" r="5" class="mg-node mg-node-c"/>
+            </svg>
+            <span class="mockup-graph-label"><i class="fa-solid fa-diagram-project"></i> Knowledge Graph — 3 linked clauses found</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat"><span class="hero-stat-num">9</span><span class="hero-stat-label">Analysis tools</span></div>
+      <div class="hero-stat"><span class="hero-stat-num">4</span><span class="hero-stat-label">Selectable models</span></div>
+      <div class="hero-stat"><span class="hero-stat-num">100%</span><span class="hero-stat-label">Cited to source</span></div>
+      <div class="hero-stat"><span class="hero-stat-num">9</span><span class="hero-stat-label">Workspace themes</span></div>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- QUOTE BLOCK — Bone surface -->
+<section class="quote-section">
+  <div class="quote-block fade-in">
+    <p class="quote-text">Ctrl+F finds a word. It doesn't find an answer, and it definitely doesn't tell you which clause contradicts which.</p>
+    <div class="quote-author">
+      <div class="quote-avatar"><i class="fa-solid fa-quote-right"></i></div>
+      <div class="quote-info">
+        <div class="quote-name">Retrieval, not keyword search</div>
+        <div class="quote-role">Why Nexora.AI exists</div>
+      </div>
+    </div>
+    <div class="pastel-badges">
+      <span class="pastel-badge yellow"><i class="fa-solid fa-file-pdf"></i> PDFs</span>
+      <span class="pastel-badge pink"><i class="fa-solid fa-file-word"></i> Word Docs</span>
+      <span class="pastel-badge blue"><i class="fa-solid fa-file-powerpoint"></i> Slides</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- HOW IT WORKS — Paper White -->
+<section class="section" id="how">
+  <div class="section-inner">
+    <div class="section-number">02</div>
+    <div class="section-label"><i class="fa-solid fa-arrows-spin"></i> How it works</div>
+    <h2 class="section-title">Four steps. <em>No configuration.</em></h2>
+    <p class="section-desc">There's no schema to define or pipeline to wire up. Drop in files, and everything downstream — indexing, retrieval, analysis — happens automatically.</p>
+
+    <div class="steps-grid">
+      <div class="step-card fade-in" data-step="Step 1">
+        <div class="step-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+        <h3 class="step-title">Upload & index</h3>
+        <p class="step-desc">Drop in PDFs, Word docs, PowerPoints, or text files. Nexora.AI splits them into paragraphs and embeds each one into a semantic vector index.</p>
+      </div>
+      <div class="step-card fade-in" data-step="Step 2">
+        <div class="step-icon"><i class="fa-solid fa-comment-dots"></i></div>
+        <h3 class="step-title">Ask in plain language</h3>
+        <p class="step-desc">Type or speak a question. Dense retrieval matches it against your documents and an LLM answers, grounded only in what it finds.</p>
+      </div>
+      <div class="step-card fade-in" data-step="Step 3">
+        <div class="step-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+        <h3 class="step-title">Check the source</h3>
+        <p class="step-desc">Every answer carries a citation badge. Click it to open the Source Inspector and read the exact paragraph and page it came from.</p>
+      </div>
+      <div class="step-card fade-in" data-step="Step 4">
+        <div class="step-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+        <h3 class="step-title">Go deeper</h3>
+        <p class="step-desc">Open the analysis suite for knowledge graphs, action-item extraction, sentiment and readability scoring, or a live web fact-check.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LAYER DIAGRAM — Aubergine dark -->
+<section class="layer-section">
+  <div class="section-inner section-center">
+    <div class="section-number" style="color:rgba(253,252,254,0.3)">03</div>
+    <div class="section-label" style="background:rgba(226,223,254,0.12);color:var(--color-ghost-lavender)"><i class="fa-solid fa-cubes-stacked"></i> The architecture</div>
+    <h2 class="section-title" style="color:var(--color-paper-white)">A retrieval layer, <em>not a black box.</em></h2>
+    <p class="section-desc" style="color:rgba(253,252,254,0.55)">Nexora.AI doesn't send your documents into a model's memory and hope for the best. It retrieves the exact passages relevant to your question, then asks the model to answer from those passages alone.</p>
+
+    <div class="layer-diagram fade-in">
+      <div class="layer layer-l1">
+        <div class="layer-title">You ask</div>
+        <div class="layer-desc">A question, in plain language or by voice</div>
+      </div>
+      <div class="layer-connector"><i class="fa-solid fa-arrow-down"></i></div>
+      <div class="layer layer-l2">
+        <div class="layer-title">Nexora.AI retrieves & reasons</div>
+        <div class="layer-desc">Vector search finds the relevant passages · your chosen LLM answers from them · every claim keeps its citation</div>
+      </div>
+      <div class="layer-connector"><i class="fa-solid fa-arrow-down"></i></div>
+      <div class="layer layer-l3">
+        <div class="layer-title">Your document library</div>
+        <div class="layer-desc">PDFs, Word files, slide decks, and plain text — indexed paragraph by paragraph</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES — Bone surface -->
+<section class="section section-bone" id="features">
+  <div class="section-inner">
+    <div class="section-number">04</div>
+    <div class="section-label"><i class="fa-solid fa-gem"></i> What you get</div>
+    <h2 class="section-title">Everything you need, <em>nothing you don't.</em></h2>
+    <p class="section-desc">The core mechanics that make document Q&A trustworthy instead of just plausible-sounding.</p>
+
+    <div class="features-grid">
+      <div class="feature-card fade-in">
+        <div class="feature-icon"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+        <h3 class="feature-title">Semantic retrieval</h3>
+        <p class="feature-desc">Finds passages by meaning, using dense vector similarity — not just matching keywords.</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon"><i class="fa-solid fa-circle-check"></i></div>
+        <h3 class="feature-title">Grounded answers</h3>
+        <p class="feature-desc">Responses are built only from retrieved passages, and every claim links to its exact source.</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon"><i class="fa-solid fa-microchip"></i></div>
+        <h3 class="feature-title">Choose your model</h3>
+        <p class="feature-desc">Switch between Llama 3.3 70B, Llama 3.1 8B, Mixtral 8x7B, or Gemma 2 9B for the speed-vs-depth trade-off you want.</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon"><i class="fa-solid fa-cubes"></i></div>
+        <h3 class="feature-title">Cross-document synthesis</h3>
+        <p class="feature-desc">Ask one question and get an answer drawn from every file in your workspace, not just one at a time.</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon"><i class="fa-solid fa-sliders"></i></div>
+        <h3 class="feature-title">A workspace that's yours</h3>
+        <p class="feature-desc">9 color themes, light or dark mode, and a toggle between short and detailed answers.</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon"><i class="fa-solid fa-user-shield"></i></div>
+        <h3 class="feature-title">Private by account</h3>
+        <p class="feature-desc">Your documents, chats, and search history sit in a workspace tied only to your login.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TOOLS — Paper White -->
+<section class="section" id="tools">
+  <div class="section-inner">
+    <div class="section-number">05</div>
+    <div class="section-label"><i class="fa-solid fa-flask-vial"></i> Explore every tool</div>
+    <h2 class="section-title">One chat box, <em>nine analysis engines.</em></h2>
+    <p class="section-desc">Grouped into four categories inside the workspace — Intelligence, Knowledge Discovery, Visual Analytics, and Advanced Analytics — each tool runs on the documents you've already uploaded. No extra setup.</p>
+
+    <div class="tools-grid">
+      <div class="tool-card fade-in">
+        <div class="tool-preview">
+          <div class="tool-preview-rings">
+            <div class="tool-ring r1"></div>
+            <div class="tool-ring r2"></div>
+            <div class="tool-ring r3"></div>
+          </div>
+          <i class="fa-solid fa-diagram-project tool-preview-icon"></i>
+        </div>
+        <div class="tool-body">
+          <div class="tool-header">
+            <div class="tool-icon"><i class="fa-solid fa-diagram-project"></i></div>
+            <h3 class="tool-name">Knowledge Graph</h3>
+          </div>
+          <p class="tool-desc">Visualizes people, entities, and topics as a force-directed network, so relationships across separate files become visible at a glance.</p>
+          <ul class="tool-points">
+            <li>Surfaces connections you'd miss reading linearly</li>
+            <li>Click any node to jump to its source</li>
+            <li>Spans every document in the workspace</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tool-card fade-in">
+        <div class="tool-preview">
+          <div class="tool-preview-rings">
+            <div class="tool-ring r1"></div>
+            <div class="tool-ring r2"></div>
+            <div class="tool-ring r3"></div>
+          </div>
+          <i class="fa-solid fa-circle-nodes tool-preview-icon"></i>
+        </div>
+        <div class="tool-body">
+          <div class="tool-header">
+            <div class="tool-icon"><i class="fa-solid fa-circle-nodes"></i></div>
+            <h3 class="tool-name">Cluster Universe</h3>
+          </div>
+          <p class="tool-desc">Embeds every file into a 2D semantic space — documents that sit close together are close in meaning, giving you a bird's-eye map of the whole library.</p>
+          <ul class="tool-points">
+            <li>No manual tagging required</li>
+            <li>Reveals overlap in messy archives</li>
+            <li>Built on the same embeddings as search</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tool-card fade-in">
+        <div class="tool-preview">
+          <div class="tool-preview-rings">
+            <div class="tool-ring r1"></div>
+            <div class="tool-ring r2"></div>
+            <div class="tool-ring r3"></div>
+          </div>
+          <i class="fa-solid fa-chart-simple tool-preview-icon"></i>
+        </div>
+        <div class="tool-body">
+          <div class="tool-header">
+            <div class="tool-icon"><i class="fa-solid fa-flask-vial"></i></div>
+            <h3 class="tool-name">LexiScope Suite</h3>
+          </div>
+          <p class="tool-desc">Runs full NLP on your text: sentiment, keyphrases, named entities, topics, a word cloud, and a readability score.</p>
+          <ul class="tool-points">
+            <li>Overall emotional tone</li>
+            <li>People, places, and dates extracted</li>
+            <li>Reading-difficulty scoring</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tool-card fade-in">
+        <div class="tool-preview">
+          <div class="tool-preview-rings">
+            <div class="tool-ring r1"></div>
+            <div class="tool-ring r2"></div>
+            <div class="tool-ring r3"></div>
+          </div>
+          <i class="fa-solid fa-list-check tool-preview-icon"></i>
+        </div>
+        <div class="tool-body">
+          <div class="tool-header">
+            <div class="tool-icon"><i class="fa-solid fa-list-check"></i></div>
+            <h3 class="tool-name">Action Tracker</h3>
+          </div>
+          <p class="tool-desc">Scans documents for hidden action items, deadlines, owners, and decisions, then organizes them on a working Kanban board.</p>
+          <ul class="tool-points">
+            <li>Nothing buried in a report gets missed</li>
+            <li>Kanban or timeline view</li>
+            <li>Filter by type, owner, or status</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tool-card fade-in">
+        <div class="tool-preview">
+          <div class="tool-preview-rings">
+            <div class="tool-ring r1"></div>
+            <div class="tool-ring r2"></div>
+            <div class="tool-ring r3"></div>
+          </div>
+          <i class="fa-solid fa-file-contract tool-preview-icon"></i>
+        </div>
+        <div class="tool-body">
+          <div class="tool-header">
+            <div class="tool-icon"><i class="fa-solid fa-file-invoice"></i></div>
+            <h3 class="tool-name">Executive Report</h3>
+          </div>
+          <p class="tool-desc">Compiles an AI-written summary of every finding, insight, and key metric across your selected documents into one report.</p>
+          <ul class="tool-points">
+            <li>Synthesizes across the whole file set</li>
+            <li>Exports as PDF or DOCX</li>
+            <li>Ready to forward as-is</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tool-card fade-in">
+        <div class="tool-preview">
+          <div class="tool-preview-rings">
+            <div class="tool-ring r1"></div>
+            <div class="tool-ring r2"></div>
+            <div class="tool-ring r3"></div>
+          </div>
+          <i class="fa-solid fa-earth-americas tool-preview-icon"></i>
+        </div>
+        <div class="tool-body">
+          <div class="tool-header">
+            <div class="tool-icon"><i class="fa-solid fa-earth-americas"></i></div>
+            <h3 class="tool-name">TrendLens</h3>
+          </div>
+          <p class="tool-desc">Pulls key claims from your documents and checks them against live web search — news, research, reviews — to see what still holds up.</p>
+          <ul class="tool-points">
+            <li>Confirmed, contradicted, or outdated — flagged clearly</li>
+            <li>Sources cited from the live web</li>
+            <li>Exports as a "Doc vs. World" PDF</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tool-card fade-in">
+        <div class="tool-preview">
+          <div class="tool-preview-rings">
+            <div class="tool-ring r1"></div>
+            <div class="tool-ring r2"></div>
+            <div class="tool-ring r3"></div>
+          </div>
+          <i class="fa-solid fa-timeline tool-preview-icon"></i>
+        </div>
+        <div class="tool-body">
+          <div class="tool-header">
+            <div class="tool-icon"><i class="fa-solid fa-timeline"></i></div>
+            <h3 class="tool-name">TimelineWeave</h3>
+          </div>
+          <p class="tool-desc">Identifies the primary themes in your documents and plots them chronologically next to real-world news and events.</p>
+          <ul class="tool-points">
+            <li>See how your document's story lines up with history</li>
+            <li>Pulled live from the web</li>
+            <li>Exports as a structured timeline report</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tool-card fade-in">
+        <div class="tool-preview">
+          <div class="tool-preview-rings">
+            <div class="tool-ring r1"></div>
+            <div class="tool-ring r2"></div>
+            <div class="tool-ring r3"></div>
+          </div>
+          <i class="fa-solid fa-chart-pie tool-preview-icon"></i>
+        </div>
+        <div class="tool-body">
+          <div class="tool-header">
+            <div class="tool-icon"><i class="fa-solid fa-chart-pie"></i></div>
+            <h3 class="tool-name">StatSonar</h3>
+          </div>
+          <p class="tool-desc">Surfaces live big-number stat cards and cross-source sparklines, grouping web references by source credibility.</p>
+          <ul class="tool-points">
+            <li>Counts references across news, blogs, and social</li>
+            <li>Source-credibility heatmap</li>
+            <li>Built for a fast gut-check on a topic</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tool-card fade-in">
+        <div class="tool-preview">
+          <div class="tool-preview-rings">
+            <div class="tool-ring r1"></div>
+            <div class="tool-ring r2"></div>
+            <div class="tool-ring r3"></div>
+          </div>
+          <i class="fa-solid fa-images tool-preview-icon"></i>
+        </div>
+        <div class="tool-body">
+          <div class="tool-header">
+            <div class="tool-icon"><i class="fa-solid fa-images"></i></div>
+            <h3 class="tool-name">Visual Pulse</h3>
+          </div>
+          <p class="tool-desc">Turns your document's core topics into a live image gallery, pairing text-heavy reports with real visual context.</p>
+          <ul class="tool-points">
+            <li>Images sourced fresh from the web</li>
+            <li>Built for briefs and presentations</li>
+            <li>One click from any topic</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- USE CASES — Aubergine Dark -->
+<section class="section section-dark" id="usecases">
+  <div class="section-inner">
+    <div class="section-number">06</div>
+    <div class="section-label"><i class="fa-solid fa-users"></i> Use Cases</div>
+    <h2 class="section-title">Built for every kind of <em>document.</em></h2>
+    <p class="section-desc">From contracts to case studies, Nexora.AI turns a stack of files into answers you can actually cite back.</p>
+
+    <div class="usecases-grid">
+      <div class="usecase-card fade-in" style="background:rgba(253,252,254,0.06);border-color:rgba(226,223,254,0.12)">
+        <div class="usecase-icon" style="background:rgba(226,223,254,0.12)"><i class="fa-solid fa-scale-balanced" style="color:var(--color-periwinkle)"></i></div>
+        <h3 class="usecase-title" style="color:var(--color-paper-white)">Legal & Compliance</h3>
+        <span class="usecase-subtitle" style="background:rgba(226,223,254,0.12);color:var(--color-ghost-lavender)">Legal teams</span>
+        <ul class="usecase-list">
+          <li style="color:rgba(253,252,254,0.55);border-color:rgba(226,223,254,0.1)"><strong style="color:var(--color-paper-white)">Contract Review</strong> — Spot risky clauses before signing anything.</li>
+          <li style="color:rgba(253,252,254,0.55);border-color:rgba(226,223,254,0.1)"><strong style="color:var(--color-paper-white)">Due Diligence</strong> — Cross-reference hundreds of documents in minutes.</li>
+          <li style="color:rgba(253,252,254,0.55);border-color:rgba(226,223,254,0.1)"><strong style="color:var(--color-paper-white)">Compliance Audits</strong> — Query your policy library instantly.</li>
+        </ul>
+      </div>
+      <div class="usecase-card fade-in" style="background:rgba(253,252,254,0.06);border-color:rgba(226,223,254,0.12)">
+        <div class="usecase-icon" style="background:rgba(226,223,254,0.12)"><i class="fa-solid fa-chart-pie" style="color:var(--color-periwinkle)"></i></div>
+        <h3 class="usecase-title" style="color:var(--color-paper-white)">Finance & Accounting</h3>
+        <span class="usecase-subtitle" style="background:rgba(226,223,254,0.12);color:var(--color-ghost-lavender)">Finance teams</span>
+        <ul class="usecase-list">
+          <li style="color:rgba(253,252,254,0.55);border-color:rgba(226,223,254,0.1)"><strong style="color:var(--color-paper-white)">Statement Analysis</strong> — Turn reports into plain-English answers.</li>
+          <li style="color:rgba(253,252,254,0.55);border-color:rgba(226,223,254,0.1)"><strong style="color:var(--color-paper-white)">Expense Reconciliation</strong> — Chat through stacks of receipts.</li>
+          <li style="color:rgba(253,252,254,0.55);border-color:rgba(226,223,254,0.1)"><strong style="color:var(--color-paper-white)">Investment Research</strong> — Query earnings calls like a personal analyst.</li>
+        </ul>
+      </div>
+      <div class="usecase-card fade-in" style="background:rgba(253,252,254,0.06);border-color:rgba(226,223,254,0.12)">
+        <div class="usecase-icon" style="background:rgba(226,223,254,0.12)"><i class="fa-solid fa-graduation-cap" style="color:var(--color-periwinkle)"></i></div>
+        <h3 class="usecase-title" style="color:var(--color-paper-white)">Research & Academia</h3>
+        <span class="usecase-subtitle" style="background:rgba(226,223,254,0.12);color:var(--color-ghost-lavender)">Researchers</span>
+        <ul class="usecase-list">
+          <li style="color:rgba(253,252,254,0.55);border-color:rgba(226,223,254,0.1)"><strong style="color:var(--color-paper-white)">Literature Review</strong> — Ask dozens of papers, get one synthesized answer.</li>
+          <li style="color:rgba(253,252,254,0.55);border-color:rgba(226,223,254,0.1)"><strong style="color:var(--color-paper-white)">Thesis Work</strong> — Find every citation and contradiction instantly.</li>
+          <li style="color:rgba(253,252,254,0.55);border-color:rgba(226,223,254,0.1)"><strong style="color:var(--color-paper-white)">Grant Writing</strong> — Pull prior proposals without re-reading.</li>
+        </ul>
+      </div>
+      <div class="usecase-card fade-in" style="background:rgba(253,252,254,0.06);border-color:rgba(226,223,254,0.12)">
+        <div class="usecase-icon" style="background:rgba(226,223,254,0.12)"><i class="fa-solid fa-briefcase" style="color:var(--color-periwinkle)"></i></div>
+        <h3 class="usecase-title" style="color:var(--color-paper-white)">Business & Operations</h3>
+        <span class="usecase-subtitle" style="background:rgba(226,223,254,0.12);color:var(--color-ghost-lavender)">Operations teams</span>
+        <ul class="usecase-list">
+          <li style="color:rgba(253,252,254,0.55);border-color:rgba(226,223,254,0.1)"><strong style="color:var(--color-paper-white)">Report Digestion</strong> — Catch every decision and action item.</li>
+          <li style="color:rgba(253,252,254,0.55);border-color:rgba(226,223,254,0.1)"><strong style="color:var(--color-paper-white)">Onboarding & SOPs</strong> — Let new hires ask the handbook questions.</li>
+          <li style="color:rgba(253,252,254,0.55);border-color:rgba(226,223,254,0.1)"><strong style="color:var(--color-paper-white)">Vendor Review</strong> — Compare contracts side by side instantly.</li>
+        </ul>
+      </div>
+      <div class="usecase-card fade-in" style="background:rgba(253,252,254,0.06);border-color:rgba(226,223,254,0.12)">
+        <div class="usecase-icon" style="background:rgba(226,223,254,0.12)"><i class="fa-solid fa-dna" style="color:var(--color-periwinkle)"></i></div>
+        <h3 class="usecase-title" style="color:var(--color-paper-white)">Healthcare & Life Sciences</h3>
+        <span class="usecase-subtitle" style="background:rgba(226,223,254,0.12);color:var(--color-ghost-lavender)">Healthcare teams</span>
+        <ul class="usecase-list">
+          <li style="color:rgba(253,252,254,0.55);border-color:rgba(226,223,254,0.1)"><strong style="color:var(--color-paper-white)">Clinical Review</strong> — Surface key findings from records fast.</li>
+          <li style="color:rgba(253,252,254,0.55);border-color:rgba(226,223,254,0.1)"><strong style="color:var(--color-paper-white)">Research Synthesis</strong> — Ask a stack of articles what they agree on.</li>
+          <li style="color:rgba(253,252,254,0.55);border-color:rgba(226,223,254,0.1)"><strong style="color:var(--color-paper-white)">Regulatory Filings</strong> — Search guidelines to accelerate prep.</li>
+        </ul>
+      </div>
+      <div class="usecase-card fade-in" style="background:rgba(253,252,254,0.06);border-color:rgba(226,223,254,0.12)">
+        <div class="usecase-icon" style="background:rgba(226,223,254,0.12)"><i class="fa-solid fa-chalkboard-user" style="color:var(--color-periwinkle)"></i></div>
+        <h3 class="usecase-title" style="color:var(--color-paper-white)">Education</h3>
+        <span class="usecase-subtitle" style="background:rgba(226,223,254,0.12);color:var(--color-ghost-lavender)">Students & Educators</span>
+        <ul class="usecase-list">
+          <li style="color:rgba(253,252,254,0.55);border-color:rgba(226,223,254,0.1)"><strong style="color:var(--color-paper-white)">Study Prep</strong> — Turn textbooks into a tutor that quizzes you back.</li>
+          <li style="color:rgba(253,252,254,0.55);border-color:rgba(226,223,254,0.1)"><strong style="color:var(--color-paper-white)">Curriculum Design</strong> — Mine past course materials for what worked.</li>
+          <li style="color:rgba(253,252,254,0.55);border-color:rgba(226,223,254,0.1)"><strong style="color:var(--color-paper-white)">Interactive Manuals</strong> — Convert heavy guides into companions.</li>
+        </ul>
+      </div>
+      <div class="usecase-card fade-in" style="background:rgba(253,252,254,0.06);border-color:rgba(226,223,254,0.12)">
+        <div class="usecase-icon" style="background:rgba(226,223,254,0.12)"><i class="fa-solid fa-building-user" style="color:var(--color-periwinkle)"></i></div>
+        <h3 class="usecase-title" style="color:var(--color-paper-white)">Real Estate & Property</h3>
+        <span class="usecase-subtitle" style="background:rgba(226,223,254,0.12);color:var(--color-ghost-lavender)">Property teams</span>
+        <ul class="usecase-list">
+          <li style="color:rgba(253,252,254,0.55);border-color:rgba(226,223,254,0.1)"><strong style="color:var(--color-paper-white)">Lease Abstraction</strong> — Extract key terms and renewal dates.</li>
+          <li style="color:rgba(253,252,254,0.55);border-color:rgba(226,223,254,0.1)"><strong style="color:var(--color-paper-white)">Portfolio Querying</strong> — Inspect valuation reports in seconds.</li>
+          <li style="color:rgba(253,252,254,0.55);border-color:rgba(226,223,254,0.1)"><strong style="color:var(--color-paper-white)">Zoning & Compliance</strong> — Get quick answers from local codes.</li>
+        </ul>
+      </div>
+      <div class="usecase-card fade-in" style="background:rgba(253,252,254,0.06);border-color:rgba(226,223,254,0.12)">
+        <div class="usecase-icon" style="background:rgba(226,223,254,0.12)"><i class="fa-solid fa-user-gear" style="color:var(--color-periwinkle)"></i></div>
+        <h3 class="usecase-title" style="color:var(--color-paper-white)">Personal Productivity</h3>
+        <span class="usecase-subtitle" style="background:rgba(226,223,254,0.12);color:var(--color-ghost-lavender)">Individual users</span>
+        <ul class="usecase-list">
+          <li style="color:rgba(253,252,254,0.55);border-color:rgba(226,223,254,0.1)"><strong style="color:var(--color-paper-white)">Tax & Finance</strong> — Ask your statements where money went.</li>
+          <li style="color:rgba(253,252,254,0.55);border-color:rgba(226,223,254,0.1)"><strong style="color:var(--color-paper-white)">Rapid Reading</strong> — Skim a 200-page report by asking questions.</li>
+          <li style="color:rgba(253,252,254,0.55);border-color:rgba(226,223,254,0.1)"><strong style="color:var(--color-paper-white)">Project Archives</strong> — Search years of old files instantly.</li>
+        </ul>
+      </div>
+      <div class="usecase-card fade-in" style="background:rgba(253,252,254,0.06);border-color:rgba(226,223,254,0.12)">
+        <div class="usecase-icon" style="background:rgba(226,223,254,0.12)"><i class="fa-solid fa-laptop-code" style="color:var(--color-periwinkle)"></i></div>
+        <h3 class="usecase-title" style="color:var(--color-paper-white)">Tech & Engineering</h3>
+        <span class="usecase-subtitle" style="background:rgba(226,223,254,0.12);color:var(--color-ghost-lavender)">Engineering teams</span>
+        <ul class="usecase-list">
+          <li style="color:rgba(253,252,254,0.55);border-color:rgba(226,223,254,0.1)"><strong style="color:var(--color-paper-white)">API & Docs Search</strong> — Ask complex docs how to integrate.</li>
+          <li style="color:rgba(253,252,254,0.55);border-color:rgba(226,223,254,0.1)"><strong style="color:var(--color-paper-white)">Specifications</strong> — Parse requirements for architectures.</li>
+          <li style="color:rgba(253,252,254,0.55);border-color:rgba(226,223,254,0.1)"><strong style="color:var(--color-paper-white)">System SOPs</strong> — Query operational handbooks during outages.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ — Paper White -->
+<section class="section faq-section" id="faq">
+  <div class="section-inner section-center">
+    <div class="section-number">07</div>
+    <div class="section-label"><i class="fa-solid fa-message"></i> FAQ</div>
+    <h2 class="section-title">Quick <em>answers.</em></h2>
+    <p class="section-desc">The most common questions, answered simply.</p>
+
+    <div class="faq-list">
+      <div class="faq-item fade-in">
+        <button class="faq-question">What kinds of files can I upload?<span class="faq-caret"><i class="fa-solid fa-chevron-down"></i></span></button>
+        <div class="faq-answer"><div class="faq-answer-inner">PDFs, Word documents (.doc/.docx), PowerPoint files (.ppt/.pptx), and plain text. Drag them into the workspace and Nexora.AI handles parsing, paragraph splitting, and indexing automatically.</div></div>
+      </div>
+      <div class="faq-item fade-in">
+        <button class="faq-question">Do I need any technical skill to use this?<span class="faq-caret"><i class="fa-solid fa-chevron-down"></i></span></button>
+        <div class="faq-answer"><div class="faq-answer-inner">None. If you can type a question into a search bar, you can use Nexora.AI. There's nothing to configure, install, or manage — upload and ask.</div></div>
+      </div>
+      <div class="faq-item fade-in">
+        <button class="faq-question">How does the AI search across my files?<span class="faq-caret"><i class="fa-solid fa-chevron-down"></i></span></button>
+        <div class="faq-answer"><div class="faq-answer-inner">Documents are split into paragraphs and embedded into a semantic vector index. Your question is matched against that index using dense cosine similarity to locate the relevant sections before an answer is generated.</div></div>
+      </div>
+      <div class="faq-item fade-in">
+        <button class="faq-question">Can I choose which AI model answers?<span class="faq-caret"><i class="fa-solid fa-chevron-down"></i></span></button>
+        <div class="faq-answer"><div class="faq-answer-inner">Yes. Session Settings lets you pick Llama 3.3 70B (the default, most capable), Llama 3.1 8B (fastest), Mixtral 8x7B, or Gemma 2 9B, and toggle between short and detailed response styles.</div></div>
+      </div>
+      <div class="faq-item fade-in">
+        <button class="faq-question">What is TrendLens and how does it work?<span class="faq-caret"><i class="fa-solid fa-chevron-down"></i></span></button>
+        <div class="faq-answer"><div class="faq-answer-inner">TrendLens extracts key claims from your documents and runs real-time web searches to check them against live sources, then reports whether each claim is confirmed, contradicted, or outdated.</div></div>
+      </div>
+      <div class="faq-item fade-in">
+        <button class="faq-question">Can I change theme colors or styling?<span class="faq-caret"><i class="fa-solid fa-chevron-down"></i></span></button>
+        <div class="faq-answer"><div class="faq-answer-inner">Yes — click the gear icon to open Session Settings. Choose from 9 color themes and toggle between dark and light mode instantly.</div></div>
+      </div>
+      <div class="faq-item fade-in">
+        <button class="faq-question">How do I export my conversation?<span class="faq-caret"><i class="fa-solid fa-chevron-down"></i></span></button>
+        <div class="faq-answer"><div class="faq-answer-inner">Use the floating Export PDF button inside the chat area to download a formatted transcript, including citations, of your session.</div></div>
+      </div>
+      <div class="faq-item fade-in">
+        <button class="faq-question">Can anyone else see my files?<span class="faq-caret"><i class="fa-solid fa-chevron-down"></i></span></button>
+        <div class="faq-answer"><div class="faq-answer-inner">No. Your documents, questions, and conversations live in a workspace tied to your account only — nobody else can access them.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINALE — Aubergine Dark -->
+<section class="finale">
+  <div class="finale-orb">
+    <div class="finale-ring f1"></div>
+    <div class="finale-ring f2"></div>
+    <div class="finale-ring f3"></div>
+  </div>
+  <div class="section-inner section-center fade-in">
+    <h2 class="finale-title">Stop skimming. <em>Start citing.</em></h2>
+    <p class="finale-desc">Create a free account and turn your first document into a grounded, source-linked answer.</p>
+    <button class="btn btn-primary" onclick="openLogin('signup')" style="font-size:16px;padding:18px 44px">Get started free <i class="fa-solid fa-arrow-right"></i></button>
+  </div>
+</section>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <a class="footer-brand" href="#">
+      <div class="nav-logo-mark" style="width:28px;height:28px;font-size:12px">N</div>
+      Nexora<span class="nav-logo-suffix">.AI</span>
+    </a>
+    <nav class="footer-links">
+      <a href="#how" class="footer-link"><i class="fa-solid fa-layer-group"></i> How it works</a>
+      <a href="#features" class="footer-link"><i class="fa-solid fa-sparkles"></i> Platform</a>
+      <a href="#tools" class="footer-link"><i class="fa-solid fa-toolbox"></i> Tools</a>
+      <a href="#usecases" class="footer-link"><i class="fa-solid fa-briefcase"></i> Use cases</a>
+      <a href="#faq" class="footer-link"><i class="fa-solid fa-circle-question"></i> FAQ</a>
+    </nav>
+    <div class="footer-copy">© 2026 Nexora.AI</div>
+  </div>
+</footer>
+
+<!-- LOGIN / SIGNUP MODAL -->
+<div class="modal-backdrop" id="loginModal">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeLogin()"><i class="fa-solid fa-xmark"></i></button>
+
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tabSignin" onclick="switchAuthTab('signin')"><i class="fa-solid fa-arrow-right-to-bracket"></i> Sign in</button>
+      <button class="modal-tab" id="tabSignup" onclick="switchAuthTab('signup')"><i class="fa-solid fa-user-plus"></i> Create account</button>
+    </div>
+
+    <!-- SIGN IN -->
+    <div class="auth-panel active" id="panelSignin">
+      <div class="modal-header">
+        <div class="modal-logo">N</div>
+        <h2 class="modal-title">Welcome back</h2>
+        <p class="modal-subtitle">Sign in to continue to Nexora.AI</p>
+      </div>
+      <form action="/login" method="POST">
+        <div class="input-group">
+          <span class="input-icon"><i class="fa-regular fa-user"></i></span>
+          <input type="text" name="username" placeholder="Username" required autocomplete="username">
+        </div>
+        <div class="input-group">
+          <span class="input-icon"><i class="fa-solid fa-lock"></i></span>
+          <input type="password" name="password" id="signinPassword" placeholder="Password" required autocomplete="current-password">
+          <button type="button" class="input-toggle" onclick="togglePassword('signinPassword', this)" tabindex="-1" aria-label="Show password"><i class="fa-regular fa-eye"></i></button>
+        </div>
+        <button type="submit" class="submit-btn"><i class="fa-solid fa-arrow-right"></i> Sign in</button>
+      </form>
+      <div class="modal-footer">
+        <p class="modal-footer-text">New here? <a href="#" onclick="switchAuthTab('signup');return false;">Create a free account</a></p>
+      </div>
+    </div>
+
+    <!-- CREATE ACCOUNT -->
+    <div class="auth-panel" id="panelSignup">
+      <div class="modal-header">
+        <div class="modal-logo">N</div>
+        <h2 class="modal-title">Create your account</h2>
+        <p class="modal-subtitle">Start turning documents into grounded answers</p>
+      </div>
+      <form action="/register" method="POST">
+        <div class="input-group">
+          <span class="input-icon"><i class="fa-regular fa-user"></i></span>
+          <input type="text" name="username" placeholder="Username" required autocomplete="username">
+        </div>
+        <div class="input-group">
+          <span class="input-icon"><i class="fa-regular fa-envelope"></i></span>
+          <input type="email" name="email" placeholder="Email address" required autocomplete="email">
+        </div>
+        <div class="input-group">
+          <span class="input-icon"><i class="fa-solid fa-lock"></i></span>
+          <input type="password" name="password" id="signupPassword" placeholder="Password" required autocomplete="new-password">
+          <button type="button" class="input-toggle" onclick="togglePassword('signupPassword', this)" tabindex="-1" aria-label="Show password"><i class="fa-regular fa-eye"></i></button>
+        </div>
+        <button type="submit" class="submit-btn"><i class="fa-solid fa-user-plus"></i> Create account</button>
+      </form>
+      <div class="modal-footer">
+        <p class="modal-footer-text">Already have an account? <a href="#" onclick="switchAuthTab('signin');return false;">Sign in</a></p>
+      </div>
+    </div>
+
+    <div class="modal-trust">
+      <span class="trust-badge"><i class="fa-solid fa-key"></i> Encrypted</span>
+      <span class="trust-badge"><i class="fa-solid fa-user-shield"></i> Account-private</span>
+      <span class="trust-badge"><i class="fa-solid fa-microchip"></i> 4 model choices</span>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══ Navbar Scroll Effect ═══ */
+window.addEventListener('scroll', function() {
+  var nav = document.getElementById('navbar');
+  if (window.scrollY > 50) {
+    nav.classList.add('scrolled');
+  } else {
+    nav.classList.remove('scrolled');
+  }
+});
+
+/* ═══ Modal Controls ═══ */
+function openLogin(tab) {
+  document.getElementById('loginModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  switchAuthTab(tab === 'signup' ? 'signup' : 'signin');
+}
+function closeLogin() {
+  document.getElementById('loginModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function switchAuthTab(tab) {
+  var isSignup = tab === 'signup';
+  document.getElementById('tabSignin').classList.toggle('active', !isSignup);
+  document.getElementById('tabSignup').classList.toggle('active', isSignup);
+  document.getElementById('panelSignin').classList.toggle('active', !isSignup);
+  document.getElementById('panelSignup').classList.toggle('active', isSignup);
+}
+function togglePassword(inputId, btn) {
+  var input = document.getElementById(inputId);
+  var showing = input.type === 'text';
+  input.type = showing ? 'password' : 'text';
+  btn.innerHTML = showing ? '<i class="fa-regular fa-eye"></i>' : '<i class="fa-regular fa-eye-slash"></i>';
+}
+document.getElementById('loginModal').addEventListener('click', function(e) {
+  if (e.target === this) closeLogin();
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeLogin();
+});
+
+/* ═══ FAQ Accordion ═══ */
+document.querySelectorAll('.faq-item').forEach(function(item) {
+  var q = item.querySelector('.faq-question');
+  var a = item.querySelector('.faq-answer');
+  q.addEventListener('click', function() {
+    var isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(function(other) {
+      if (other !== item) {
+        other.classList.remove('open');
+        other.querySelector('.faq-answer').style.maxHeight = null;
+      }
+    });
+    if (isOpen) {
+      item.classList.remove('open');
+      a.style.maxHeight = null;
+    } else {
+      item.classList.add('open');
+      a.style.maxHeight = a.scrollHeight + 'px';
+    }
+  });
+});
+
+/* ═══ Smooth Scroll ═══ */
+document.querySelectorAll('a[href^="#"]').forEach(function(link) {
+  link.addEventListener('click', function(e) {
+    var target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+
+/* ═══ THREE.JS: Floating Document Orb + Particle Constellation ═══ */
+(function() {
+  var container = document.getElementById('canvas-container');
+  if (!container) return;
+
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 2000);
+  camera.position.z = 400;
+
+  var renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0x000000, 0);
+  container.appendChild(renderer.domElement);
+
+  var mainGroup = new THREE.Group();
+  scene.add(mainGroup);
+
+  // — Document Orb: layered transparent planes forming a sphere —
+  var orbGroup = new THREE.Group();
+  mainGroup.add(orbGroup);
+
+  var planeCount = 18;
+  for (var i = 0; i < planeCount; i++) {
+    var planeGeo = new THREE.PlaneGeometry(60, 80, 1, 1);
+    var planeMat = new THREE.MeshBasicMaterial({
+      color: i % 3 === 0 ? 0xab9ff2 : (i % 3 === 1 ? 0xe2dffe : 0x3c315b),
+      transparent: true,
+      opacity: 0.06 + Math.random() * 0.06,
+      side: THREE.DoubleSide,
+      depthWrite: false
+    });
+    var plane = new THREE.Mesh(planeGeo, planeMat);
+
+    // Distribute planes on a sphere
+    var phi = Math.acos(-1 + (2 * i) / planeCount);
+    var theta = Math.sqrt(planeCount * Math.PI) * phi;
+    var r = 70;
+    plane.position.x = r * Math.cos(theta) * Math.sin(phi);
+    plane.position.y = r * Math.sin(theta) * Math.sin(phi);
+    plane.position.z = r * Math.cos(phi);
+    plane.lookAt(0, 0, 0);
+
+    // Slight random tilt for organic feel
+    plane.rotation.z = Math.random() * 0.3 - 0.15;
+    orbGroup.add(plane);
+  }
+
+  // Glowing center sphere
+  var coreMat = new THREE.MeshBasicMaterial({
+    color: 0xab9ff2,
+    transparent: true,
+    opacity: 0.12
+  });
+  var coreGeo = new THREE.SphereGeometry(25, 16, 16);
+  var core = new THREE.Mesh(coreGeo, coreMat);
+  orbGroup.add(core);
+
+  // Wireframe ring
+  var ringGeo = new THREE.TorusGeometry(90, 0.5, 8, 64);
+  var ringMat = new THREE.MeshBasicMaterial({
+    color: 0xe2dffe,
+    transparent: true,
+    opacity: 0.15
+  });
+  var ring = new THREE.Mesh(ringGeo, ringMat);
+  ring.rotation.x = Math.PI / 2.5;
+  orbGroup.add(ring);
+
+  // Second ring at angle
+  var ring2 = new THREE.Mesh(
+    new THREE.TorusGeometry(110, 0.3, 8, 64),
+    new THREE.MeshBasicMaterial({ color: 0xab9ff2, transparent: true, opacity: 0.08 })
+  );
+  ring2.rotation.x = Math.PI / 3.5;
+  ring2.rotation.y = Math.PI / 4;
+  orbGroup.add(ring2);
+
+  // — Ambient Particles —
+  var particleCount = 150;
+  var positions = new Float32Array(particleCount * 3);
+  var velocities = [];
+
+  for (var j = 0; j < particleCount; j++) {
+    var pTheta = Math.random() * Math.PI * 2;
+    var pPhi = Math.acos((Math.random() * 2) - 1);
+    var pR = 120 + Math.random() * 180;
+    positions[j * 3] = pR * Math.sin(pPhi) * Math.cos(pTheta);
+    positions[j * 3 + 1] = pR * Math.sin(pPhi) * Math.sin(pTheta);
+    positions[j * 3 + 2] = pR * Math.cos(pPhi);
+    velocities.push({
+      x: (Math.random() - 0.5) * 0.04,
+      y: (Math.random() - 0.5) * 0.04,
+      z: (Math.random() - 0.5) * 0.04
+    });
+  }
+
+  var pGeo = new THREE.BufferGeometry();
+  pGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+  // Create soft circle texture
+  function createDotTexture(color, alpha) {
+    var c = document.createElement('canvas');
+    c.width = 32; c.height = 32;
+    var ctx = c.getContext('2d');
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(16, 16, 3, 0, Math.PI * 2);
+    ctx.fill();
+    var grad = ctx.createRadialGradient(16, 16, 3, 16, 16, 16);
+    grad.addColorStop(0, color.replace(')', ',' + alpha + ')').replace('rgb', 'rgba'));
+    grad.addColorStop(1, 'rgba(171,159,242,0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(16, 16, 16, 0, Math.PI * 2);
+    ctx.fill();
+    return new THREE.CanvasTexture(c);
+  }
+
+  var pMat = new THREE.PointsMaterial({
+    size: 10,
+    transparent: true,
+    opacity: 0.7,
+    map: createDotTexture('rgb(171,159,242)', '0.35'),
+    depthWrite: false
+  });
+
+  var particles = new THREE.Points(pGeo, pMat);
+  mainGroup.add(particles);
+
+  // — Connection Lines —
+  var maxConn = particleCount * 3;
+  var linePositions = new Float32Array(maxConn * 6);
+  var lineGeo = new THREE.BufferGeometry();
+  lineGeo.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+
+  var lineMat = new THREE.LineBasicMaterial({
+    color: 0xab9ff2,
+    transparent: true,
+    opacity: 0.06
+  });
+  var lines = new THREE.LineSegments(lineGeo, lineMat);
+  mainGroup.add(lines);
+
+  // Mouse tracking
+  var mouseX = 0, mouseY = 0;
+  var targetMX = 0, targetMY = 0;
+  var autoRot = 0;
+
+  window.addEventListener('mousemove', function(e) {
+    targetMX = (e.clientX - window.innerWidth / 2) * 0.03;
+    targetMY = (e.clientY - window.innerHeight / 2) * 0.03;
+  });
+
+  function animate() {
+    requestAnimationFrame(animate);
+
+    var pos = pGeo.attributes.position.array;
+    var lPos = lineGeo.attributes.position.array;
+    var lIdx = 0;
+
+    // Update particles
+    for (var i = 0; i < particleCount; i++) {
+      pos[i * 3] += velocities[i].x;
+      pos[i * 3 + 1] += velocities[i].y;
+      pos[i * 3 + 2] += velocities[i].z;
+      var dist = Math.sqrt(pos[i * 3] ** 2 + pos[i * 3 + 1] ** 2 + pos[i * 3 + 2] ** 2);
+      if (dist > 300 || dist < 100) {
+        velocities[i].x *= -1;
+        velocities[i].y *= -1;
+        velocities[i].z *= -1;
+      }
+    }
+    pGeo.attributes.position.needsUpdate = true;
+
+    // Connection lines
+    for (var a = 0; a < particleCount; a++) {
+      for (var b = a + 1; b < particleCount; b++) {
+        var dx = pos[b * 3] - pos[a * 3];
+        var dy = pos[b * 3 + 1] - pos[a * 3 + 1];
+        var dz = pos[b * 3 + 2] - pos[a * 3 + 2];
+        var d = Math.sqrt(dx * dx + dy * dy + dz * dz);
+        if (d < 45 && lIdx < maxConn) {
+          lPos[lIdx * 6] = pos[a * 3];
+          lPos[lIdx * 6 + 1] = pos[a * 3 + 1];
+          lPos[lIdx * 6 + 2] = pos[a * 3 + 2];
+          lPos[lIdx * 6 + 3] = pos[b * 3];
+          lPos[lIdx * 6 + 4] = pos[b * 3 + 1];
+          lPos[lIdx * 6 + 5] = pos[b * 3 + 2];
+          lIdx++;
+        }
+      }
+    }
+    lineGeo.setDrawRange(0, lIdx * 2);
+    lineGeo.attributes.position.needsUpdate = true;
+
+    // Rotation
+    mouseX += (targetMX - mouseX) * 0.04;
+    mouseY += (targetMY - mouseY) * 0.04;
+    autoRot += 0.0004;
+
+    mainGroup.rotation.y = autoRot + mouseX * 0.003;
+    mainGroup.rotation.x = autoRot * 0.3 + mouseY * 0.003;
+
+    // Orb gentle bob
+    orbGroup.rotation.y += 0.002;
+    orbGroup.rotation.z = Math.sin(autoRot * 2) * 0.05;
+
+    renderer.render(scene, camera);
+  }
+
+  window.addEventListener('resize', function() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  animate();
+})();
+
+/* ═══ GSAP Animations ═══ */
+gsap.registerPlugin(ScrollTrigger);
+
+// Hero entrance sequence
+gsap.from(".hero-badge", { opacity: 0, y: 20, duration: 0.8, ease: "power2.out", delay: 0.3 });
+gsap.from(".hero-title", { opacity: 0, y: 40, duration: 1.1, ease: "power2.out", delay: 0.5 });
+gsap.from(".hero-subtitle", { opacity: 0, y: 20, duration: 0.8, ease: "power2.out", delay: 0.8 });
+gsap.from(".hero-actions", { opacity: 0, y: 15, duration: 0.8, ease: "power2.out", delay: 1.0 });
+gsap.from(".hero-mockup", { opacity: 0, y: 30, scale: 0.97, duration: 1, ease: "power2.out", delay: 1.2 });
+gsap.from(".hero-stat", { opacity: 0, y: 12, duration: 0.6, ease: "power2.out", delay: 1.5, stagger: 0.1 });
+
+// Scroll-triggered reveal animations
+gsap.utils.toArray(".fade-in").forEach(function(el) {
+  gsap.fromTo(el,
+    { opacity: 0, y: 30 },
+    {
+      opacity: 1,
+      y: 0,
+      duration: 0.9,
+      ease: "power2.out",
+      scrollTrigger: {
+        trigger: el,
+        start: "top 88%",
+        toggleActions: "play none none none"
+      }
+    }
+  );
+});
+
+// Parallax on hero mockup
+gsap.to(".hero-mockup", {
+  y: -40,
+  ease: "none",
+  scrollTrigger: {
+    trigger: ".hero",
+    start: "top top",
+    end: "bottom top",
+    scrub: 1
+  }
+});
+
+// Navbar pill grows subtle shadow on scroll
+gsap.to(".navbar-inner", {
+  scrollTrigger: {
+    trigger: ".hero",
+    start: "top top",
+    end: "200px top",
+    scrub: true
+  },
+  boxShadow: "0 4px 32px rgba(60,49,91,0.08)"
+});
+
+// Section labels slide in
+gsap.utils.toArray(".section-label").forEach(function(el) {
+  gsap.from(el, {
+    opacity: 0,
+    x: -20,
+    duration: 0.7,
+    ease: "power2.out",
+    scrollTrigger: {
+      trigger: el,
+      start: "top 90%",
+      toggleActions: "play none none none"
+    }
+  });
+});
+
+// Section titles
+gsap.utils.toArray(".section-title").forEach(function(el) {
+  gsap.from(el, {
+    opacity: 0,
+    y: 20,
+    duration: 0.8,
+    ease: "power2.out",
+    scrollTrigger: {
+      trigger: el,
+      start: "top 88%",
+      toggleActions: "play none none none"
+    }
+  });
+});
+</script>
+</body>
+</html>

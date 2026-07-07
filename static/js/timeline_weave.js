@@ -353,9 +353,11 @@ const TimelineWeave = (() => {
                     <button class="tlw-header-btn primary" id="tlwRegenerateBtn" onclick="TimelineWeave.generate()" style="display:none">
                         <i class="fa-solid fa-wand-magic-sparkles"></i> Regenerate
                     </button>
+                    <!--
                     <button class="tlw-header-btn" id="tlwDownloadBtn" onclick="TimelineWeave.downloadPDF()" style="display:none">
                         <i class="fa-solid fa-file-arrow-down"></i> Download PDF
                     </button>
+                    -->
                     <button id="tlwCloseBtn" onclick="TimelineWeave.close()" title="Close TimelineWeave" style="margin-left:8px;background:transparent;border:none;color:var(--text-secondary);cursor:pointer;font-size:18px;display:inline-flex;align-items:center;justify-content:center;padding:4px;transition:color 0.2s;">
                         <i class="fa-solid fa-xmark"></i>
                     </button>

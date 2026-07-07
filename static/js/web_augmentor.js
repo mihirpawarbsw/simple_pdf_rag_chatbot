@@ -720,9 +720,11 @@ const WebAugmentor = (() => {
                     <button class="war-header-btn primary" id="warRegenerateBtn" onclick="WebAugmentor.generate()" style="display:none">
                         <i class="fa-solid fa-wand-magic-sparkles"></i> Regenerate
                     </button>
+                    <!--
                     <button class="war-header-btn" id="warDownloadBtn" onclick="WebAugmentor.downloadPDF()" style="display:none">
                         <i class="fa-solid fa-file-arrow-down"></i> Download PDF
                     </button>
+                    -->
                     <button class="war-header-btn" id="warCloseBtn" onclick="WebAugmentor.close()" title="Close TrendLens" style="margin-left: 8px; background: transparent; border: none; color: var(--text-secondary); cursor: pointer; font-size: 18px; display: inline-flex; align-items: center; justify-content: center; padding: 4px; transition: color 0.2s;">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
@@ -759,7 +761,7 @@ const WebAugmentor = (() => {
                     <!-- Idle state -->
                     <div class="war-state" id="warIdleState">
                         <i class="fa-solid fa-earth-americas" style="font-size: 32px; color: var(--accent); margin-bottom: 8px;"></i>
-                        <h3 style="margin:0;font-family:var(--font-display);font-size:1.1rem;color:var(--text-primary)">Web-Grounded Intelligence</h3>
+                        <h3 style="margin:0;font-family:var(--font-display);font-size:1.1rem;color:var(--text-primary)">TrendLens</h3>
                         <p style="margin:0 0 12px;font-size:.88rem;max-width:480px;line-height:1.5">
                             Select documents from the sidebar, then click <strong>Generate Report</strong> to compare your docs against live news, articles, tweets, reviews, and research.
                         </p>

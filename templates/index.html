@@ -494,9 +494,6 @@
                             </div>
                         </div>
                         <div class="at-header-right">
-                            <button id="atExtractBtn" class="at-extract-btn" onclick="ActionTracker.extract(false)">
-                                <i class="fa-solid fa-bolt"></i> Extract Items
-                            </button>
                             <button class="at-extract-btn secondary" onclick="ActionTracker.extract(true)" title="Re-scan and overwrite">
                                 <i class="fa-solid fa-rotate"></i> Re-scan
                             </button>
@@ -1286,7 +1283,7 @@
             const data = await response.json();
             if(data.status === "success"){
                 session_id = data.session_id;
-                document.getElementById("uploadStatus").innerHTML = `<span style="color:rgba(200,255,220,0.9)"><i class="fa-solid fa-circle-check"></i> Indexed successfully!</span>`;
+                document.getElementById("uploadStatus").innerText = "";
                 document.getElementById("pdfFiles").value = "";
                 document.getElementById("fileSelectionList").innerHTML = "";
                 loadSessionFiles(session_id);
@@ -1298,12 +1295,27 @@
                     if(splash){ splash.style.display="none";
                         document.getElementById("messages").innerHTML = `
                         <div class="message bot">
-                            <div class="message-avatar"><i class="fa-solid fa-robot"></i></div>
+                            <div class="message-avatar"><img src="{{ url_for('static', filename='images/logo_nexora_icon.png') }}" alt="Bot Avatar" style="width: 24px; height: 24px; object-fit: contain;"></div>
                             <div class="message-content">
                                 I have processed and indexed your files into the vector database. Ask me any questions based on their content!
                             </div>
                         </div>`; }
                 }
+                closeUploadModal(null, true);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Upload Successful',
+                    text: 'Your documents have been indexed successfully!',
+                    confirmButtonColor: '#B18FCF',
+                    background: '#0e0e0e',
+                    color: '#f0f0f0',
+                    confirmButtonText: 'Great',
+                    customClass: {
+                        popup: 'nexora-swal-popup',
+                        title: 'nexora-swal-title',
+                        confirmButton: 'nexora-swal-btn'
+                    }
+                });
             } else { 
                 Swal.fire({
                     icon: 'error',
@@ -1607,9 +1619,11 @@
         const messages = document.getElementById("messages");
         const div = document.createElement("div");
         div.className = `message ${type}`;
-        const avatarIcon = type === "user" ? "fa-user" : "fa-robot";
+        const avatarHTML = type === "user" 
+            ? '<i class="fa-solid fa-user"></i>' 
+            : `<img src="{{ url_for('static', filename='images/logo_nexora_icon.png') }}" alt="Bot Avatar" style="width: 24px; height: 24px; object-fit: contain;">`;
         div.innerHTML = `
-            <div class="message-avatar"><i class="fa-solid ${avatarIcon}"></i></div>
+            <div class="message-avatar">${avatarHTML}</div>
             <div class="message-content">${content}</div>`;
         messages.appendChild(div);
         messages.scrollTop = messages.scrollHeight;

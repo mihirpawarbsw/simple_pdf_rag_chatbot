@@ -92,7 +92,7 @@ const ActionTracker = (() => {
                 btn.disabled = false; 
                 btn.innerHTML = forceRefresh 
                     ? '<i class="fa-solid fa-rotate"></i> Re-scan' 
-                    : '<i class="fa-solid fa-bolt"></i> Extract Action Items'; 
+                    : '<i class="fa-solid fa-bolt"></i> Generate Report'; 
             }
         }
     }
@@ -181,7 +181,7 @@ const ActionTracker = (() => {
                         Scans your documents to automatically extract and track action items, deadlines, and decision points in a Kanban board.
                     </p>
                     <button class="at-extract-btn" onclick="ActionTracker.extract(false)" style="background: var(--grad-button); color: var(--swal-btn-text); border: none; padding: 10px 24px; border-radius: 12px; font-family: var(--font-display); font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 12px var(--accent-glow); display: inline-flex; align-items: center; gap: 8px;">
-                        <i class="fa-solid fa-bolt"></i> Extract Action Items
+                        <i class="fa-solid fa-bolt"></i> Generate Report
                     </button>
                 </div>`;
         } else {

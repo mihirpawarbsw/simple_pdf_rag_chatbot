@@ -1,0 +1,1840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexora — Ask Your Documents Anything</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" crossorigin="anonymous">
+
+<!-- Three.js and GSAP Libraries! -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<style>
+/* ═══════════════════════════════════════════════════════════
+   NEXORA — Redesigned Web3 UI
+   Theme: Auros — Abyssal Observatory & Bioluminescent Teal
+   ═══════════════════════════════════════════════════════════ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  /* Color Palette */
+  --surface-abyss: #012624;         /* Page canvas, primary background */
+  --surface-trench: #011d1c;        /* Card surface, pressed depth */
+  --surface-reef: #003734;          /* Interactive card background, reef */
+  --color-fog-veil: #bbc7c6;         /* Secondary copy, muted typography */
+  --color-ice-mist: #edfffe;         /* Accent strokes, highlight borders */
+  --color-ash-gray: #333333;         /* Dark structural borders */
+  --color-snow-sheet: #ffffff;       /* Primary headlines, white typography */
+  --color-lilac-wisp: #fde9ff;       /* Compliment border tint, lavender */
+  --color-current-gradient: #00E6CB; /* Glow accent base */
+  
+  /* Aurora Wash Gradients */
+  --grad-card: linear-gradient(135deg, rgba(0,130,124,0.25), rgba(203,255,252,0.18), rgba(253,233,255,0.15));
+  --grad-btn: linear-gradient(90deg, #00827C 0%, #00A896 25%, #00E6CB 55%, #CBFFFC 100%);
+  --grad-heading: linear-gradient(90deg, #CBFFFC 0%, #EDFFFE 35%, #FFFFFF 55%, #FDE9FF 100%);
+  --grad-hover: linear-gradient(135deg, #003734 0%, #00827C 25%, #00E6CB 50%, #CBFFFC 75%, #FDE9FF 100%);
+  --grad-btn-hover: linear-gradient(90deg, #00A896 0%, #00E6CB 35%, #CBFFFC 70%, #FDE9FF 100%);
+  
+  --grad-current: var(--grad-btn);
+  --grad-aurora: var(--grad-heading);
+  
+  /* Typography Scale (Matter/Inter) */
+  --ff-display: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --ff-body: 'DM Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  /* Border Radii Discipline */
+  --radius-tags: 6px;
+  --radius-cards: 16px;
+  --radius-inputs: 6px;
+  --radius-avatars: 9999px;
+  --radius-buttons: 6px;
+  
+  --ease: cubic-bezier(.22,.8,.26,.99);
+}
+
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--ff-body);
+  background: linear-gradient(180deg, #012624 0%, #003734 100%);
+  background-attachment: fixed;
+  color:var(--color-fog-veil);
+  min-height:100vh;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  font-size:14px;
+  line-height:1.5;
+  position: relative;
+}
+
+::selection{background:rgba(203,255,252,.2);color:var(--color-snow-sheet)}
+a{color:inherit}
+img{max-width:100%;display:block}
+button{font-family:inherit}
+
+/* Grid Backdrop in Luminous Teal */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-image: 
+    linear-gradient(to right, rgba(203, 255, 252, 0.012) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(203, 255, 252, 0.012) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Subtle Film Grain */
+body::after{
+  content:'';position:fixed;inset:0;z-index:2;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
+  opacity:.3;
+}
+
+/* Atmospheric section backgrounds (Bioluminescent drift spots) */
+.nebula{position:fixed;border-radius:50%;filter:blur(140px);z-index:0;pointer-events:none;animation:nebDrift 30s ease-in-out infinite alternate}
+.neb-1{width:760px;height:760px;background:radial-gradient(circle,rgba(0,130,124,.12) 0%,transparent 70%);top:-200px;left:-200px}
+.neb-2{width:640px;height:640px;background:radial-gradient(circle,rgba(203,255,252,.08) 0%,transparent 70%);top:30%;right:-200px;animation-delay:7s}
+.neb-3{width:600px;height:600px;background:radial-gradient(circle,rgba(253,233,255,.06) 0%,transparent 70%);bottom:-200px;left:30%;animation-delay:13s}
+@keyframes nebDrift{0%{transform:translate(0,0) scale(1)}50%{transform:translate(60px,-30px) scale(1.03)}100%{transform:translate(-30px,50px) scale(0.97)}}
+
+/* NAVBAR */
+.navbar{
+  position:fixed;top:16px;left:50%;transform:translateX(-50%);
+  width:min(1200px,calc(100% - 32px));height:64px;z-index:500;
+  display:flex;align-items:center;justify-content:space-between;padding:0 16px;
+  border-radius:var(--radius-tags);
+  border:1px solid rgba(237,255,254,0.06);
+  background:rgba(1,38,36,0.65);
+  backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);
+  box-shadow:none;
+  transition: all 0.3s var(--ease);
+}
+.navbar.scrolled {
+  top: 8px;
+  background: rgba(1,29,28,0.85);
+  border-color: rgba(237,255,254,0.12);
+}
+.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none;z-index:5;position:relative}
+.logo-wrapper{
+  display:flex;align-items:center;justify-content:center;
+  background:#ffffff !important;padding:6px 18px;border-radius:12px;
+  box-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.9), inset -2px -2px 4px rgba(0, 0, 0, 0.15), 4px 4px 10px rgba(0, 0, 0, 0.25);
+  border:1px solid rgba(0, 0, 0, 0.05);
+  transition:all .3s var(--ease);
+}
+.logo-wrapper:hover{
+  transform:translateY(-2px);
+  box-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.9), inset -2px -2px 4px rgba(0, 0, 0, 0.15), 6px 6px 16px rgba(0, 0, 0, 0.3);
+}
+.logo-wrapper img{width:116px;height:auto;display:block}
+
+.nav-links{display:flex;align-items:center;gap:32px}
+.nav-link{
+  font-family:var(--ff-display);
+  font-size:11px;
+  font-weight:500;
+  text-transform: uppercase;
+  letter-spacing:1.44px;
+  color:var(--color-fog-veil);
+  text-decoration:none;
+  transition:color .3s var(--ease);
+  position:relative;
+  padding:4px 0;
+}
+.nav-link::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;border-radius:2px;background:var(--grad-current);transition:width .3s var(--ease)}
+.nav-link:hover{color:var(--color-snow-sheet)}
+.nav-link:hover::after{width:100%}
+@media(max-width:900px){.nav-links{display:none}}
+
+.nav-right{display:flex;align-items:center;gap:10px}
+.nav-cta{
+  height:38px;padding:0 22px;
+  background:transparent;
+  color:var(--color-snow-sheet);
+  border:1px solid rgba(237, 255, 254, 0.4);
+  border-radius:var(--radius-buttons);
+  font-family:var(--ff-display);
+  font-size:11px;
+  font-weight:500;
+  text-transform: uppercase;
+  letter-spacing:1.44px;
+  cursor:pointer;
+  transition:all .3s var(--ease);
+}
+.nav-cta:hover{
+  background:var(--surface-reef);
+  border-color:var(--color-ice-mist);
+  transform:translateY(-1px);
+}
+
+.page{position:relative;z-index:3}
+
+/* HERO */
+.hero{
+  min-height:100svh;position:relative;display:flex;
+  align-items:center;justify-content:center;
+  padding:120px 24px 80px;overflow:hidden;
+}
+
+#canvas-container {
+  position:fixed;inset:0;z-index:1;pointer-events:none;
+}
+
+.hero-container {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 50px;
+  align-items: center;
+  text-align: left;
+  width: min(1200px, calc(100% - 48px));
+  margin: 0 auto;
+  position: relative;
+  z-index: 4;
+}
+
+.hero-content{position:relative;z-index:4;max-width:620px; pointer-events: auto;}
+
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:12px;padding:6px 14px;border-radius:999px;
+  background:var(--surface-trench);border:1px solid rgba(237,255,254,0.08);
+  font-family:var(--ff-display);font-size:10px;font-weight:500;
+  text-transform: uppercase;letter-spacing:2.4px;
+  color:var(--color-fog-veil);margin-bottom:24px;
+}
+.hero-eyebrow .dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--color-current-gradient);
+  box-shadow:0 0 10px var(--color-current-gradient);
+  animation:pulse 2s ease infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+
+.hero-h1{
+  font-family:var(--ff-display);
+  font-size:clamp(36px, 4.5vw, 60px);
+  font-weight:400;line-height:1.15;letter-spacing:-1px;
+  margin-bottom:24px;color:var(--color-snow-sheet);
+}
+.hero-h1 span{display:inline-block}
+.hero-h1 em{
+  font-style:normal;
+  background:var(--grad-current);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+
+.hero-sub{
+  font-family:var(--ff-body);
+  font-size:16px;line-height:1.5;color:var(--color-fog-veil);
+  max-width:640px;margin:0 auto 36px;
+}
+.hero-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+
+.btn-primary{
+  height:48px;padding:0 28px;
+  background:var(--grad-current);
+  color:var(--surface-trench);
+  border:none;border-radius:var(--radius-buttons);
+  font-family:var(--ff-display);font-size:11px;font-weight:500;
+  text-transform: uppercase;letter-spacing:1.44px;
+  cursor:pointer;display:inline-flex;align-items:center;gap:10px;
+  transition:all .3s var(--ease);
+}
+.btn-primary:hover{
+  background: var(--grad-btn-hover);
+  transform:translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 230, 203, 0.45);
+}
+.btn-primary i{transition:transform .3s var(--ease)}
+.btn-primary:hover i{transform:translateX(4px)}
+
+.btn-ghost{
+  height:48px;padding:0 24px;
+  background:transparent;
+  color:var(--color-snow-sheet);
+  border:1px solid rgba(237,255,254,0.4);
+  border-radius:var(--radius-buttons);
+  font-family:var(--ff-display);font-size:11px;font-weight:500;
+  text-transform: uppercase;letter-spacing:1.44px;
+  cursor:pointer;display:inline-flex;align-items:center;gap:10px;
+  text-decoration:none;
+  transition:all .3s var(--ease);
+}
+.btn-ghost:hover{
+  background:rgba(237,255,254,0.05);
+  border-color:var(--color-ice-mist);
+  transform:translateY(-2px);
+}
+
+.scroll-hint{
+  position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:4;
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  font-family:var(--ff-display);font-size:10px;font-weight:500;
+  text-transform: uppercase;letter-spacing:2.4px;
+  color:rgba(203,255,252,0.4);
+}
+.scroll-line{width:1px;height:30px;background:linear-gradient(rgba(203,255,252,0.4),transparent);animation:scrollPulse 2s ease infinite}
+@keyframes scrollPulse{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* SECTIONS */
+.scene{position:relative;padding:100px 24px;z-index:2}
+.scene-inner{max-width:1140px;margin:0 auto}
+.center{text-align:center;max-width:700px;margin:0 auto 64px}
+
+.scene-tag{
+  display:inline-flex;align-items:center;gap:12px;
+  font-family:var(--ff-display);font-size:10px;font-weight:500;
+  text-transform: uppercase;letter-spacing:2.4px;
+  color:var(--color-fog-veil);margin-bottom:20px;
+}
+.scene-tag i {
+  display: none !important;
+}
+.scene-tag::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-current-gradient);
+  box-shadow: 0 0 8px var(--color-current-gradient);
+}
+
+.scene-h2{
+  font-family:var(--ff-display);
+  font-size:clamp(28px,3.8vw,48px);
+  font-weight:400;letter-spacing:-0.47px;line-height:1.2;
+  margin-bottom:18px;color:var(--color-snow-sheet);
+}
+.scene-h2 em{font-style:normal;background:var(--grad-aurora);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.scene-sub{font-size:15px;line-height:1.6;color:var(--color-fog-veil)}
+
+/* HOW IT WORKS */
+.steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+@media(max-width:1024px){.steps-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.steps-grid{grid-template-columns:1fr}}
+.step-card{
+  position:relative;background:var(--grad-card);border:1px solid rgba(237,255,254,0.08);border-radius:var(--radius-cards);
+  padding:40px;text-align:left;overflow:hidden;
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  transition:all .3s var(--ease);
+}
+.step-card:hover{
+  background: linear-gradient(135deg, rgba(1, 38, 36, 0.9) 0%, rgba(0, 55, 52, 0.95) 100%);
+  transform:translateY(-6px);
+  border-color: var(--color-current-gradient);
+  box-shadow: 0 12px 32px rgba(0, 230, 203, 0.25);
+}
+.step-card:hover h3 {
+  color: var(--color-current-gradient) !important;
+}
+.step-card:hover .step-icon {
+  background: rgba(0, 230, 203, 0.15) !important;
+  color: var(--color-current-gradient) !important;
+  box-shadow: 0 0 12px rgba(0, 230, 203, 0.3);
+}
+.step-num{
+  font-family:var(--ff-display);font-size:10px;font-weight:500;
+  text-transform: uppercase;color:var(--color-current-gradient);
+  letter-spacing:2.4px;margin-bottom:20px;
+}
+.step-icon{
+  width:48px;height:48px;border-radius:var(--radius-buttons);margin-bottom:20px;
+  background:rgba(0,130,124,0.12);display:flex;align-items:center;justify-content:center;
+  font-size:18px;color:var(--color-ice-mist);
+}
+.step-card h3{
+  font-family:var(--ff-display);font-size:20px;font-weight:500;
+  color:var(--color-snow-sheet);margin-bottom:12px;letter-spacing:-0.29px;
+}
+.step-card p{font-size:14px;line-height:1.55;color:var(--color-fog-veil)}
+.step-connector{
+  position:absolute;top:50%;right:-28px;width:56px;height:1px;
+  background:repeating-linear-gradient(90deg,rgba(203,255,252,0.06) 0 6px,transparent 6px 12px);
+  display:none;
+}
+@media(min-width:1025px){.step-card:not(:last-child) .step-connector{display:block}}
+
+/* SEPARATOR SYNAPSE */
+.synapse{width:100%;height:1px;background:rgba(203,255,252,0.04);position:relative;z-index:2}
+
+/* FEATURES */
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+@media(max-width:980px){.feat-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.feat-grid{grid-template-columns:1fr}}
+.feat-card{
+  background:var(--grad-card);border:1px solid rgba(237,255,254,0.08);border-radius:var(--radius-cards);
+  padding:32px 28px;text-align:left;
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  transition:all .3s var(--ease);
+}
+.feat-card:hover{
+  background: linear-gradient(135deg, rgba(1, 38, 36, 0.9) 0%, rgba(0, 55, 52, 0.95) 100%);
+  transform:translateY(-4px);
+  border-color: var(--color-current-gradient);
+  box-shadow: 0 12px 32px rgba(0, 230, 203, 0.25);
+}
+.feat-card:hover h3 {
+  color: var(--color-current-gradient) !important;
+}
+.feat-card:hover .feat-icon {
+  background: rgba(0, 230, 203, 0.15) !important;
+  color: var(--color-current-gradient) !important;
+  box-shadow: 0 0 12px rgba(0, 230, 203, 0.3);
+}
+.feat-icon{
+  width:44px;height:44px;border-radius:var(--radius-buttons);margin-bottom:18px;
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  background:rgba(0,130,124,0.12);color:var(--color-ice-mist);
+}
+.feat-card h3{
+  font-family:var(--ff-display);font-size:18px;font-weight:500;
+  color:var(--color-snow-sheet);margin-bottom:10px;letter-spacing:-0.29px;
+}
+.feat-card p{font-size:14px;line-height:1.5;color:var(--color-fog-veil)}
+
+/* LOOPING TICKER STRIP */
+.strip-section{
+  overflow:hidden;padding:24px 0;
+  background:rgba(1,29,28,0.5);
+  border-top:1px solid rgba(237,255,254,0.05);
+  border-bottom:1px solid rgba(237,255,254,0.05);
+  margin:64px 0 20px;
+}
+.strip-track{display:flex;width:max-content;gap:48px;animation:stripScroll 35s linear infinite}
+.strip-badge{
+  font-family:var(--ff-display);font-size:11px;font-weight:500;
+  text-transform: uppercase;color:var(--color-fog-veil);
+  display:inline-flex;align-items:center;gap:8px;white-space:nowrap;letter-spacing:1.44px;
+}
+.strip-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--color-current-gradient)}
+@keyframes stripScroll{to{transform:translateX(calc(-50% - 24px))}}
+
+/* TOOLS SHOWCASE */
+.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+@media(max-width:980px){.tool-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.tool-grid{grid-template-columns:1fr}}
+.tool-card{
+  background:var(--grad-card);border:1px solid rgba(237,255,254,0.08);border-radius:var(--radius-cards);
+  padding:0;text-align:left;overflow:hidden;display:flex;flex-direction:column;
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  transition:all .3s var(--ease);
+}
+.tool-card:hover{
+  background: linear-gradient(135deg, rgba(1, 38, 36, 0.9) 0%, rgba(0, 55, 52, 0.95) 100%);
+  transform:translateY(-6px);
+  border-color: var(--color-current-gradient);
+  box-shadow: 0 12px 32px rgba(0, 230, 203, 0.25);
+}
+.tool-card:hover h3 {
+  color: var(--color-current-gradient) !important;
+}
+.tool-card:hover .tool-icon {
+  background: rgba(0, 230, 203, 0.15) !important;
+  color: var(--color-current-gradient) !important;
+  box-shadow: 0 0 12px rgba(0, 230, 203, 0.3);
+}
+.tool-preview{
+  position:relative;height:124px;
+  background:var(--surface-abyss);
+  border-bottom:1px solid rgba(237,255,254,0.05);
+  overflow:hidden;
+}
+.tool-preview::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg, rgba(203,255,252,0.03), rgba(0,130,124,0.03));
+}
+.tool-body{padding:32px 28px;display:flex;flex-direction:column;flex:1}
+.tool-head{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.tool-icon{
+  width:38px;height:38px;border-radius:var(--radius-buttons);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+  background:rgba(0,130,124,0.12);color:var(--color-ice-mist);
+}
+.tool-card h3{
+  font-family:var(--ff-display);font-size:18px;font-weight:500;
+  color:var(--color-snow-sheet);letter-spacing:-0.29px;
+}
+.tool-card>.tool-body>p{font-size:14px;line-height:1.55;color:var(--color-fog-veil);margin-bottom:16px}
+.tool-list{display:flex;flex-direction:column;gap:8px;margin-top:auto}
+.tool-list li{list-style:none;display:flex;align-items:flex-start;gap:8px;font-size:13px;line-height:1.45;color:var(--color-fog-veil)}
+.tool-list li i{color:var(--color-current-gradient);font-size:8px;margin-top:6px;flex-shrink:0}
+
+/* Previews animations */
+.mp-dot{
+  position:absolute;width:7px;height:7px;border-radius:50%;
+  background:var(--color-aurora-gradient);
+  box-shadow:0 0 10px rgba(203,255,252,0.6);
+  animation:mpFloat ease-in-out infinite alternate;
+}
+.mp-dot.alt{
+  background:var(--color-twilight-gradient);
+  box-shadow:0 0 10px rgba(253,233,255,0.6);
+}
+.mp-line{position:absolute;height:1px;background:rgba(203,255,252,0.1);transform-origin:left center}
+@keyframes mpFloat{from{transform:translateY(0)}to{transform:translateY(-8px)}}
+
+.mp-graph .mp-dot:nth-child(1){top:25%;left:18%;animation-duration:4s}
+.mp-graph .mp-dot:nth-child(2){top:35%;left:70%;animation-duration:5s}
+.mp-graph .mp-dot:nth-child(3){top:70%;left:32%;animation-duration:4.6s}
+.mp-graph .mp-dot:nth-child(4){top:75%;left:60%;animation-duration:5.4s}
+.mp-graph .mp-line:nth-child(5){width:70px;top:30%;left:20%;transform:rotate(8deg)}
+.mp-graph .mp-line:nth-child(6){width:60px;top:72%;left:34%;transform:rotate(-30deg)}
+
+.mp-map{display:flex;align-items:center;justify-content:center;height:100%}
+.mp-map-core{
+  width:14px;height:14px;border-radius:50%;
+  background:var(--grad-current);
+  box-shadow:0 0 14px rgba(0, 130, 124, 0.6);
+}
+.mp-map .mp-line{width:46px;top:50%;left:50%}
+.mp-map .mp-line:nth-child(2){transform:rotate(25deg)}
+.mp-map .mp-line:nth-child(3){transform:rotate(-25deg)}
+.mp-map .mp-line:nth-child(4){transform:rotate(155deg)}
+.mp-map .mp-line:nth-child(5){transform:rotate(-155deg)}
+.mp-map .mp-dot:nth-child(6){top:28%;left:74%;animation-duration:4s}
+.mp-map .mp-dot:nth-child(7){top:68%;left:74%;animation-duration:4.8s}
+.mp-map .mp-dot:nth-child(8){top:28%;left:24%;animation-duration:5.2s}
+
+.mp-cluster{display:flex;align-items:center;justify-content:center;height:100%;position:relative}
+.mp-bubble{position:absolute;border-radius:50%;border:1.5px solid var(--color-current-gradient);opacity:.55;animation:mpSpin linear infinite}
+@keyframes mpSpin{to{transform:rotate(360deg)}}
+.mp-bubble.b1{width:60px;height:60px;animation-duration:9s}
+.mp-bubble.b2{width:84px;height:84px;animation-duration:14s;border-color:var(--color-twilight-gradient);animation-direction:reverse}
+.mp-bubble.b3{width:36px;height:36px;animation-duration:6s}
+
+.mp-bars{display:flex;align-items:flex-end;gap:7px;height:100%;padding:30px 26px}
+.mp-bars .bar{flex:1;border-radius:4px 4px 0 0;background:var(--grad-current);animation:mpBar 2.4s ease-in-out infinite alternate}
+.mp-bars .bar:nth-child(1){height:35%;animation-delay:.1s}
+.mp-bars .bar:nth-child(2){height:75%;animation-delay:.3s}
+.mp-bars .bar:nth-child(3){height:50%;animation-delay:.5s}
+.mp-bars .bar:nth-child(4){height:90%;animation-delay:.2s}
+.mp-bars .bar:nth-child(5){height:28%;animation-delay:.6s}
+@keyframes mpBar{from{transform:scaleY(.85)}to{transform:scaleY(1)}}
+
+.mp-tracker{display:flex;gap:9px;height:100%;padding:20px 22px;align-items:flex-start}
+.mp-tracker .col{flex:1;display:flex;flex-direction:column;gap:7px}
+.mp-tracker .card{height:18px;border-radius:6px;background:var(--surface-trench);border:1px solid rgba(237,255,254,0.06)}
+.mp-tracker .card.cy{background:rgba(0,130,124,0.15);border-color:var(--color-current-gradient)}
+
+.mp-report{display:flex;gap:10px;height:100%;padding:18px 22px;align-items:center}
+.mp-report .page{
+  flex:1;height:78px;background:var(--surface-trench);
+  border:1px solid rgba(237,255,254,0.06);border-radius:8px;
+  padding:10px;display:flex;flex-direction:column;gap:6px;animation:mpReport 4s ease-in-out infinite;
+}
+.mp-report .page:nth-child(2){animation-delay:2s}
+@keyframes mpReport{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.mp-report .pl{height:3px;border-radius:2px;background:rgba(203,255,252,0.1)}
+.mp-report .pl.v{background:var(--color-current-gradient)}
+
+.mp-trendlens {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  position: relative;
+}
+.mp-trendlens .globe {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 1px dashed var(--color-current-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: var(--color-ice-mist);
+  background: var(--surface-trench);
+  z-index: 2;
+  animation: pulseGlobe 2s infinite alternate;
+}
+.mp-trendlens .ring {
+  position: absolute;
+  border: 1px solid rgba(203, 255, 252, 0.15);
+  border-radius: 50%;
+  animation: radarScan 3s linear infinite;
+  pointer-events: none;
+}
+.mp-trendlens .ring.r1 { width: 80px; height: 80px; animation-delay: 0s; }
+.mp-trendlens .ring.r2 { width: 110px; height: 110px; animation-delay: 1s; }
+.mp-trendlens .ring.r3 { width: 140px; height: 140px; animation-delay: 2s; }
+
+@keyframes pulseGlobe {
+  0% { box-shadow: 0 0 0 0 rgba(0, 130, 124, 0.4); }
+  100% { box-shadow: 0 0 15px 4px rgba(0, 130, 124, 0.2); }
+}
+
+@keyframes radarScan {
+  0% { transform: scale(0.6); opacity: 0; }
+  50% { opacity: 0.8; }
+  100% { transform: scale(1.2); opacity: 0; }
+}
+
+/* TimelineWeave Preview */
+.mp-timeline {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 100%;
+  padding: 0 20px;
+  position: relative;
+}
+.mp-timeline::before {
+  content: '';
+  position: absolute;
+  height: 2px;
+  background: rgba(203, 255, 252, 0.15);
+  left: 20px;
+  right: 20px;
+  top: 50%;
+  z-index: 1;
+}
+.mp-timeline .tl-node {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--surface-trench);
+  border: 2.5px solid var(--color-current-gradient);
+  z-index: 2;
+  position: relative;
+  animation: pulseGlobe 2s infinite alternate;
+}
+.mp-timeline .tl-node:nth-child(2) {
+  border-color: var(--color-twilight-gradient);
+  animation-delay: 0.6s;
+}
+.mp-timeline .tl-node:nth-child(3) {
+  border-color: var(--color-current-gradient);
+  animation-delay: 1.2s;
+}
+
+/* StatSonar Preview */
+.mp-sonar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  position: relative;
+}
+.mp-sonar .sonar-wave {
+  position: absolute;
+  border: 1px solid var(--color-current-gradient);
+  border-radius: 50%;
+  opacity: 0.5;
+  width: 70px;
+  height: 70px;
+  animation: radarScan 2.5s linear infinite;
+}
+.mp-sonar .sonar-core {
+  font-size: 24px;
+  color: var(--color-current-gradient);
+  animation: pulseGlobe 2s infinite alternate;
+}
+
+/* Visual Pulse Preview */
+.mp-pulse {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 100%;
+}
+.mp-pulse .pulse-card {
+  width: 45px;
+  height: 60px;
+  border-radius: 6px;
+  background: var(--surface-trench);
+  border: 1px solid rgba(237,255,254,0.06);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: var(--color-ice-mist);
+  transition: all 0.3s;
+  animation: mpReport 3s ease-in-out infinite;
+}
+.mp-pulse .pulse-card:nth-child(1) {
+  animation-delay: 0s;
+  border-color: var(--color-current-gradient);
+}
+.mp-pulse .pulse-card:nth-child(2) {
+  animation-delay: 0.5s;
+  border-color: var(--color-twilight-gradient);
+}
+.mp-pulse .pulse-card:nth-child(3) {
+  animation-delay: 1s;
+  border-color: var(--color-current-gradient);
+}
+
+/* USE CASES */
+.usecases-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+@media(max-width:980px){.usecases-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:680px){.usecases-grid{grid-template-columns:1fr}}
+.usecase-card{
+  background:var(--grad-card);border:1px solid rgba(237,255,254,0.08);border-radius:var(--radius-cards);
+  padding:40px;text-align:left;
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  transition:all .3s var(--ease);
+}
+.usecase-card:hover{
+  background: linear-gradient(135deg, rgba(1, 38, 36, 0.9) 0%, rgba(0, 55, 52, 0.95) 100%);
+  transform:translateY(-4px);
+  border-color: var(--color-current-gradient);
+  box-shadow: 0 12px 32px rgba(0, 230, 203, 0.25);
+}
+.usecase-card:hover h3 {
+  color: var(--color-current-gradient) !important;
+}
+.usecase-card:hover .usecase-icon {
+  background: rgba(0, 230, 203, 0.15) !important;
+  color: var(--color-current-gradient) !important;
+  box-shadow: 0 0 12px rgba(0, 230, 203, 0.3);
+}
+.usecase-icon{
+  width:44px;height:44px;border-radius:var(--radius-buttons);margin-bottom:20px;
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  background:rgba(0,130,124,0.12);color:var(--color-ice-mist);
+}
+.usecase-card h3{
+  font-family:var(--ff-display);font-size:20px;font-weight:500;
+  margin-bottom:8px;letter-spacing:-0.29px;color:var(--color-snow-sheet);
+}
+.usecase-subtitle{
+  display:block;
+  font-size:13px;
+  font-weight:500;
+  color:var(--color-current-gradient);
+  margin-bottom:18px;
+  line-height:1.4;
+  text-transform: uppercase;
+  letter-spacing:1px;
+}
+.usecase-list{
+  list-style:none;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin-top:8px;
+}
+.usecase-list li{
+  font-size:13.5px;
+  line-height:1.55;
+  color:var(--color-fog-veil);
+  position:relative;
+  padding-left:16px;
+}
+.usecase-list li::before{
+  content:'';
+  position:absolute;
+  left:0;
+  top:8px;
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:var(--color-current-gradient);
+}
+.usecase-list li strong{
+  color:var(--color-snow-sheet);
+  font-weight:500;
+}
+
+/* FAQ */
+.faq-list{max-width:740px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.faq-item{
+  background:var(--surface-trench);border:1px solid rgba(237,255,254,0.06);border-radius:var(--radius-tags);
+  overflow:hidden;transition:all .3s var(--ease);
+}
+.faq-item:hover{border-color:rgba(203,255,252,0.15)}
+.faq-item.open{border-color:var(--color-ice-mist);background:var(--surface-trench)}
+.faq-q{
+  width:100%;padding:22px 28px;background:none;border:none;text-align:left;
+  font-family:var(--ff-display);font-size:15px;font-weight:500;color:var(--color-snow-sheet);
+  cursor:pointer;display:flex;align-items:center;justify-content:space-between;
+}
+.faq-caret{font-size:11px;color:var(--color-fog-veil);transition:transform .3s var(--ease)}
+.faq-item.open .faq-caret{transform:rotate(180deg);color:var(--color-ice-mist)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .35s var(--ease)}
+.faq-a p{padding:0 28px 22px;font-size:14px;line-height:1.6;color:var(--color-fog-veil)}
+
+/* FINALE */
+.finale{
+  position:relative;padding:140px 24px;text-align:center;background:var(--surface-trench);
+  border-top:1px solid rgba(237,255,254,0.04);z-index:2;overflow:hidden;
+}
+.finale-inner{position:relative;z-index:4;max-width:680px;margin:0 auto}
+.finale h2{
+  font-family:var(--ff-display);font-size:clamp(32px,4.5vw,56px);
+  font-weight:400;letter-spacing:-1.22px;line-height:1.1;
+  margin-bottom:16px;color:var(--color-snow-sheet);
+}
+.finale h2 em{font-style:normal;background:var(--grad-current);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.finale p{font-size:16px;color:var(--color-fog-veil);margin-bottom:36px}
+.finale-actions{display:flex;justify-content:center}
+
+.core-wrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:1;opacity:.25}
+.core-ring{position:absolute;border-radius:50%;border:1px solid rgba(237,255,254,0.1)}
+.cr-2{width:460px;height:460px;border-style:dashed;animation:orbSpin 45s linear infinite reverse}
+.cr-3{width:700px;height:700px;animation:orbSpin 70s linear infinite}
+@keyframes orbSpin{to{transform:rotate(360deg)}}
+
+/* FOOTER */
+footer{background:var(--surface-abyss);border-top:1px solid rgba(237,255,254,0.04);padding:40px 24px;position:relative;z-index:2}
+.footer-inner{max-width:1140px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.footer-links{
+  display:flex;gap:28px;font-family:var(--ff-display);font-size:11px;font-weight:500;
+  text-transform: uppercase;letter-spacing:1.44px;color:var(--color-fog-veil);
+}
+.footer-links a{text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:var(--color-snow-sheet)}
+.footer-copy{font-size:13px;color:rgba(203,255,252,0.4)}
+@media(max-width:680px){
+  .footer-inner{flex-direction:column;text-align:center}
+  .footer-links{flex-direction:column;gap:14px}
+}
+
+/* LOGIN MODAL */
+.modal-backdrop{
+  position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;
+  background:rgba(1,38,36,0.7);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  opacity:0;pointer-events:none;transition:opacity 0.4s var(--ease);
+}
+.modal-backdrop.open{opacity:1;pointer-events:auto}
+.modal-card{
+  background:var(--grad-card);
+  border:1px solid rgba(237,255,254,0.12);
+  border-radius:var(--radius-cards);padding:44px 38px;width:min(440px,calc(100% - 24px));
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  position:relative;z-index:10;transform:translateY(30px) scale(0.96);
+  transition:all 0.4s var(--ease);
+}
+.modal-backdrop.open .modal-card{transform:translateY(0) scale(1)}
+.modal-close{
+  position:absolute;top:20px;right:20px;width:32px;height:32px;border-radius:50%;
+  background:var(--surface-abyss);border:1px solid rgba(237,255,254,0.08);color:var(--color-fog-veil);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+}
+.modal-close:hover{background:var(--color-snow-sheet);color:var(--surface-abyss);border-color:var(--color-snow-sheet)}
+
+.modal-brand{text-align:center;margin-bottom:28px}
+.modal-tagline{display:block;font-size:12px;font-weight:500;text-transform: uppercase;color:var(--color-current-gradient);letter-spacing:1px}
+.modal-heading{
+  font-family:var(--ff-display);font-size:24px;font-weight:400;letter-spacing:-0.29px;
+  text-align:center;margin-bottom:24px;color:var(--color-snow-sheet);
+}
+
+/* Form controls */
+.alert{padding:12px 16px;border-radius:var(--radius-inputs);font-size:13.5px;font-weight:500;margin-bottom:18px;text-align:center}
+.alert-error{background:rgba(198,40,40,0.15);color:#ff8a80;border:1px solid rgba(198,40,40,0.3)}
+.alert-success{background:rgba(46,125,50,0.15);color:#b9f6ca;border:1px solid rgba(46,125,50,0.3)}
+
+.input-group{position:relative;margin-bottom:16px}
+.input-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--color-fog-veil);font-size:15px;pointer-events:none}
+.input-group input{
+  width:100%;height:48px;padding:0 16px 0 46px;border-radius:var(--radius-inputs);
+  border:1px solid rgba(237,255,254,0.1);background:var(--surface-abyss);
+  color:var(--color-snow-sheet);font-family:var(--ff-body);font-size:14.5px;outline:none;
+  transition:all .3s var(--ease);
+}
+.input-group input:focus{
+  border-color:var(--color-ice-mist);background:var(--surface-trench);
+  box-shadow:0 0 0 4px rgba(203,255,252,0.1);
+}
+
+.submit-btn{
+  width:100%;height:48px;
+  background:var(--grad-current);
+  color:var(--surface-trench);border:none;
+  border-radius:var(--radius-buttons);
+  font-family:var(--ff-display);font-size:12px;font-weight:500;
+  text-transform: uppercase;letter-spacing:1.44px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all .3s var(--ease);margin-top:22px;
+}
+.submit-btn:hover{
+  background: var(--grad-btn-hover);
+  transform:translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 230, 203, 0.45);
+}
+
+.register-link{text-align:center;font-size:13.5px;color:var(--color-fog-veil);margin-top:20px}
+.register-link a{color:var(--color-aurora-gradient);font-weight:500;text-decoration:none}
+.register-link a:hover{text-decoration:underline}
+
+.trust-row{display:flex;justify-content:center;gap:16px;margin-top:28px;padding-top:20px;border-top:1px solid rgba(237,255,254,0.06)}
+.trust-badge{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:500;text-transform: uppercase;letter-spacing:1px;color:rgba(203,255,252,0.4)}
+.trust-badge i{color:var(--color-current-gradient);font-size:10px}
+
+/* GSAP Animations reveals classes */
+.gs-reveal {
+  opacity: 0;
+  transform: translateY(32px);
+}
+
+</style>
+</head>
+<body class="dark-mode">
+
+<!-- Ambient layers -->
+<div class="nebula neb-1"></div>
+<div class="nebula neb-2"></div>
+<div class="nebula neb-3"></div>
+<div id="canvas-container"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="mainNavbar">
+  <a class="nav-brand" href="/">
+    <div class="logo-wrapper">
+      <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora">
+    </div>
+  </a>
+  <div class="nav-links">
+    <a href="#how" class="nav-link">How it works</a>
+    <a href="#features" class="nav-link">Features</a>
+    <a href="#tools" class="nav-link">Tools</a>
+    <a href="#usecases" class="nav-link">Use Cases</a>
+    <a href="#faq" class="nav-link">FAQ</a>
+  </div>
+  <div class="nav-right">
+    <button class="nav-cta" onclick="openLogin()">Sign in</button>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+
+  <div class="hero-content" style="text-align: center; margin: 0 auto;">
+    <div class="hero-eyebrow"><span class="dot"></span>AI Document Intelligence Suite</div>
+    <h1 class="hero-h1">
+      <span>Go beyond chat.</span><br>
+      <span>Analyze, map, and <em>resolve.</em></span>
+    </h1>
+    <p class="hero-sub" style="margin: 0 auto 36px; text-align: center; max-width: 640px;">Nexora is a complete workspace for your documents. Upload your files to instantly map relationships, generate visual mind maps, track action items, and run LexiScope—far more than a simple Q&A chat.</p>
+    <div class="hero-actions" style="justify-content: center;">
+      <button class="btn-primary" onclick="openLogin()">Get started free<i class="fa-solid fa-arrow-right"></i></button>
+      <a class="btn-ghost" href="#how"><i class="fa-regular fa-circle-play"></i>See how it works</a>
+    </div>
+  </div>
+
+  <div class="scroll-hint"><span>SCROLL</span><div class="scroll-line"></div></div>
+</section>
+
+<!-- ═══ HOW IT WORKS ═══ -->
+<section class="scene" id="how">
+  <div class="scene-inner">
+    <div class="center gs-reveal">
+      <div class="scene-tag"><i class="fa-solid fa-route"></i>How it works</div>
+      <h2 class="scene-h2">Four steps. <em>No learning curve.</em></h2>
+      <p class="scene-sub">No complex configurations or training manuals. If you can click a button, you already know how to use Nexora.AI.</p>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step-card gs-reveal">
+        <div class="step-connector"></div>
+        <div class="step-num">STEP 1</div>
+        <div class="step-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+        <h3>Ingest & Index Files</h3>
+        <p>Upload PDFs, Word documents, spreadsheets, or plain text. Once uploaded, Nexora automatically parses and indexes them semantically.</p>
+      </div>
+      <div class="step-card gs-reveal">
+        <div class="step-connector"></div>
+        <div class="step-num">STEP 2</div>
+        <div class="step-icon"><i class="fa-solid fa-comment-dots"></i></div>
+        <h3>Ask Questions (RAG)</h3>
+        <p>Ask in natural language. Nexora semantic search fetches relevant paragraphs and drafts answers directly citing original sources.</p>
+      </div>
+      <div class="step-card gs-reveal">
+        <div class="step-connector"></div>
+        <div class="step-num">STEP 3</div>
+        <div class="step-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+        <h3>Inspect Citations</h3>
+        <p>Click the highlighted source badges on any answer to open the Inspector and read the exact source document passages in real time.</p>
+      </div>
+      <div class="step-card gs-reveal">
+        <div class="step-num">STEP 4</div>
+        <div class="step-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+        <h3>Explore Analytics</h3>
+        <p>Access specialized tools like sentiment analytics, mind maps, knowledge graphs, semantic cluster universes, and action trackers.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="synapse"></div>
+
+<!-- ═══ FEATURES ═══ -->
+<section class="scene" id="features">
+  <div class="scene-inner">
+    <div class="center gs-reveal">
+      <div class="scene-tag"><i class="fa-solid fa-sparkles"></i>What you get</div>
+      <h2 class="scene-h2">Everything you need, <em>nothing you don't.</em></h2>
+      <p class="scene-sub">A quick look at the highlights — then a full walkthrough of every tool just below.</p>
+    </div>
+
+    <div class="feat-grid">
+      <div class="feat-card gs-reveal">
+        <div class="feat-icon"><i class="fa-solid fa-brain"></i></div>
+        <h3>Deep Context Comprehension</h3>
+        <p>Nexora analyzes semantic meanings and sentence relationships to understand the core message of your files, far beyond keyword matching.</p>
+      </div>
+      <div class="feat-card gs-reveal">
+        <div class="feat-icon"><i class="fa-solid fa-circle-check"></i></div>
+        <h3>Zero Hallucination Guarantee</h3>
+        <p>Answers are strictly bounded to your uploaded files to prevent fabrications. If a claim isn't in your corpus, the model won't invent it.</p>
+      </div>
+      <div class="feat-card gs-reveal">
+        <div class="feat-icon"><i class="fa-solid fa-tags"></i></div>
+        <h3>Automated Metadata Tagging</h3>
+        <p>Automatically identifies and extracts key named entities (people, dates, places) and specialized terminology across your documents.</p>
+      </div>
+      <div class="feat-card gs-reveal">
+        <div class="feat-icon"><i class="fa-solid fa-cubes"></i></div>
+        <h3>Cross-Document Synthesis</h3>
+        <p>Ask questions that span multiple separate documents. Nexora correlates information across PDF, DOCX, and TXT files simultaneously.</p>
+      </div>
+      <div class="feat-card gs-reveal">
+        <div class="feat-icon"><i class="fa-solid fa-sliders"></i></div>
+        <h3>Custom Workspace Styling</h3>
+        <p>Personalize your session with 5 premium visual themes, adjustable response lengths, and light/dark modes tailored for your workflow.</p>
+      </div>
+      <div class="feat-card gs-reveal">
+        <div class="feat-icon"><i class="fa-solid fa-user-shield"></i></div>
+        <h3>Private & Secure Sandbox</h3>
+        <p>Your files, database indexes, and chat histories are isolated in your account. Zero model training and complete data privacy.</p>
+      </div>
+    </div>
+
+    <div class="strip-section gs-reveal">
+      <div class="strip-track">
+        <span class="strip-badge">Plain-language answers</span>
+        <span class="strip-badge">Source citations</span>
+        <span class="strip-badge">Smart summaries</span>
+        <span class="strip-badge">Task detection</span>
+        <span class="strip-badge">Visual knowledge maps</span>
+        <span class="strip-badge">Private workspaces</span>
+        <span class="strip-badge">PDF & Word export</span>
+        <span class="strip-badge">Works on any device</span>
+        <!-- duplicate for seamless loop -->
+        <span class="strip-badge">Plain-language answers</span>
+        <span class="strip-badge">Source citations</span>
+        <span class="strip-badge">Smart summaries</span>
+        <span class="strip-badge">Task detection</span>
+        <span class="strip-badge">Visual knowledge maps</span>
+        <span class="strip-badge">Private workspaces</span>
+        <span class="strip-badge">PDF & Word export</span>
+        <span class="strip-badge">Works on any device</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="synapse"></div>
+
+<!-- ═══ TOOLS SHOWCASE ═══ -->
+<section class="scene" id="tools">
+  <div class="scene-inner">
+    <div class="center gs-reveal">
+      <div class="scene-tag"><i class="fa-solid fa-layer-group"></i>Explore every tool</div>
+      <h2 class="scene-h2">One workspace, <em>nine superpowers.</em></h2>
+      <p class="scene-sub">Behind the simple chat box sits a full toolkit. Open any of these any time — no extra setup, just a click.</p>
+    </div>
+
+    <div class="tool-grid">
+      <!-- 1. Knowledge Graph -->
+      <div class="tool-card gs-reveal">
+        <div class="tool-preview mp-graph">
+          <div class="mp-dot"></div><div class="mp-dot alt"></div><div class="mp-dot"></div><div class="mp-dot alt"></div>
+          <div class="mp-line"></div><div class="mp-line"></div>
+        </div>
+        <div class="tool-body">
+          <div class="tool-head">
+            <div class="tool-icon"><i class="fa-solid fa-diagram-project"></i></div>
+            <h3>Knowledge Graph</h3>
+          </div>
+          <p>See how everything in your documents connects — people, companies, topics, and ideas, drawn as a simple web.</p>
+          <ul class="tool-list">
+            <li><i class="fa-solid fa-circle"></i>Spot relationships you'd otherwise miss</li>
+            <li><i class="fa-solid fa-circle"></i>Click any point to jump to the source</li>
+            <li><i class="fa-solid fa-circle"></i>Works across all your files at once</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 2. Interactive Mind Map commented out
+      <div class="tool-card gs-reveal">
+        <div class="tool-preview mp-map">
+          <div class="mp-line"></div><div class="mp-line"></div><div class="mp-line"></div><div class="mp-line"></div>
+          <div class="mp-map-core"></div>
+          <div class="mp-dot"></div><div class="mp-dot alt"></div><div class="mp-dot"></div>
+        </div>
+        <div class="tool-body">
+          <div class="tool-head">
+            <div class="tool-icon"><i class="fa-solid fa-brain"></i></div>
+            <h3>Interactive Mind Map</h3>
+          </div>
+          <p>Turns a long document into a visual tree of its main ideas, so you can see the big picture in seconds.</p>
+          <ul class="tool-list">
+            <li><i class="fa-solid fa-circle"></i>Built automatically — nothing to draw yourself</li>
+            <li><i class="fa-solid fa-circle"></i>Expand any branch for more detail</li>
+            <li><i class="fa-solid fa-circle"></i>Great for studying or skimming reports</li>
+          </ul>
+        </div>
+      </div>
+      -->
+
+      <!-- 3. Cluster Universe -->
+      <div class="tool-card gs-reveal">
+        <div class="tool-preview mp-cluster">
+          <div class="mp-bubble b2"></div><div class="mp-bubble b1"></div><div class="mp-bubble b3"></div>
+        </div>
+        <div class="tool-body">
+          <div class="tool-head">
+            <div class="tool-icon"><i class="fa-solid fa-circle-nodes"></i></div>
+            <h3>Cluster Universe</h3>
+          </div>
+          <p>Automatically sorts a big pile of files into neat topic groups, so related documents find each other.</p>
+          <ul class="tool-list">
+            <li><i class="fa-solid fa-circle"></i>No folders or tags to manage by hand</li>
+            <li><i class="fa-solid fa-circle"></i>Each group comes with a short summary</li>
+            <li><i class="fa-solid fa-circle"></i>Perfect for messy, unsorted archives</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 4. NLP Analytics Suite -->
+      <div class="tool-card gs-reveal">
+        <div class="tool-preview mp-bars">
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        </div>
+        <div class="tool-body">
+          <div class="tool-head">
+            <div class="tool-icon"><i class="fa-solid fa-chart-simple"></i></div>
+            <h3>Document Analytics</h3>
+          </div>
+          <p>Get an instant read on tone, key phrases, and how complex a document is — without reading it cover to cover.</p>
+          <ul class="tool-list">
+            <li><i class="fa-solid fa-circle"></i>Tells you if the tone is positive or negative</li>
+            <li><i class="fa-solid fa-circle"></i>Highlights the most-used ideas and terms</li>
+            <li><i class="fa-solid fa-circle"></i>Flags whether something is a hard read</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 5. Smart Action Tracker -->
+      <div class="tool-card gs-reveal">
+        <div class="tool-preview mp-tracker">
+          <div class="col"><div class="card"></div><div class="card cy"></div></div>
+          <div class="col"><div class="card"></div></div>
+          <div class="col"><div class="card cy"></div></div>
+        </div>
+        <div class="tool-body">
+          <div class="tool-head">
+            <div class="tool-icon"><i class="fa-solid fa-list-check"></i></div>
+            <h3>Smart Action Tracker</h3>
+          </div>
+          <p>Reads meeting notes and reports for you, then pulls out every task, deadline, and decision automatically.</p>
+          <ul class="tool-list">
+            <li><i class="fa-solid fa-circle"></i>Nothing falls through the cracks</li>
+            <li><i class="fa-solid fa-circle"></i>Drag tasks across a simple to-do board</li>
+            <li><i class="fa-solid fa-circle"></i>See who's responsible for what</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 6. Executive Report Generator -->
+      <div class="tool-card gs-reveal">
+        <div class="tool-preview mp-report">
+          <div class="page"><div class="pl v" style="width:80%"></div><div class="pl" style="width:90%"></div><div class="pl c" style="width:55%"></div></div>
+          <div class="page"><div class="pl c" style="width:60%"></div><div class="pl" style="width:85%"></div><div class="pl v" style="width:70%"></div></div>
+        </div>
+        <div class="tool-body">
+          <div class="tool-head">
+            <div class="tool-icon"><i class="fa-solid fa-file-contract"></i></div>
+            <h3>One-Click Report Builder</h3>
+          </div>
+          <p>Turns a whole folder of documents into one clean, readable report — ready to download or share.</p>
+          <ul class="tool-list">
+            <li><i class="fa-solid fa-circle"></i>Includes a summary and key takeaways</li>
+            <li><i class="fa-solid fa-circle"></i>Export straight to PDF or Word</li>
+            <li><i class="fa-solid fa-circle"></i>Saves hours of manual copy-pasting</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 7. TrendLens (Web Verification) -->
+      <div class="tool-card gs-reveal">
+        <div class="tool-preview mp-trendlens">
+          <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
+          <div class="globe"><i class="fa-solid fa-earth-americas"></i></div>
+        </div>
+        <div class="tool-body">
+          <div class="tool-head">
+            <div class="tool-icon"><i class="fa-solid fa-earth-americas"></i></div>
+            <h3>TrendLens™ Live Verification</h3>
+          </div>
+          <p>Compare document insights against live web intelligence—news, reviews, tweets, and trends—to verify accuracy.</p>
+          <ul class="tool-list">
+            <li><i class="fa-solid fa-circle"></i>Cross-reference files with live web searches</li>
+            <li><i class="fa-solid fa-circle"></i>Spot confirmed, contradicted, or outdated data</li>
+            <li><i class="fa-solid fa-circle"></i>Export comprehensive "Doc vs. World" reports</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 8. TimelineWeave -->
+      <div class="tool-card gs-reveal">
+        <div class="tool-preview mp-timeline">
+          <div class="tl-node"></div>
+          <div class="tl-node"></div>
+          <div class="tl-node"></div>
+        </div>
+        <div class="tool-body">
+          <div class="tool-head">
+            <div class="tool-icon"><i class="fa-solid fa-timeline"></i></div>
+            <h3>TimelineWeave</h3>
+          </div>
+          <p>Plots document topics chronologically alongside live web events, news, and history milestones.</p>
+          <ul class="tool-list">
+            <li><i class="fa-solid fa-circle"></i>Visualizes timelines dynamically</li>
+            <li><i class="fa-solid fa-circle"></i>Correlates internal files with real-world history</li>
+            <li><i class="fa-solid fa-circle"></i>Exports detailed temporal reports as PDF</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 9. StatSonar -->
+      <div class="tool-card gs-reveal">
+        <div class="tool-preview mp-sonar">
+          <div class="sonar-wave"></div>
+          <div class="sonar-core"><i class="fa-solid fa-chart-pie"></i></div>
+        </div>
+        <div class="tool-body">
+          <div class="tool-head">
+            <div class="tool-icon"><i class="fa-solid fa-chart-pie"></i></div>
+            <h3>StatSonar Live Heatmaps</h3>
+          </div>
+          <p>Extracts statistical metrics and maps source credibility across different web feeds.</p>
+          <ul class="tool-list">
+            <li><i class="fa-solid fa-circle"></i>Animated gauge and big-number cards</li>
+            <li><i class="fa-solid fa-circle"></i>Real-time source-tier heatmaps</li>
+            <li><i class="fa-solid fa-circle"></i>Cross-source reference counts</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 10. Visual Pulse -->
+      <div class="tool-card gs-reveal">
+        <div class="tool-preview mp-pulse">
+          <div class="pulse-card"><i class="fa-solid fa-image"></i></div>
+          <div class="pulse-card"><i class="fa-solid fa-image"></i></div>
+          <div class="pulse-card"><i class="fa-solid fa-image"></i></div>
+        </div>
+        <div class="tool-body">
+          <div class="tool-head">
+            <div class="tool-icon"><i class="fa-solid fa-images"></i></div>
+            <h3>Visual Pulse Mood Board</h3>
+          </div>
+          <p>Transforms document subjects into a live visual mood-board gallery searched from the web.</p>
+          <ul class="tool-list">
+            <li><i class="fa-solid fa-circle"></i>Generates clean image-driven galleries</li>
+            <li><i class="fa-solid fa-circle"></i>Pairs text-based data with visual context</li>
+            <li><i class="fa-solid fa-circle"></i>Supports PDF downloads for visual reports</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="synapse"></div>
+
+<!-- ═══ USE CASES ═══ -->
+<section class="scene" id="usecases">
+  <div class="scene-inner">
+    <div class="center gs-reveal">
+      <div class="scene-tag"><i class="fa-solid fa-folder-tree"></i>Use Cases</div>
+      <h2 class="scene-h2">Built for every kind of document, <em>every kind of mind.</em></h2>
+      <p class="scene-sub">From contracts to case studies, Nexora turns whatever you throw at it into answers.</p>
+    </div>
+
+    <div class="usecases-grid">
+      <!-- 1. Legal & Compliance -->
+      <div class="usecase-card gs-reveal">
+        <div class="usecase-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+        <h3>Legal & Compliance</h3>
+        <span class="usecase-subtitle">Legal teams — Read contracts at the speed of a question.</span>
+        <ul class="usecase-list">
+          <li><strong>Contract Review</strong> — Spot risky clauses, obligations, and deadlines before you sign anything.</li>
+          <li><strong>Due Diligence</strong> — Cross-reference hundreds of deal documents in minutes, not weeks.</li>
+          <li><strong>Compliance Audits</strong> — Ask your policy library if you're actually following your own rules.</li>
+        </ul>
+      </div>
+
+      <!-- 2. Finance & Accounting -->
+      <div class="usecase-card gs-reveal">
+        <div class="usecase-icon"><i class="fa-solid fa-chart-pie"></i></div>
+        <h3>Finance & Accounting</h3>
+        <span class="usecase-subtitle">Finance teams — Make your filings talk back.</span>
+        <ul class="usecase-list">
+          <li><strong>Statement Analysis</strong> — Turn quarterly reports into plain-English answers about cash flow and risk.</li>
+          <li><strong>Expense Reconciliation</strong> — Chat your way through stacks of receipts instead of scanning line by line.</li>
+          <li><strong>Investment Research</strong> — Query earnings calls, prospectuses, and filings like a personal analyst.</li>
+        </ul>
+      </div>
+
+      <!-- 3. Research & Academia -->
+      <div class="usecase-card gs-reveal">
+        <div class="usecase-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+        <h3>Research & Academia</h3>
+        <span class="usecase-subtitle">Researchers — One question, a hundred papers, one answer.</span>
+        <ul class="usecase-list">
+          <li><strong>Literature Review</strong> — Ask dozens of papers the same question and get one synthesized answer.</li>
+          <li><strong>Thesis & Dissertation</strong> — Find every citation, quote, and contradiction across source material instantly.</li>
+          <li><strong>Grant Writing</strong> — Pull prior proposals and findings into new applications without re-reading.</li>
+        </ul>
+      </div>
+
+      <!-- 4. Business & Operations -->
+      <div class="usecase-card gs-reveal">
+        <div class="usecase-icon"><i class="fa-solid fa-briefcase"></i></div>
+        <h3>Business & Operations</h3>
+        <span class="usecase-subtitle">Operations — Your SOPs, now searchable in plain English.</span>
+        <ul class="usecase-list">
+          <li><strong>Report Digestion</strong> — Catch every decision and action item buried in last quarter's reports.</li>
+          <li><strong>Onboarding & SOPs</strong> — Let new hires ask the handbook questions instead of hunting through folders.</li>
+          <li><strong>Vendor Review</strong> — Compare supplier contracts and terms side by side, instantly.</li>
+        </ul>
+      </div>
+
+      <!-- 5. Healthcare & Life Sciences -->
+      <div class="usecase-card gs-reveal">
+        <div class="usecase-icon"><i class="fa-solid fa-dna"></i></div>
+        <h3>Healthcare & Life Sciences</h3>
+        <span class="usecase-subtitle">Healthcare — Find the finding, skip the scrolling.</span>
+        <ul class="usecase-list">
+          <li><strong>Clinical Review</strong> — Surface key findings from patient records, studies, or trial reports fast.</li>
+          <li><strong>Research Synthesis</strong> — Ask a stack of journal articles what they actually agree on.</li>
+          <li><strong>Regulatory Filings</strong> — Search guidelines and past protocols to accelerate submission preparation.</li>
+        </ul>
+      </div>
+
+      <!-- 6. Education -->
+      <div class="usecase-card gs-reveal">
+        <div class="usecase-icon"><i class="fa-solid fa-chalkboard-user"></i></div>
+        <h3>Education</h3>
+        <span class="usecase-subtitle">Students & Educators — Turn your syllabus into a study partner.</span>
+        <ul class="usecase-list">
+          <li><strong>Study & Exam Prep</strong> — Turn textbooks and lecture notes into a tutor that quizzes you back.</li>
+          <li><strong>Curriculum Design</strong> — Mine past course materials for what worked and what to reuse.</li>
+          <li><strong>Interactive Manuals</strong> — Convert heavy academic or training guides into interactive companions.</li>
+        </ul>
+      </div>
+
+      <!-- 7. Real Estate & Property -->
+      <div class="usecase-card gs-reveal">
+        <div class="usecase-icon"><i class="fa-solid fa-building-user"></i></div>
+        <h3>Real Estate & Property</h3>
+        <span class="usecase-subtitle">Property teams — Analyze complex portfolios instantly.</span>
+        <ul class="usecase-list">
+          <li><strong>Lease Abstraction</strong> — Extract key lease terms, renewal dates, and payment obligations from agreements.</li>
+          <li><strong>Portfolio Querying</strong> — Inspect valuation reports, structural surveys, and maintenance logs in seconds.</li>
+          <li><strong>Zoning & Compliance</strong> — Get quick answers from local codes and municipal regulations.</li>
+        </ul>
+      </div>
+
+      <!-- 8. Personal Productivity -->
+      <div class="usecase-card gs-reveal">
+        <div class="usecase-icon"><i class="fa-solid fa-user-gear"></i></div>
+        <h3>Personal Productivity</h3>
+        <span class="usecase-subtitle">Productivity — Save hours of scrolling and copy-pasting daily.</span>
+        <ul class="usecase-list">
+          <li><strong>Tax & Finance</strong> — Ask your own bank and tax statements where your money actually went.</li>
+          <li><strong>Rapid Reading</strong> — Skim a 200-page report by asking questions instead of reading cover to cover.</li>
+          <li><strong>Project Archives</strong> — Search years of old files like they happened yesterday.</li>
+        </ul>
+      </div>
+
+      <!-- 9. Tech & Engineering -->
+      <div class="usecase-card gs-reveal">
+        <div class="usecase-icon"><i class="fa-solid fa-laptop-code"></i></div>
+        <h3>Tech & Engineering</h3>
+        <span class="usecase-subtitle">Engineering teams — Turn documentation into interactive technical guides.</span>
+        <ul class="usecase-list">
+          <li><strong>API & Docs Search</strong> — Ask complex developer documentation how to integrate and build software features without manual scroll-searching.</li>
+          <li><strong>SDR & Specifications</strong> — Parse requirements docs and product specs to extract system architectures and technical benchmarks.</li>
+          <li><strong>System SOPs</strong> — Let developers query system operations handbooks and deployment guides instantly during outages.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="synapse"></div>
+
+<!-- ═══ FAQ ═══ -->
+<section class="scene" id="faq">
+  <div class="scene-inner">
+    <div class="center gs-reveal">
+      <div class="scene-tag"><i class="fa-solid fa-circle-question"></i>FAQ</div>
+      <h2 class="scene-h2">Quick <em>answers.</em></h2>
+      <p class="scene-sub">The most common questions, answered simply.</p>
+    </div>
+
+    <div class="faq-list">
+      <div class="faq-item gs-reveal">
+        <button class="faq-q">What kinds of files can I upload?<span class="faq-caret"><i class="fa-solid fa-chevron-down"></i></span></button>
+        <div class="faq-a"><p>Nexora supports PDFs, Word documents, plain text files, and spreadsheets. Just drag them into your workspace — Nexora handles parsing, paragraph splitting, and indexing automatically.</p></div>
+      </div>
+      <div class="faq-item gs-reveal">
+        <button class="faq-q">Do I need any technical skill to use this?<span class="faq-caret"><i class="fa-solid fa-chevron-down"></i></span></button>
+        <div class="faq-a"><p>None at all. If you can type a question into a search bar, you can use Nexora. There's nothing to configure, install, or manage.</p></div>
+      </div>
+      <div class="faq-item gs-reveal">
+        <button class="faq-q">How does the AI search across my files?<span class="faq-caret"><i class="fa-solid fa-chevron-down"></i></span></button>
+        <div class="faq-a"><p>The system splits your documents into paragraphs, embeds them into a semantic vector database, and matches your questions using dense cosine similarity to locate the most relevant sections before generating answers. This ensures high accuracy and reduces hallucinations.</p></div>
+      </div>
+      <div class="faq-item gs-reveal">
+        <button class="faq-q">What is TrendLens and how does it work?<span class="faq-caret"><i class="fa-solid fa-chevron-down"></i></span></button>
+        <div class="faq-a"><p>TrendLens extracts key claims and topics from your uploaded documents and runs real-time web searches to check them against live internet resources. It compiles this evidence to show whether your documents are confirmed, contradicted, or outdated relative to current information.</p></div>
+      </div>
+      <div class="faq-item gs-reveal">
+        <button class="faq-q">Can I change theme colors or styling?<span class="faq-caret"><i class="fa-solid fa-chevron-down"></i></span></button>
+        <div class="faq-a"><p>Yes! Once logged in, click the gear icon in the top right of the workspace to open "Session Settings". You can select from 6 themes (Lavender, Cyan, Sunset, Sherbet, Obsidian, Tropical) and toggle between dark and light appearance modes instantly.</p></div>
+      </div>
+      <div class="faq-item gs-reveal">
+        <button class="faq-q">How do I export my conversation?<span class="faq-caret"><i class="fa-solid fa-chevron-down"></i></span></button>
+        <div class="faq-a"><p>Use the floating "Export PDF" button inside the chat area to download a beautifully formatted transcript of your session, including all generated answers and citations.</p></div>
+      </div>
+      <div class="faq-item gs-reveal">
+        <button class="faq-q">Can anyone else see my files?<span class="faq-caret"><i class="fa-solid fa-chevron-down"></i></span></button>
+        <div class="faq-a"><p>No. Your documents, search queries, and conversations live in a private space tied to your account only. Nobody else can access them.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FINALE ═══ -->
+<section class="finale">
+  <div class="core-wrap">
+    <div class="core-ring cr-2"></div>
+    <div class="core-ring cr-3"></div>
+  </div>
+  <div class="finale-inner gs-reveal">
+    <h2>Stop searching. <em>Start asking.</em></h2>
+    <p>Join in seconds and turn your first document into answers right away.</p>
+    <div class="finale-actions">
+      <button class="btn-primary" onclick="openLogin()">Get started free<i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <a class="footer-brand" href="/" style="text-decoration:none">
+      <div class="logo-wrapper" style="padding: 6px 16px;">
+        <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora" style="width: 110px; height: auto;">
+      </div>
+    </a>
+    <nav class="footer-links">
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#tools">Tools</a>
+      <a href="#usecases">Use Cases</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="footer-copy">© 2026 Nexora</div>
+  </div>
+</footer>
+
+<!-- ═══ LOGIN MODAL ═══ -->
+<div class="modal-backdrop" id="loginModal">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeLogin()"><i class="fa-solid fa-xmark"></i></button>
+    <div class="modal-brand">
+      <div class="logo-wrapper" style="margin-bottom:12px; display:inline-flex; width:max-content; padding:8px 20px;">
+        <img src="{{ url_for('static', filename='images/logo_nexora_full.png') }}" alt="Nexora AI" style="width: 130px; height: auto;">
+      </div>
+      <span class="modal-tagline">Welcome back to Nexora</span>
+    </div>
+    <h2 class="modal-heading">Sign in</h2>
+    {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+    {% if success %}<div class="alert alert-success">{{ success }}</div>{% endif %}
+    <form method="POST">
+      <div class="input-group">
+        <span class="input-icon"><i class="fa-regular fa-user"></i></span>
+        <input type="text" name="username" placeholder="Username" required autocomplete="username">
+      </div>
+      <div class="input-group">
+        <span class="input-icon"><i class="fa-solid fa-lock"></i></span>
+        <input type="password" name="password" placeholder="Password" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="submit-btn">Sign in<i class="fa-solid fa-arrow-right"></i></button>
+    </form>
+    <div class="register-link">New here? <a href="/register">Create a free account</a></div>
+    <div class="trust-row">
+      <span class="trust-badge"><i class="fa-solid fa-key"></i>Encrypted</span>
+      <span class="trust-badge"><i class="fa-solid fa-user-shield"></i>Private</span>
+      <span class="trust-badge"><i class="fa-solid fa-bolt"></i>Instant</span>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══ Navbar Scrolled Styling ═══ */
+window.addEventListener('scroll', function() {
+  const nav = document.getElementById('mainNavbar');
+  if (window.scrollY > 40) {
+    nav.classList.add('scrolled');
+  } else {
+    nav.classList.remove('scrolled');
+  }
+});
+
+/* ═══ Modal controls ═══ */
+function openLogin(){
+  document.getElementById('loginModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeLogin(){
+  document.getElementById('loginModal').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.getElementById('loginModal').addEventListener('click',function(e){
+  if(e.target===this) closeLogin();
+});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape') closeLogin();
+});
+window.addEventListener('load',function(){
+  {% if error or success %} openLogin(); {% endif %}
+  if(window.location.search.includes('login=true') || window.location.hash === '#login'){
+    openLogin();
+  }
+});
+
+/* ═══ FAQ accordion logic ═══ */
+document.querySelectorAll('.faq-item').forEach(function(item){
+  var q=item.querySelector('.faq-q'), a=item.querySelector('.faq-a');
+  q.addEventListener('click',function(){
+    var isOpen=item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(function(other){
+      if(other!==item){
+        other.classList.remove('open');
+        other.querySelector('.faq-a').style.maxHeight=null;
+      }
+    });
+    if(isOpen){
+      item.classList.remove('open');
+      a.style.maxHeight=null;
+    }else{
+      item.classList.add('open');
+      a.style.maxHeight=a.scrollHeight+'px';
+    }
+  });
+});
+
+/* ═══ Smooth scroll ═══ */
+document.querySelectorAll('a[href^="#"]').forEach(function(link){
+  link.addEventListener('click',function(e){
+    var target=document.querySelector(this.getAttribute('href'));
+    if(target){
+      e.preventDefault();
+      target.scrollIntoView({behavior:'smooth',block:'start'});
+    }
+  });
+});
+
+/* ═══ THREE.JS: Bioluminescent 3D Particle Sphere ═══ */
+(function() {
+  const container = document.getElementById('canvas-container');
+  if (!container) return;
+
+  // Scene Setup
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 1, 1000);
+  camera.position.z = 270;
+
+  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  container.appendChild(renderer.domElement);
+
+  // Group to apply global rotation / mouse drift
+  const networkGroup = new THREE.Group();
+  scene.add(networkGroup);
+
+  // Initialize Particles (Teal/Cyan Constellation Sphere)
+  const particleCount = 160;
+  const positions = new Float32Array(particleCount * 3);
+  const velocities = [];
+
+  // Generate particles inside a spherical shell
+  for (let i = 0; i < particleCount; i++) {
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos((Math.random() * 2) - 1);
+    
+    // Radius of the sphere shell
+    const r = 80 + Math.random() * 25;
+    
+    positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+    positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+    positions[i * 3 + 2] = r * Math.cos(phi);
+    
+    velocities.push({
+      x: (Math.random() - 0.5) * 0.08,
+      y: (Math.random() - 0.5) * 0.08,
+      z: (Math.random() - 0.5) * 0.08
+    });
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+  // Glowing Circle Texture generator for Web3 aesthetic
+  function createCircleTexture(color) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 32;
+    canvas.height = 32;
+    const ctx = canvas.getContext('2d');
+    
+    // Solid core dot
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(16, 16, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Soft outer radial glow
+    const grad = ctx.createRadialGradient(16, 16, 2.5, 16, 16, 16);
+    grad.addColorStop(0, 'rgba(203, 255, 252, 0.4)'); // cyan glow
+    grad.addColorStop(0.5, 'rgba(0, 130, 124, 0.15)'); // teal glow
+    grad.addColorStop(1, 'rgba(0, 130, 124, 0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(16, 16, 16, 0, Math.PI * 2);
+    ctx.fill();
+    
+    return new THREE.CanvasTexture(canvas);
+  }
+
+  // Create point cloud with glowing nodes
+  const material = new THREE.PointsMaterial({
+    size: 13,
+    transparent: true,
+    opacity: 0.9,
+    map: createCircleTexture('#cbfffc'), // Cyan core glow
+    depthWrite: false
+  });
+
+  const points = new THREE.Points(geometry, material);
+  networkGroup.add(points);
+
+  // Line segments linking nodes
+  const maxConnections = particleCount * 4;
+  const linePositions = new Float32Array(maxConnections * 6);
+  const lineGeometry = new THREE.BufferGeometry();
+  lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+
+  const lineMaterial = new THREE.LineBasicMaterial({
+    color: 0x00827c, // Saturated Teal links
+    transparent: true,
+    opacity: 0.22
+  });
+
+  const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
+  networkGroup.add(lines);
+
+  // Interaction / Parallax variables
+  let mouseX = 0, mouseY = 0;
+  let targetX = 0, targetY = 0;
+
+  window.addEventListener('mousemove', function(e) {
+    targetX = (e.clientX - window.innerWidth / 2) * 0.08;
+    targetY = (e.clientY - window.innerHeight / 2) * 0.08;
+  });
+
+  // Scroll rotation object that GSAP will animate
+  const scrollRotation = { x: 0, y: 0, z: 0 };
+  let autoRotationY = 0;
+  let autoRotationX = 0;
+
+  // Animation loop
+  function animate() {
+    requestAnimationFrame(animate);
+
+    const pos = geometry.attributes.position.array;
+    const linePos = lineGeometry.attributes.position.array;
+    let lineIdx = 0;
+
+    // 1. Move Neurons randomly within boundaries
+    for (let i = 0; i < particleCount; i++) {
+      pos[i * 3] += velocities[i].x;
+      pos[i * 3 + 1] += velocities[i].y;
+      pos[i * 3 + 2] += velocities[i].z;
+
+      // Keep them within spherical shell boundaries [70, 110]
+      const dist = Math.sqrt(pos[i * 3]**2 + pos[i * 3 + 1]**2 + pos[i * 3 + 2]**2);
+      if (dist > 110 || dist < 70) {
+        velocities[i].x *= -1;
+        velocities[i].y *= -1;
+        velocities[i].z *= -1;
+      }
+    }
+    geometry.attributes.position.needsUpdate = true;
+
+    // 2. Build Connections between close neurons
+    for (let i = 0; i < particleCount; i++) {
+      const x1 = pos[i * 3];
+      const y1 = pos[i * 3 + 1];
+      const z1 = pos[i * 3 + 2];
+
+      for (let j = i + 1; j < particleCount; j++) {
+        const x2 = pos[j * 3];
+        const y2 = pos[j * 3 + 1];
+        const z2 = pos[j * 3 + 2];
+
+        const dist = Math.sqrt((x2 - x1)**2 + (y2 - y1)**2 + (z2 - z1)**2);
+
+        if (dist < 46 && lineIdx < maxConnections) {
+          linePos[lineIdx * 6] = x1;
+          linePos[lineIdx * 6 + 1] = y1;
+          linePos[lineIdx * 6 + 2] = z1;
+          linePos[lineIdx * 6 + 3] = x2;
+          linePos[lineIdx * 6 + 4] = y2;
+          linePos[lineIdx * 6 + 5] = z2;
+          lineIdx++;
+        }
+      }
+    }
+    lineGeometry.setDrawRange(0, lineIdx * 2);
+    lineGeometry.attributes.position.needsUpdate = true;
+
+    // 3. Apply Parallax and Auto-drift + Scroll Rotation
+    mouseX += (targetX - mouseX) * 0.05;
+    mouseY += (targetY - mouseY) * 0.05;
+
+    autoRotationY += 0.0004;
+    autoRotationX += 0.0002;
+
+    networkGroup.rotation.x = scrollRotation.x + autoRotationX + (mouseY * 0.004);
+    networkGroup.rotation.y = scrollRotation.y + autoRotationY + (mouseX * 0.004);
+    networkGroup.rotation.z = scrollRotation.z;
+
+    renderer.render(scene, camera);
+  }
+
+  // Handle Resize
+  window.addEventListener('resize', function() {
+    camera.aspect = container.clientWidth / container.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(container.clientWidth, container.clientHeight);
+  });
+
+  animate();
+
+  /* ═══ GSAP + SCROLLTRIGGER: Camera & Neural Network animation ═══ */
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Setup GSAP Timeline linked to the page scroll
+  const scrollTimeline = gsap.timeline({
+    scrollTrigger: {
+      trigger: ".page",
+      start: "top top",
+      end: "bottom bottom",
+      scrub: 1.2
+    }
+  });
+
+  // Animate camera position and rotation properties through the timeline
+  scrollTimeline
+    // 1. Scroll from Hero to "How it works"
+    .to(camera.position, { x: 40, y: 20, z: 180, ease: "power1.inOut" }, 0)
+    .to(scrollRotation, { x: 0.2, y: Math.PI * 0.5, z: 0.1, ease: "power1.inOut" }, 0)
+
+    // 2. Scroll from "How it works" to "Features"
+    .to(camera.position, { x: -50, y: -15, z: 150, ease: "power1.inOut" }, 0.25)
+    .to(scrollRotation, { x: -0.2, y: Math.PI * 1.0, z: -0.1, ease: "power1.inOut" }, 0.25)
+
+    // 3. Scroll from "Features" to "Tools"
+    .to(camera.position, { x: 0, y: 40, z: 120, ease: "power1.inOut" }, 0.5)
+    .to(scrollRotation, { x: 0.3, y: Math.PI * 1.5, z: 0.2, ease: "power1.inOut" }, 0.5)
+
+    // 4. Scroll from "Tools" to "Use Cases" / "FAQ"
+    .to(camera.position, { x: 30, y: -10, z: 200, ease: "power1.inOut" }, 0.75)
+    .to(scrollRotation, { x: -0.1, y: Math.PI * 2.0, z: 0, ease: "power1.inOut" }, 0.75)
+
+    // 5. Scroll to "Finale" / footer
+    .to(camera.position, { x: 0, y: 0, z: 270, ease: "power1.inOut" }, 0.95)
+    .to(scrollRotation, { x: 0, y: Math.PI * 2.5, z: 0.1, ease: "power1.inOut" }, 0.95);
+
+})();
+
+/* ═══ GSAP Reveals and Card Hover Effects ═══ */
+window.addEventListener('DOMContentLoaded', () => {
+  gsap.from(".hero-eyebrow", { opacity: 0, y: 20, duration: 0.8, ease: "power3.out", delay: 0.2 });
+  gsap.from(".hero-h1 span", { opacity: 0, y: 40, duration: 1.0, ease: "power4.out", stagger: 0.2, delay: 0.4 });
+  gsap.from(".hero-sub", { opacity: 0, y: 20, duration: 0.8, ease: "power3.out", delay: 0.8 });
+  gsap.from(".hero-actions", { opacity: 0, y: 15, duration: 0.8, ease: "power3.out", delay: 1.0 });
+  gsap.from(".scroll-hint", { opacity: 0, duration: 0.6, delay: 1.3 });
+});
+
+gsap.utils.toArray(".gs-reveal").forEach(element => {
+  gsap.fromTo(element, 
+    { opacity: 0, y: 35 }, 
+    {
+      opacity: 1, 
+      y: 0, 
+      duration: 1.0, 
+      ease: "power2.out", 
+      scrollTrigger: {
+        trigger: element,
+        start: "top 88%",
+        toggleActions: "play none none none"
+      }
+    }
+  );
+});
+
+if (window.matchMedia('(hover:hover)').matches) {
+  const cards = document.querySelectorAll('.step-card, .feat-card, .tool-card, .usecase-card');
+  cards.forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      
+      gsap.to(card, {
+        rotateX: -y * 0.08,
+        rotateY: x * 0.08,
+        translateY: -5,
+        scale: 1.01,
+        duration: 0.3,
+        ease: "power2.out"
+      });
+    });
+    
+    card.addEventListener('mouseleave', () => {
+      gsap.to(card, {
+        rotateX: 0,
+        rotateY: 0,
+        translateY: 0,
+        scale: 1,
+        duration: 0.5,
+        ease: "power2.out"
+      });
+    });
+  });
+}
+</script>
+</body>
+</html>

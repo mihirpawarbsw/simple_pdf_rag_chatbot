@@ -401,11 +401,11 @@ const VisualPulse = (() => {
                         <i class="fa-solid fa-images" style="font-size:32px;color:var(--accent);margin-bottom:8px;"></i>
                         <h3 style="margin:0;font-family:var(--font-display);font-size:1.1rem;color:var(--text-primary)">Doc Topics, Mapped to Real Images</h3>
                         <p style="margin:0 0 12px;font-size:.88rem;max-width:480px;line-height:1.5">
-                            Select documents from the sidebar, then click <strong>Build Pulse</strong> to turn your document's topics into a live visual mood-board.
+                            Select documents from the sidebar, then click <strong>Generate Report</strong> to turn your document's topics into a live visual mood-board.
                         </p>
                         <button id="vpGenerateBtn" onclick="VisualPulse.generate()"
                             style="background:var(--grad-button);color:var(--swal-btn-text);border:none;padding:8px 16px;border-radius:10px;font-family:var(--font-display);font-size:0.8rem;font-weight:600;cursor:pointer;box-shadow:0 4px 12px var(--accent-glow);display:inline-flex;align-items:center;gap:8px">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i> Build Pulse
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Report
                         </button>
                     </div>
                     <div id="vpReportContent" style="display:none"></div>
@@ -775,7 +775,7 @@ const VisualPulse = (() => {
         } finally {
             _generating = false;
             genBtn.disabled = false;
-            genBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> Build Pulse`;
+            genBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Report`;
             const regenBtn = document.getElementById("vpRegenerateBtn");
             if (regenBtn) {
                 regenBtn.disabled = false;

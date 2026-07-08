@@ -3137,7 +3137,8 @@ body.light-mode .features-dropdown .toolbar-btn:hover {
     right: 28px; /* Aligned with chat header padding */
     z-index: 90;
     height: 36px;
-    padding: 0 14px;
+    width: 36px;
+    padding: 0;
     border-radius: 10px;
     border: 1px solid var(--border);
     background: var(--bg-glass-deep);
@@ -3145,11 +3146,11 @@ body.light-mode .features-dropdown .toolbar-btn:hover {
     -webkit-backdrop-filter: blur(20px);
     color: var(--text-primary);
     font-family: var(--font-display), sans-serif;
-    font-size: 12.5px;
+    font-size: 14px;
     font-weight: 600;
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15), 0 0 10px var(--accent-glow-soft);
     transition: all 0.2s var(--transition);

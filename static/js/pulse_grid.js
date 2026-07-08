@@ -405,12 +405,12 @@ const PulseGrid = (() => {
                         <i class="fa-solid fa-chart-pie" style="font-size:32px;color:var(--accent);margin-bottom:8px;"></i>
                         <h3 style="margin:0;font-family:var(--font-display);font-size:1.1rem;color:var(--text-primary)">Doc Topics → Live Stats & Credibility</h3>
                         <p style="margin:0 0 12px;font-size:.88rem;max-width:520px;line-height:1.5">
-                            Select documents from the sidebar, then click <strong>Build Grid</strong> to pull real current statistics
+                            Select documents from the sidebar, then click <strong>Generate Report</strong> to pull real current statistics
                             and see which topics are backed by credible sources vs. only forum chatter.
                         </p>
                         <button id="pgGenerateBtn" onclick="PulseGrid.generate()"
                             style="background:var(--grad-button);color:var(--swal-btn-text);border:none;padding:8px 16px;border-radius:10px;font-family:var(--font-display);font-size:0.8rem;font-weight:600;cursor:pointer;box-shadow:0 4px 12px var(--accent-glow);display:inline-flex;align-items:center;gap:8px">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i> Build Grid
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Report
                         </button>
                     </div>
                     <div id="pgReportContent" style="display:none"></div>
@@ -842,7 +842,7 @@ const PulseGrid = (() => {
         } finally {
             _generating = false;
             genBtn.disabled = false;
-            genBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> Build Grid`;
+            genBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Report`;
             const regenBtn = document.getElementById("pgRegenerateBtn");
             if (regenBtn) {
                 regenBtn.disabled = false;

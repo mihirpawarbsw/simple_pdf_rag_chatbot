@@ -769,7 +769,7 @@ body.light-mode #nlpCloseBtn:hover {
               </div>
               
               <button onclick="NLPAnalytics.run()" style="background: var(--grad-button); color: var(--swal-btn-text); border: none; padding: 8px 20px; border-radius: 10px; font-family: var(--font-display); font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 12px var(--accent-glow); display: inline-flex; align-items: center; gap: 6px;">
-                <i class="fa-solid fa-rotate"></i> Run Full Analysis
+                <i class="fa-solid fa-rotate"></i> Generate Report
               </button>
             </div>
 

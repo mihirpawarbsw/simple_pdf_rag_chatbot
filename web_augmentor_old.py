@@ -1,42 +1,71 @@
 """
-web_augmentor.py — Nexora AI  |  Web-Grounded Research Augmentor  (OPTIMIZED)
+web_augmentor.py — Nexora AI  |  Web-Grounded Research Augmentor
 ================================================================
-Same routes/behavior as the original module, but the pipeline that
-burns Tavily/Groq tokens has been rewritten:
+Combines your uploaded documents (via ChromaDB RAG) with live web
+intelligence to produce a "Doc vs. World" executive report.
 
-  - Topic extraction uses a cheap/fast model, capped at 4 topics,
-    1 search query per topic (was up to 8 topics x 3 queries).
-  - Tavily search uses "basic" depth (half the credits of "advanced")
-    and is cached in SQLite with a TTL, so repeated/duplicate queries
-    don't cost a new credit.
-  - Per-topic synthesis + the executive summary used to be up to 8
-    separate Groq calls. They are now ONE mega-synthesis call that
-    returns everything (per-topic verdicts + exec summary) in one
-    JSON response.
+Pipeline:
+  1. Extract key topics from user's docs  (via Chroma + LLM)
+  2. For each topic → fire a web search   (Tavily)
+  3. LLM synthesises Doc claim vs Web evidence per topic
+  4. Build structured JSON report object  (single source of truth)
+  5a. Return JSON for in-app viewer       (GET /web_augmentor/view)
+  5b. Render PDF server-side via WeasyPrint (POST /web_augmentor/export_pdf)
 
-Net effect per "Generate" click: ~9 Groq calls -> 2, ~21 Tavily calls -> ~4
-(fewer still with cache hits), and "advanced" depth -> "basic" depth.
-
-Register in app.py (unchanged):
+Register in app.py:
     from web_augmentor import web_augmentor_bp
     app.register_blueprint(web_augmentor_bp)
 
-Routes (unchanged):
-    POST   /web_augmentor/generate
-    POST   /web_augmentor/export_pdf
-    GET    /web_augmentor/history
-    GET    /web_augmentor/history/<report_id>
+Routes:
+    POST /web_augmentor/generate
+         Body: { "files": [...], "session_id": "..." }
+         Returns: { "report": <ReportJSON>, "status": "ok" }
+
+    POST /web_augmentor/export_pdf
+         Body: { "report": <ReportJSON> }
+         Returns: PDF file download
+
+    GET  /web_augmentor/history
+         Returns: [ list of saved reports for user ]
+
     DELETE /web_augmentor/history/<report_id>
+         Deletes a saved report
+
+ReportJSON schema:
+    {
+        "id":           "war_<uuid>",
+        "title":        "Web-Grounded Intelligence Report",
+        "doc_names":    ["file.pdf", ...],
+        "generated_at": "2024-01-01 12:00:00",
+        "freshness_label": "Live as of …",
+        "executive_summary": "…",
+        "overall_verdict":   "validated|mixed|outdated",
+        "topics": [
+            {
+                "id":        "t0",
+                "title":     "RAG Architecture",
+                "doc_claim": "The document states …",
+                "web_evidence": [
+                    { "title": "…", "snippet": "…", "url": "…", "source_type": "article|news|tweet|review" }
+                ],
+                "synthesis":   "…",
+                "verdict":     "confirmed|partially_outdated|contradicted|new_development",
+                "trend_score": 82          ← 0-100 web trendiness
+            },
+            …
+        ],
+        "opportunities": ["…", …],
+        "risks":         ["…", …],
+        "sources":       [ { "title":"…", "url":"…", "type":"…" }, … ]
+    }
 """
 
 from __future__ import annotations
 
-import hashlib
 import json
 import os
 import re
 import sqlite3
-import time
 import uuid
 from datetime import datetime
 from collections import defaultdict
@@ -50,42 +79,36 @@ from rag_logic import CHROMA_PATH, CHROMA_COLLECTION
 
 web_augmentor_bp = Blueprint("web_augmentor_bp", __name__, url_prefix="/web_augmentor")
 
-# ── DB ─────────────────────────────────────────────────────────────────────
+# ── DB (reuse app's DB_NAME via env or default) ───────────────────────────────
 DB_NAME = os.getenv("DB_NAME", "chat_history.db")
 
-# ── Web-search provider config (Tavily only) ────────────────────────────────
-TAVILY_API_KEY = os.getenv("TAVILY_API_KEY", "")
+# ── Web-search provider config ────────────────────────────────────────────────
+# Tavily only.
+TAVILY_API_KEY  = os.getenv("TAVILY_API_KEY",  "")
 
-# ═════════════════════════════════════════════════════════════════════════
-# Tunables — adjust these to trade cost vs depth/quality
-# ═════════════════════════════════════════════════════════════════════════
-
-MAX_TOPICS          = 4          # was up to 7-8
-QUERIES_PER_TOPIC    = 1          # was 3
-RESULTS_PER_QUERY    = 4          # was 5-6
-TAVILY_SEARCH_DEPTH  = "basic"    # was "advanced" (advanced = 2x Tavily credits)
-CACHE_TTL_SECONDS    = 12 * 3600  # how long a cached search result is considered fresh
-
-# Cheap/fast model for topic + query extraction (structured, low-reasoning task)
-_TOPIC_EXTRACT_CFG = {
-    "model_name":  "llama-3.1-8b-instant",
-    "temperature": 0.0,
-    "max_tokens":  900,
-}
-
-# Quality model — used ONCE per report now, for the mega-synthesis call
-_MEGA_SYNTH_CFG = {
+# ── LLM config ────────────────────────────────────────────────────────────────
+_LLM_CFG = {
     "model_name":  "llama-3.3-70b-versatile",
     "temperature": 0.2,
-    "max_tokens":  2500,
+    "max_tokens":  1200,
+}
+
+_TOPIC_EXTRACT_CFG = {
+    "model_name":  "llama-3.3-70b-versatile",
+    "temperature": 0.0,
+    # NOTE: 5-8 topics * (title + doc_claim + 3 search_queries) in JSON
+    # routinely exceeds 600 tokens and gets cut off mid-array, which is
+    # the root cause of "Expecting value" JSON errors. Raised to 1800.
+    "max_tokens":  1800,
 }
 
 
-# ═════════════════════════════════════════════════════════════════════════
-# DB helpers  (unchanged from original)
-# ═════════════════════════════════════════════════════════════════════════
+# ═════════════════════════════════════════════════════════════════════════════
+# DB helpers
+# ═════════════════════════════════════════════════════════════════════════════
 
 def _init_war_table() -> None:
+    """Create web_augmentor_reports table if it doesn't exist."""
     conn = sqlite3.connect(DB_NAME)
     cur  = conn.cursor()
     cur.execute("""
@@ -173,64 +196,9 @@ def _delete_report(username: str, report_id: str) -> bool:
     return affected > 0
 
 
-# ═════════════════════════════════════════════════════════════════════════
-# Search-result cache (SQLite) — avoids re-paying Tavily for a query
-# already run recently (e.g. "Regenerate" clicked twice, or overlapping
-# topics across documents).
-# ═════════════════════════════════════════════════════════════════════════
-
-def _init_cache_table() -> None:
-    conn = sqlite3.connect(DB_NAME)
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS war_search_cache (
-            query_hash   TEXT PRIMARY KEY,
-            query_text   TEXT NOT NULL,
-            results_json TEXT NOT NULL,
-            fetched_at   REAL NOT NULL
-        )
-    """)
-    conn.commit()
-    conn.close()
-
-
-def _cache_key(query: str) -> str:
-    return hashlib.sha256(query.strip().lower().encode()).hexdigest()
-
-
-def _cache_get(query: str) -> list[dict] | None:
-    _init_cache_table()
-    conn = sqlite3.connect(DB_NAME)
-    row = conn.execute(
-        "SELECT results_json, fetched_at FROM war_search_cache WHERE query_hash = ?",
-        (_cache_key(query),)
-    ).fetchone()
-    conn.close()
-    if not row:
-        return None
-    results_json, fetched_at = row
-    if time.time() - fetched_at > CACHE_TTL_SECONDS:
-        return None
-    try:
-        return json.loads(results_json)
-    except Exception:
-        return None
-
-
-def _cache_set(query: str, results: list[dict]) -> None:
-    _init_cache_table()
-    conn = sqlite3.connect(DB_NAME)
-    conn.execute(
-        "INSERT OR REPLACE INTO war_search_cache (query_hash, query_text, results_json, fetched_at) "
-        "VALUES (?, ?, ?, ?)",
-        (_cache_key(query), query, json.dumps(results), time.time())
-    )
-    conn.commit()
-    conn.close()
-
-
-# ═════════════════════════════════════════════════════════════════════════
-# Chroma helpers  (unchanged from original)
-# ═════════════════════════════════════════════════════════════════════════
+# ═════════════════════════════════════════════════════════════════════════════
+# Chroma helpers  (same pattern as cluster_universe.py)
+# ═════════════════════════════════════════════════════════════════════════════
 
 def _fetch_chunks(username: str, filenames: list[str]) -> list[dict]:
     """Return list of {"text": str, "source": str} from ChromaDB."""
@@ -257,35 +225,40 @@ def _fetch_chunks(username: str, filenames: list[str]) -> list[dict]:
         return []
 
 
-# ═════════════════════════════════════════════════════════════════════════
-# Step 1 — Topic extraction (cheap model, fewer topics, fewer queries)
-# ═════════════════════════════════════════════════════════════════════════
+# ═════════════════════════════════════════════════════════════════════════════
+# Step 1 — Topic extraction
+# ═════════════════════════════════════════════════════════════════════════════
 
 def _extract_topics(chunks: list[dict]) -> list[dict]:
     """
-    Returns list of {"title": str, "doc_claim": str, "search_query": str}
+    Ask the LLM to pull 5-8 key topics from the document chunks,
+    each with a short doc_claim summarising what the doc says about it.
+    Returns list of {"title": str, "doc_claim": str, "search_queries": [str, …]}
     """
+    # Group by source, grab representative snippets
     grouped: dict[str, list[str]] = defaultdict(list)
     for c in chunks:
         grouped[c["source"]].append(c["text"])
 
     source_blobs = []
     for src, texts in list(grouped.items())[:6]:
-        blob = trim_to_budget(" ".join(texts[:6]), 500)
+        blob = trim_to_budget(" ".join(texts[:6]), 600)
         source_blobs.append(f'[{src}]: {blob}')
 
-    context = trim_to_budget("\n\n".join(source_blobs), 3000)
+    context = trim_to_budget("\n\n".join(source_blobs), 3800)
 
-    prompt = f"""Read the document excerpts and extract exactly {MAX_TOPICS} KEY TOPICS
-central to the documents.
+    prompt = f"""You are an expert research analyst.
+
+Read the document excerpts below and extract 5-8 KEY TOPICS that are central to the documents.
 
 For each topic provide:
 - title        : 3-6 word topic label
-- doc_claim    : 1 sentence summary of what the documents say about this topic
-- search_query : ONE highly targeted, specific web search query (include 2025 or 2026)
-                 to check whether this claim is still current
+- doc_claim    : 1-2 sentence summary of what the documents say about this topic
+- search_queries: array of 3 highly targeted web search queries to find the LATEST news,
+                  articles, tweets, reviews, and trends about this topic (be specific,
+                  include year 2024 or 2025 in at least one query)
 
-Output ONLY a valid JSON array, no markdown, no preamble.
+Output ONLY a valid JSON array. No markdown. No preamble.
 
 Documents:
 \"\"\"
@@ -295,24 +268,18 @@ Documents:
 JSON:"""
 
     raw = call_llm_with_fallback(prompt, _TOPIC_EXTRACT_CFG)
-    topics = _parse_json_array(raw, fallback=[])
-    return topics[:MAX_TOPICS]
+    return _parse_json_array(raw, fallback=[])
 
 
-# ═════════════════════════════════════════════════════════════════════════
-# Step 2 — Web search  (Tavily, basic depth, cached)
-# ═════════════════════════════════════════════════════════════════════════
+# ═════════════════════════════════════════════════════════════════════════════
+# Step 2 — Web search  (Tavily only)
+# ═════════════════════════════════════════════════════════════════════════════
 
-def _web_search(query: str, num_results: int = RESULTS_PER_QUERY) -> list[dict]:
+def _web_search(query: str, num_results: int = 6) -> list[dict]:
     """
-    Search the web for a query using Tavily (with SQLite caching). Returns:
+    Search the web for a query using Tavily. Returns list of:
     { "title": str, "snippet": str, "url": str, "source_type": str }
     """
-    cached = _cache_get(query)
-    if cached is not None:
-        print(f"[WAR] cache HIT for query={query!r} ({len(cached)} results)")
-        return cached
-
     if not TAVILY_API_KEY:
         print(
             "[WAR] _web_search: TAVILY_API_KEY is empty/unset — skipping search. "
@@ -328,7 +295,7 @@ def _web_search(query: str, num_results: int = RESULTS_PER_QUERY) -> list[dict]:
             json={
                 "api_key":        TAVILY_API_KEY,
                 "query":          query,
-                "search_depth":   TAVILY_SEARCH_DEPTH,   # "basic" — half the credits of "advanced"
+                "search_depth":   "advanced",
                 "max_results":    num_results,
                 "include_answer": False,
                 "include_raw_content": False,
@@ -337,7 +304,10 @@ def _web_search(query: str, num_results: int = RESULTS_PER_QUERY) -> list[dict]:
         )
 
         if resp.status_code != 200:
-            print(f"[WAR] Tavily HTTP {resp.status_code} for query={query!r}: {resp.text[:500]}")
+            print(
+                f"[WAR] Tavily HTTP {resp.status_code} for query={query!r}: "
+                f"{resp.text[:500]}"
+            )
             return []
 
         data = resp.json()
@@ -348,22 +318,20 @@ def _web_search(query: str, num_results: int = RESULTS_PER_QUERY) -> list[dict]:
 
         raw_results = data.get("results", [])
         if not raw_results:
-            print(f"[WAR] Tavily returned 0 results for query={query!r}.")
+            print(f"[WAR] Tavily returned 0 results for query={query!r}. Raw response keys: {list(data.keys())}")
             return []
 
         results = []
         for item in raw_results:
             results.append({
                 "title":       item.get("title", ""),
-                "snippet":     item.get("content", "")[:220],
+                "snippet":     item.get("content", "")[:280],
                 "url":         item.get("url", ""),
                 "source_type": _classify_source(item.get("url", "")),
             })
 
-        results = results[:num_results]
-        _cache_set(query, results)
         print(f"[WAR] Tavily returned {len(results)} result(s) for query={query!r}")
-        return results
+        return results[:num_results]
 
     except requests.exceptions.Timeout:
         print(f"[WAR] Tavily timeout for query={query!r}")
@@ -399,82 +367,140 @@ def _classify_source(url: str) -> str:
     return "article"
 
 
-# ═════════════════════════════════════════════════════════════════════════
-# Steps 3+4 — ONE LLM call for ALL topic synthesis + the executive summary
-# (replaces what used to be up to 8 separate Groq calls)
-# ═════════════════════════════════════════════════════════════════════════
+# ═════════════════════════════════════════════════════════════════════════════
+# Step 3 — Per-topic synthesis
+# ═════════════════════════════════════════════════════════════════════════════
 
-def _synthesise_all(
-    topics_with_results: list[tuple[dict, list[dict]]],
-    doc_names: list[str],
-) -> dict:
+def _synthesise_topic(topic: dict, web_results: list[dict]) -> dict:
     """
-    Returns:
-    {
-      "topics": [ {index, synthesis, verdict, trend_score, opportunities, risks}, ... ],
-      "executive_summary": "...",
-      "overall_verdict": "validated|mixed|outdated"
-    }
+    Given a topic dict and its web results, ask the LLM to:
+    - Write a synthesis paragraph
+    - Issue a verdict
+    - Score trendiness
     """
-    blocks = []
-    for i, (topic, results) in enumerate(topics_with_results):
-        if not results:
-            blocks.append(
-                f"### Topic {i}: {topic.get('title','')}\n"
-                f"DOC CLAIM: {topic.get('doc_claim','')}\n"
-                f"WEB EVIDENCE: none found"
-            )
-            continue
-        web_lines = "\n".join(
-            f"  [{r['source_type']}] {r['title']}: {r['snippet'][:160]}"
-            for r in results[:4]
-        )
-        blocks.append(
-            f"### Topic {i}: {topic.get('title','')}\n"
-            f"DOC CLAIM: {topic.get('doc_claim','')}\n"
-            f"WEB EVIDENCE:\n{web_lines}"
-        )
+    if not web_results:
+        return {
+            **topic,
+            "web_evidence": [],
+            "synthesis":   "No web data could be retrieved for this topic.",
+            "verdict":     "no_data",
+            "trend_score": 0,
+        }
 
-    combined = trim_to_budget("\n\n".join(blocks), 5500)
+    web_block = "\n".join(
+        f"[{i+1}] ({r['source_type'].upper()}) {r['title']}\n    {r['snippet'][:220]}\n    URL: {r['url']}"
+        for i, r in enumerate(web_results[:6])
+    )
 
     prompt = f"""You are a senior intelligence analyst producing a "Doc vs. World" briefing.
 
-Documents analysed: {', '.join(doc_names) or 'uploaded documents'}
+TOPIC: {topic.get("title", "")}
 
-Below are {len(topics_with_results)} topics. Each shows what the document claims and
-the latest web evidence found for it.
+WHAT THE DOCUMENT SAYS:
+{topic.get("doc_claim", "")}
 
-{combined}
+LATEST WEB INTELLIGENCE (articles, news, tweets, reviews, research):
+{web_block}
 
-For EACH topic (match the same 0-based index as "### Topic N"), produce:
-  - synthesis     : 2-3 sentences comparing doc claim vs web evidence
-  - verdict       : confirmed | partially_outdated | contradicted | new_development | no_data
-  - trend_score   : 0-100 (how actively discussed this topic is right now)
-  - opportunities : up to 2 short strings
-  - risks         : up to 2 short strings
+Your task:
+1. Write a concise synthesis (3-5 sentences) comparing what the document claims vs what the
+   web evidence shows. Be specific. Mention source types (news/tweet/review etc.) where relevant.
+2. Issue one of these verdicts:
+   - "confirmed"           → web evidence strongly supports the document
+   - "partially_outdated"  → document is mostly right but some parts are superseded
+   - "contradicted"        → web evidence directly contradicts the document
+   - "new_development"     → web reveals significant new info the document didn't capture
+3. Give a trend_score 0-100 (how trendy/discussed is this topic on the web right now).
+4. List 1-2 key opportunities and 1-2 key risks this web evidence reveals.
 
-Then also produce ONE overall executive_summary (4-6 sentences, C-suite audience:
-open with a verdict on overall document health vs today's landscape, highlight the
-2-3 most significant findings, end with a forward-looking note) and an
-overall_verdict: validated | mixed | outdated.
+Output ONLY valid JSON. No markdown.
 
-Output ONLY this JSON object. No markdown, no preamble.
 {{
-  "topics": [
-    {{"index": 0, "synthesis": "...", "verdict": "...", "trend_score": 0,
-      "opportunities": ["..."], "risks": ["..."]}}
-  ],
-  "executive_summary": "...",
-  "overall_verdict": "..."
+  "synthesis":     "…",
+  "verdict":       "confirmed|partially_outdated|contradicted|new_development",
+  "trend_score":   82,
+  "opportunities": ["…"],
+  "risks":         ["…"]
 }}"""
 
-    raw = call_llm_with_fallback(prompt, _MEGA_SYNTH_CFG)
-    return _parse_json_object(raw, fallback={})
+    raw = call_llm_with_fallback(prompt, _LLM_CFG)
+    parsed = _parse_json_object(raw, fallback={})
+
+    return {
+        **topic,
+        "web_evidence": web_results[:6],
+        "synthesis":    parsed.get("synthesis", ""),
+        "verdict":      parsed.get("verdict",   "partially_outdated"),
+        "trend_score":  int(parsed.get("trend_score", 50)),
+        "_opportunities": parsed.get("opportunities", []),
+        "_risks":         parsed.get("risks",         []),
+    }
 
 
-# ═════════════════════════════════════════════════════════════════════════
+# ═════════════════════════════════════════════════════════════════════════════
+# Step 4 — Overall executive summary + opportunity/risk synthesis
+# ═════════════════════════════════════════════════════════════════════════════
+
+def _build_executive_summary(topics: list[dict], doc_names: list[str]) -> dict:
+    """Generate executive summary + overall verdict from all synthesised topics."""
+    verdicts = [t.get("verdict", "") for t in topics]
+    confirmed   = verdicts.count("confirmed")
+    outdated    = verdicts.count("partially_outdated")
+    contradicted = verdicts.count("contradicted")
+    new_dev     = verdicts.count("new_development")
+
+    if contradicted >= 2 or (contradicted + outdated) >= len(topics) // 2 + 1:
+        overall_verdict = "outdated"
+    elif confirmed >= len(topics) // 2 + 1:
+        overall_verdict = "validated"
+    else:
+        overall_verdict = "mixed"
+
+    # Collect opportunities and risks from all topics
+    all_opps  = []
+    all_risks = []
+    for t in topics:
+        all_opps.extend(t.pop("_opportunities", []))
+        all_risks.extend(t.pop("_risks",         []))
+
+    topic_summaries = "\n".join(
+        f"- {t.get('title','')}: {t.get('verdict','')} (trend {t.get('trend_score',0)}/100) — {t.get('synthesis','')[:150]}"
+        for t in topics
+    )
+
+    prompt = f"""You are a senior executive writing a brief for the C-suite.
+
+Documents analysed: {', '.join(doc_names)}
+Number of topics assessed: {len(topics)}
+Verdict breakdown: {confirmed} confirmed, {outdated} partially outdated, {contradicted} contradicted, {new_dev} new developments found.
+
+Topic summaries:
+{topic_summaries}
+
+Write a 4-6 sentence executive summary that:
+- Opens with a verdict on the overall health/accuracy of these documents relative to today's landscape
+- Highlights the 2-3 most significant findings
+- Ends with a forward-looking sentence for decision-makers
+
+Output ONLY the summary paragraph text. No JSON. No bullet points."""
+
+    summary = call_llm_with_fallback(prompt, {**_LLM_CFG, "max_tokens": 400})
+
+    # Deduplicate and cap lists
+    seen_opps  = list(dict.fromkeys(all_opps))[:6]
+    seen_risks = list(dict.fromkeys(all_risks))[:6]
+
+    return {
+        "executive_summary": summary.strip(),
+        "overall_verdict":   overall_verdict,
+        "opportunities":     seen_opps,
+        "risks":             seen_risks,
+    }
+
+
+# ═════════════════════════════════════════════════════════════════════════════
 # Step 5 — Orchestrator
-# ═════════════════════════════════════════════════════════════════════════
+# ═════════════════════════════════════════════════════════════════════════════
 
 def run_web_augmentor(
     username:   str,
@@ -500,51 +526,40 @@ def run_web_augmentor(
             "topics": [], "opportunities": [], "risks": [], "sources": [],
         }
 
-    # 2. Extract topics (1 cheap LLM call, capped topics/queries)
+    # 2. Extract topics
     raw_topics: list[dict] = _extract_topics(chunks)
     if not raw_topics:
-        raw_topics = [{
-            "title": "General Overview",
-            "doc_claim": "Content from uploaded documents.",
-            "search_query": f"{filenames[0] if filenames else 'document'} overview 2026",
-        }]
+        # Fallback: use cluster-style keyword extraction
+        raw_topics = [{"title": "General Overview", "doc_claim": "Content from uploaded documents.", "search_queries": [f"{f} overview 2025" for f in filenames[:2]]}]
 
-    # 3. Web search per topic (cached, basic depth, 1 query/topic)
-    topics_with_results: list[tuple[dict, list[dict]]] = []
     all_web_sources: list[dict] = []
+    synthesised_topics: list[dict] = []
 
-    for topic in raw_topics[:MAX_TOPICS]:
-        query = topic.get("search_query") or f"{topic.get('title', '')} 2026"
-        results = _web_search(query, num_results=RESULTS_PER_QUERY)
+    # 3. Web search + synthesis per topic
+    for topic in raw_topics[:7]:   # cap at 7 topics to control latency
+        queries: list[str] = topic.get("search_queries", [topic.get("title", "") + " 2025"])
+        topic_results: list[dict] = []
 
+        for q in queries[:3]:
+            hits = _web_search(q, num_results=5)
+            topic_results.extend(hits)
+
+        # Deduplicate by URL
         seen_urls: set[str] = set()
         unique_results: list[dict] = []
-        for r in results:
+        for r in topic_results:
             if r["url"] not in seen_urls:
                 seen_urls.add(r["url"])
                 unique_results.append(r)
+        topic_results = unique_results[:8]
 
-        topics_with_results.append((topic, unique_results))
-        all_web_sources.extend(unique_results)
+        all_web_sources.extend(topic_results)
 
-    # 4. ONE mega-synthesis call: all topics + executive summary together
-    synth = _synthesise_all(topics_with_results, filenames)
-    synth_topics_by_index = {t.get("index"): t for t in synth.get("topics", [])}
+        syn = _synthesise_topic(topic, topic_results)
+        synthesised_topics.append(syn)
 
-    synthesised_topics: list[dict] = []
-    all_opps: list[str] = []
-    all_risks: list[str] = []
-    for i, (topic, results) in enumerate(topics_with_results):
-        s = synth_topics_by_index.get(i, {})
-        all_opps.extend(s.get("opportunities", []))
-        all_risks.extend(s.get("risks", []))
-        synthesised_topics.append({
-            **topic,
-            "web_evidence": results,
-            "synthesis":    s.get("synthesis", "No synthesis available."),
-            "verdict":      s.get("verdict", "no_data" if not results else "partially_outdated"),
-            "trend_score":  int(s.get("trend_score", 0)),
-        })
+    # 4. Executive summary + overall verdict
+    exec_data = _build_executive_summary(synthesised_topics, filenames)
 
     # 5. Deduplicate sources list
     seen_src_urls: set[str] = set()
@@ -560,11 +575,11 @@ def run_web_augmentor(
         "doc_names":         filenames,
         "generated_at":      now_str,
         "freshness_label":   f"Live web data as of {datetime.now().strftime('%d %b %Y, %H:%M')}",
-        "executive_summary": synth.get("executive_summary", ""),
-        "overall_verdict":   synth.get("overall_verdict", "mixed"),
+        "executive_summary": exec_data["executive_summary"],
+        "overall_verdict":   exec_data["overall_verdict"],
         "topics":            synthesised_topics,
-        "opportunities":     list(dict.fromkeys(all_opps))[:6],
-        "risks":             list(dict.fromkeys(all_risks))[:6],
+        "opportunities":     exec_data["opportunities"],
+        "risks":             exec_data["risks"],
         "sources":           sources[:25],
     }
 
@@ -577,9 +592,9 @@ def run_web_augmentor(
     return report
 
 
-# ═════════════════════════════════════════════════════════════════════════
-# PDF export via PDFShift  (unchanged from original)
-# ═════════════════════════════════════════════════════════════════════════
+# ═════════════════════════════════════════════════════════════════════════════
+# PDF export via WeasyPrint
+# ═════════════════════════════════════════════════════════════════════════════
 
 _VERDICT_LABELS = {
     "confirmed":           ("✅ Confirmed",          "#22c55e"),
@@ -607,7 +622,7 @@ _SOURCE_ICONS = {
 
 
 def _render_report_html(report: dict) -> str:
-    """Render report dict to a self-contained HTML string for PDF conversion."""
+    """Render report dict to a self-contained HTML string for WeasyPrint."""
 
     doc_names_str = ", ".join(report.get("doc_names", []))
     gen_at        = report.get("generated_at", "")
@@ -619,11 +634,13 @@ def _render_report_html(report: dict) -> str:
 
     exec_summary = report.get("executive_summary", "").replace("\n", "<br>")
 
+    # Topics HTML
     topics_html = ""
     for i, t in enumerate(report.get("topics", [])):
         vl, vc = _VERDICT_LABELS.get(t.get("verdict", ""), ("—", "#6b7280"))
         ts      = t.get("trend_score", 0)
 
+        # Web evidence cards
         evidence_html = ""
         for ev in t.get("web_evidence", [])[:4]:
             icon = _SOURCE_ICONS.get(ev.get("source_type", "article"), "🔗")
@@ -663,9 +680,11 @@ def _render_report_html(report: dict) -> str:
             </div>
         </div>"""
 
+    # Opportunities & Risks
     opps_html  = "".join(f'<li style="margin-bottom:6px;color:#374151">{o}</li>' for o in report.get("opportunities", []))
     risks_html = "".join(f'<li style="margin-bottom:6px;color:#374151">{r}</li>' for r in report.get("risks", []))
 
+    # Sources
     sources_html = ""
     for i, s in enumerate(report.get("sources", [])[:15]):
         icon = _SOURCE_ICONS.get(s.get("type", "article"), "🔗")
@@ -683,6 +702,7 @@ def _render_report_html(report: dict) -> str:
 </style>
 </head>
 <body>
+  <!-- Cover strip -->
   <div style="background:linear-gradient(135deg,#4f46e5,#7c3aed,#a855f7);padding:32px 36px;margin-bottom:32px;border-radius:12px">
     <div style="font-size:11px;color:rgba(255,255,255,.7);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px">Nexora AI · Web-Grounded Intelligence</div>
     <div style="font-size:26px;font-weight:800;color:#fff;margin-bottom:4px">{report.get('title','')}</div>
@@ -694,16 +714,19 @@ def _render_report_html(report: dict) -> str:
     </div>
   </div>
 
+  <!-- Executive Summary -->
   <div style="margin-bottom:28px;padding:22px 24px;background:#f5f3ff;border-radius:12px;border:1px solid #ddd6fe">
     <div style="font-size:12px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">📋 Executive Summary</div>
     <p style="font-size:14px;line-height:1.7;color:#1f2937">{exec_summary}</p>
   </div>
 
+  <!-- Topics -->
   <div style="font-size:14px;font-weight:700;color:#1f2937;margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid #e5e7eb">
     📌 Topic-by-Topic Intelligence Breakdown
   </div>
   {topics_html}
 
+  <!-- Opportunities & Risks -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px">
     <div style="padding:18px;background:#f0fdf4;border-radius:12px;border:1px solid #bbf7d0">
       <div style="font-size:12px;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">🚀 Opportunities Revealed</div>
@@ -715,6 +738,7 @@ def _render_report_html(report: dict) -> str:
     </div>
   </div>
 
+  <!-- Sources -->
   <div style="padding:18px;background:#f9fafb;border-radius:12px;border:1px solid #e5e7eb;margin-bottom:20px">
     <div style="font-size:12px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">🔗 Web Sources Consulted</div>
     <ul style="padding-left:16px;columns:2;gap:20px">{sources_html or '<li>No sources.</li>'}</ul>
@@ -730,7 +754,22 @@ def _render_report_html(report: dict) -> str:
 def _export_pdf(report: dict) -> bytes:
     """
     Render HTML report to PDF bytes via the PDFShift API (hosted Chromium).
-    Setup: sign up at https://pdfshift.io and set PDFSHIFT_API_KEY.
+
+    Why this instead of a local renderer (WeasyPrint / Playwright / pyppeteer):
+      - Render's free web service instance has only 512 MB RAM. A local
+        Chromium/WebKit process alone needs 200-500 MB to launch, which
+        will intermittently OOM-kill the whole app alongside Flask + Chroma.
+      - PDFShift runs actual Chromium on their servers, so output is
+        pixel-identical to Playwright — same flexbox/grid/gradient support,
+        nothing in your HTML template needs to change.
+      - Your Render process just does a single HTTP POST + gets PDF bytes
+        back. Memory footprint is a few hundred KB (the request body),
+        not a few hundred MB.
+
+    Setup:
+      1. Sign up at https://pdfshift.io (free tier: 250 pages/month)
+      2. Set the env var on Render:  PDFSHIFT_API_KEY=sk_xxxxxxxx
+         (Render dashboard → your service → Environment → Add Environment Variable)
     """
     import requests
 
@@ -738,7 +777,8 @@ def _export_pdf(report: dict) -> bytes:
     if not api_key:
         raise RuntimeError(
             "PDFSHIFT_API_KEY is not set. Sign up at https://pdfshift.io "
-            "(free tier available) and add PDFSHIFT_API_KEY to your environment variables."
+            "(free tier available) and add PDFSHIFT_API_KEY to your Render "
+            "environment variables."
         )
 
     html_str = _render_report_html(report)
@@ -760,6 +800,7 @@ def _export_pdf(report: dict) -> bytes:
         raise RuntimeError(f"Could not reach PDFShift API: {e}")
 
     if resp.status_code != 200:
+        # PDFShift returns JSON error bodies on failure
         try:
             err_msg = resp.json().get("message", resp.text[:300])
         except Exception:
@@ -769,19 +810,29 @@ def _export_pdf(report: dict) -> bytes:
     return resp.content
 
 
-# ═════════════════════════════════════════════════════════════════════════
-# JSON parsing helpers  (unchanged from original — robust to LLM output)
-# ═════════════════════════════════════════════════════════════════════════
+# ═════════════════════════════════════════════════════════════════════════════
+# Helpers
+# ═════════════════════════════════════════════════════════════════════════════
 
 def _clean_llm_json(raw: str) -> str:
+    """Strip markdown fences and common LLM JSON artefacts."""
+    # Remove all ``` fences (with optional language tag)
     raw = re.sub(r"```[a-z]*", "", raw, flags=re.IGNORECASE).replace("```", "")
+    # Remove JS/Python-style single-line comments  (// ...)
     raw = re.sub(r"(?m)//[^\n]*$", "", raw)
+    # Remove trailing commas before ] or }  (e.g. [..., ] or {..., })
     raw = re.sub(r",\s*([}\]])", r"\1", raw)
+    # Normalise smart/curly quotes to straight quotes
     raw = raw.replace("\u201c", '"').replace("\u201d", '"').replace("\u2018", "'").replace("\u2019", "'")
     return raw.strip()
 
 
 def _extract_json_block(text: str, opener: str, closer: str):
+    """
+    Find the OUTERMOST balanced JSON object or array in *text*.
+    Returns the matched substring, or None if not found.
+    More reliable than a greedy regex for nested structures.
+    """
     start = text.find(opener)
     if start == -1:
         return None
@@ -806,10 +857,11 @@ def _extract_json_block(text: str, opener: str, closer: str):
             depth -= 1
             if depth == 0:
                 return text[start:i + 1]
-    return None
+    return None  # unbalanced
 
 
 def _try_parse(candidate, expected_type):
+    """Attempt json.loads; return parsed value only if it matches expected_type."""
     if not candidate:
         return None
     try:
@@ -822,6 +874,12 @@ def _try_parse(candidate, expected_type):
 
 
 def _looks_truncated(text: str) -> bool:
+    """
+    Heuristic: does this look like the LLM response got cut off by max_tokens
+    rather than being malformed for some other reason?
+    True when the trimmed text doesn't end with a closing bracket/brace,
+    or ends mid-string (odd number of unescaped quotes).
+    """
     if not text:
         return False
     t = text.strip()
@@ -829,11 +887,20 @@ def _looks_truncated(text: str) -> bool:
         return False
     if t[-1] not in "]}":
         return True
+    # crude odd-quote check (ignoring escaped quotes)
     unescaped_quotes = len(re.findall(r'(?<!\\)"', t))
     return unescaped_quotes % 2 == 1
 
 
 def _repair_truncated_array(text: str):
+    """
+    Best-effort recovery for a JSON array that was cut off mid-stream
+    (typically because max_tokens was too low). Walks the top-level
+    elements of the array one at a time and keeps every element that
+    parses cleanly on its own, discarding only the dangling partial
+    element at the very end. Returns a list (possibly empty) or None
+    if no opening '[' was found at all.
+    """
     start = text.find("[")
     if start == -1:
         return None
@@ -880,6 +947,9 @@ def _repair_truncated_array(text: str):
                 break
         i += 1
 
+    # Reached end of string while still inside an element (depth >= 1) —
+    # that dangling partial element is simply dropped, which is correct:
+    # we keep every complete topic the model finished before cutting off.
     return elements if elements else None
 
 
@@ -892,32 +962,45 @@ def _parse_json_array(raw: str, fallback=None) -> list:
 
     cleaned = _clean_llm_json(raw)
 
+    # Pass 1: whole cleaned string
     result = _try_parse(cleaned, list)
     if result is not None:
         return result
 
+    # Pass 2: outermost [...] block via balanced-bracket scan
     block = _extract_json_block(cleaned, "[", "]")
     result = _try_parse(block, list)
     if result is not None:
         return result
 
+    # Pass 3: greedy regex fallback (catches simple non-nested cases)
     m = re.search(r"\[.*\]", cleaned, re.DOTALL)
     if m:
         result = _try_parse(m.group(), list)
         if result is not None:
             return result
 
+    # Pass 4: response looks truncated (hit max_tokens mid-array) — salvage
+    # every complete element instead of throwing the whole list away.
     if _looks_truncated(cleaned):
         repaired = _repair_truncated_array(cleaned)
         if repaired is not None:
-            print(f"[WAR] _parse_json_array: response was TRUNCATED — salvaged {len(repaired)} element(s).")
+            print(
+                f"[WAR] _parse_json_array: response was TRUNCATED "
+                f"(likely max_tokens cutoff) — salvaged {len(repaired)} complete "
+                f"element(s) out of a partial array. Consider raising max_tokens."
+            )
             return repaired
 
+    # All passes failed — log with full traceback
     truncated_flag = _looks_truncated(cleaned)
     try:
         json.loads(block or cleaned or raw)
     except Exception:
-        print(f"[WAR] JSON array parse error — all passes failed (looks_truncated={truncated_flag}).")
+        print(
+            f"[WAR] JSON array parse error — all passes failed "
+            f"(looks_truncated={truncated_flag}). Last exception:"
+        )
         traceback.print_exc()
 
     return fallback
@@ -932,36 +1015,46 @@ def _parse_json_object(raw: str, fallback=None) -> dict:
 
     cleaned = _clean_llm_json(raw)
 
+    # Pass 1: whole cleaned string
     result = _try_parse(cleaned, dict)
     if result is not None:
         return result
 
+    # Pass 2: outermost {...} block via balanced-bracket scan
     block = _extract_json_block(cleaned, "{", "}")
     result = _try_parse(block, dict)
     if result is not None:
         return result
 
+    # Pass 3: greedy regex fallback
     m = re.search(r"\{.*\}", cleaned, re.DOTALL)
     if m:
         result = _try_parse(m.group(), dict)
         if result is not None:
             return result
 
+    # All passes failed — log with full traceback
     try:
         json.loads(block or cleaned or raw)
     except Exception:
-        print("[WAR] JSON object parse error — all passes failed.")
+        print("[WAR] JSON object parse error — all passes failed. Last exception:")
         traceback.print_exc()
 
     return fallback
 
 
-# ═════════════════════════════════════════════════════════════════════════
-# Flask routes  (unchanged from original)
-# ═════════════════════════════════════════════════════════════════════════
+
+# ═════════════════════════════════════════════════════════════════════════════
+# Flask routes
+# ═════════════════════════════════════════════════════════════════════════════
 
 @web_augmentor_bp.route("/generate", methods=["POST"])
 def generate():
+    """
+    POST /web_augmentor/generate
+    Body: { "files": [...], "session_id": "..." }
+    Returns: { "report": <ReportJSON>, "status": "ok" }
+    """
     if not session.get("logged_in"):
         return jsonify({"status": "error", "message": "Unauthorized"}), 401
 
@@ -973,6 +1066,7 @@ def generate():
     if isinstance(filenames, str):
         filenames = [f.strip() for f in filenames.split(",") if f.strip()]
 
+    # Default to all user files if none specified
     if not filenames:
         try:
             conn = sqlite3.connect(DB_NAME)
@@ -996,6 +1090,11 @@ def generate():
 
 @web_augmentor_bp.route("/export_pdf", methods=["POST"])
 def export_pdf():
+    """
+    POST /web_augmentor/export_pdf
+    Body: { "report": <ReportJSON> }
+    Returns: PDF file
+    """
     if not session.get("logged_in"):
         return jsonify({"status": "error", "message": "Unauthorized"}), 401
 
@@ -1021,6 +1120,7 @@ def export_pdf():
 
 @web_augmentor_bp.route("/history", methods=["GET"])
 def history():
+    """GET /web_augmentor/history — list saved reports for the user."""
     if not session.get("logged_in"):
         return jsonify({"status": "error", "message": "Unauthorized"}), 401
     username = session.get("username")
@@ -1029,6 +1129,7 @@ def history():
 
 @web_augmentor_bp.route("/history/<report_id>", methods=["GET"])
 def get_report(report_id: str):
+    """GET /web_augmentor/history/<id> — fetch full report JSON."""
     if not session.get("logged_in"):
         return jsonify({"status": "error", "message": "Unauthorized"}), 401
     username = session.get("username")
@@ -1040,6 +1141,7 @@ def get_report(report_id: str):
 
 @web_augmentor_bp.route("/history/<report_id>", methods=["DELETE"])
 def delete_report(report_id: str):
+    """DELETE /web_augmentor/history/<id>"""
     if not session.get("logged_in"):
         return jsonify({"status": "error", "message": "Unauthorized"}), 401
     username = session.get("username")

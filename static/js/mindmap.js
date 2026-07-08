@@ -317,7 +317,7 @@ const MindMap = (() => {
                 Generates a fully-expanded radial map to help you explore document topics at a glance — click any bubble for details.
               </p>
               <button id="mmGenBtn" onclick="MindMap.generate()" style="background: var(--grad-button, linear-gradient(90deg,#b18fcf,#7ec8e3)); color: var(--swal-btn-text, #14151c); border: none; padding: 10px 24px; border-radius: 12px; font-family: var(--font-display, 'Sora', sans-serif); font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 12px var(--accent-glow, rgba(177,143,207,.3)); display: inline-flex; align-items: center; gap: 8px;">
-                <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Mind Map
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Report
               </button>
             </div>
 
@@ -362,7 +362,7 @@ const MindMap = (() => {
         return f;
     }
 
-    function _showState({ icon = "fa-brain", spinning = false, title = "Interactive Mind Map", text = "", showButton = true, buttonLabel = "Generate Mind Map", buttonIcon = "fa-wand-magic-sparkles" } = {}) {
+    function _showState({ icon = "fa-brain", spinning = false, title = "Interactive Mind Map", text = "", showButton = true, buttonLabel = "Generate Report", buttonIcon = "fa-wand-magic-sparkles" } = {}) {
         const state = document.getElementById("mmState");
         const iconEl = document.getElementById("mmStateIcon");
         const textEl = document.getElementById("mmStateText");
